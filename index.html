@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>결혼 나이를 바꾸는 투자 프로젝트</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"><div class="inner">
+  <h1>결혼 나이를 바꾸는 투자 프로젝트</h1>
+  <span class="step">중학교 3학년 · 5차시</span>
+</div></header>
+<div class="wrap">
+<div class="card">
+  <h3 style="margin-top:0">프로젝트 소개</h3>
+  <p class="lead" style="margin-bottom:12px">저축만으로 결혼 비용을 모으면 몇 살이 될까요?
+  주식·금·현금·부동산에 투자하면 그 나이를 얼마나 앞으로 당길 수 있을까요?
+  5차시 동안 내 돈 계획을 직접 세워 봅니다.</p>
+  <div class="grid2">
+    <label class="f"><span class="t">이름</span><input type="text" id="name" data-store="name" placeholder="예: 김민준"></label>
+    <label class="f"><span class="t">학반 / 번호</span><input type="text" id="cls" data-store="class" placeholder="예: 3학년 2반 7번"></label>
+  </div>
+</div>
+<h2>차시별 활동</h2>
+<div id="cards"></div>
+<div class="card">
+  <h3 style="margin-top:0">내 기록 관리</h3>
+  <p class="help">입력한 내용은 <b>이 기기의 브라우저에만</b> 저장됩니다. 다른 기기에서 이어서 하려면 파일로 내보낸 뒤 불러오세요.</p>
+  <div class="btnrow">
+    <button type="button" class="btn" id="exp">내 기록 내보내기 (JSON)</button>
+    <label class="btn ghost" style="display:inline-flex;align-items:center">기록 불러오기
+      <input type="file" id="imp" accept="application/json" style="display:none"></label>
+    <button type="button" class="btn ghost" id="del">전체 지우기</button>
+  </div>
+  <div id="ioMsg" class="help"></div>
+</div>
+</div>
+<div class="sticky"><span>입력 내용은 자동 저장됩니다.</span><span id="savedFlag" class="saved"></span></div>
+<script src="js/store.js"></script>
+<script>
+(function(){
+  var L=[
+    {n:1,t:'결혼하게 될 나이 계산하기',d:'관심 직업을 조사하고, 저축만으로 결혼 비용을 모을 때 결혼하게 되는 나이를 계산합니다.',k:'l1',f:'lesson1.html',on:true},
+    {n:2,t:'결혼 비용 버는 시간 줄이기',d:'물가 상승률을 반영하고, 저축액과 목표 수익률을 바꿔 결혼 나이를 앞으로 당겨 봅니다.',k:'l2',f:'lesson2.html',on:true},
+    {n:3,t:'결혼 비용을 위해 투자 도전하기',d:'주식·금·현금·부동산의 과거 자료로 실제 투자 시뮬레이션을 해 봅니다.',k:'l3',f:'lesson3.html',on:false},
+    {n:4,t:'안정적인 투자 계획 세우기',d:'시뮬레이션 결과를 비교해 위험을 줄이는 투자 비중을 조정합니다.',k:'l4',f:'lesson4.html',on:false},
+    {n:5,t:'성공한 투자자 되기',d:'내 최종 투자 계획을 정리하고 친구들에게 발표합니다.',k:'l5',f:'lesson5.html',on:false}
+  ];
+  var html='';
+  L.forEach(function(x){
+    var p=STORE.progress(STORE.KEYS[x.k]||[]);
+    html+='<a class="homecard" href="'+x.f+'">'
+      +'<div class="n">'+x.n+'차시'+(x.on?'':' · 준비 중')+'</div>'
+      +'<div class="ti">'+x.t+'</div><div class="d">'+x.d+'</div>'
+      +'<div style="margin-top:10px;display:flex;align-items:center;gap:10px">'
+      +'<div class="bar" style="flex:1"><i style="width:'+p.pct+'%"></i></div>'
+      +'<span style="font-size:13px;color:#6b7280">'+p.pct+'% ('+p.done+'/'+p.total+')</span></div></a>';
+  });
+  document.getElementById('cards').innerHTML=html;
+  STORE.bind(document);
+  document.getElementById('exp').addEventListener('click',function(){ STORE.exportFile(); });
+  document.getElementById('imp').addEventListener('change',function(e){
+    if(!e.target.files[0]) return;
+    STORE.importFile(e.target.files[0],function(ok){
+      document.getElementById('ioMsg').textContent=ok?'불러왔습니다. 화면을 새로 고칩니다.':'파일을 읽을 수 없습니다.';
+      if(ok) setTimeout(function(){ location.reload(); },700);
+    });
+  });
+  document.getElementById('del').addEventListener('click',function(){
+    if(confirm('입력한 모든 내용을 지웁니다. 계속할까요?')){ localStorage.removeItem('wedding-project-v2'); location.reload(); }
+  });
+})();
+</script>
+</body></html>

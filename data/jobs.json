@@ -1,0 +1,338 @@
+[
+ {
+  "name": "교사(중등)",
+  "major": "교육학과, 사범대 관련 전공",
+  "salary": 4300,
+  "satisfaction": 72
+ },
+ {
+  "name": "초등교사",
+  "major": "초등교육과",
+  "salary": 4200,
+  "satisfaction": 74
+ },
+ {
+  "name": "의사",
+  "major": "의예과",
+  "salary": 12000,
+  "satisfaction": 70
+ },
+ {
+  "name": "치과의사",
+  "major": "치의예과",
+  "salary": 9500,
+  "satisfaction": 72
+ },
+ {
+  "name": "한의사",
+  "major": "한의예과",
+  "salary": 7200,
+  "satisfaction": 68
+ },
+ {
+  "name": "약사",
+  "major": "약학과",
+  "salary": 6500,
+  "satisfaction": 73
+ },
+ {
+  "name": "간호사",
+  "major": "간호학과",
+  "salary": 4500,
+  "satisfaction": 58
+ },
+ {
+  "name": "물리치료사",
+  "major": "물리치료학과",
+  "salary": 3400,
+  "satisfaction": 62
+ },
+ {
+  "name": "수의사",
+  "major": "수의예과",
+  "salary": 6000,
+  "satisfaction": 70
+ },
+ {
+  "name": "변호사",
+  "major": "법학전문대학원(학부 무관)",
+  "salary": 9000,
+  "satisfaction": 66
+ },
+ {
+  "name": "검사·판사",
+  "major": "법학전문대학원",
+  "salary": 11000,
+  "satisfaction": 68
+ },
+ {
+  "name": "변리사",
+  "major": "이공계 전공 + 변리사 시험",
+  "salary": 8500,
+  "satisfaction": 70
+ },
+ {
+  "name": "회계사",
+  "major": "경영학과, 회계학과",
+  "salary": 7000,
+  "satisfaction": 64
+ },
+ {
+  "name": "세무사",
+  "major": "세무학과, 경영학과",
+  "salary": 5800,
+  "satisfaction": 66
+ },
+ {
+  "name": "경찰관",
+  "major": "경찰행정학과 등",
+  "salary": 4600,
+  "satisfaction": 60
+ },
+ {
+  "name": "소방관",
+  "major": "소방행정학과 등",
+  "salary": 4500,
+  "satisfaction": 65
+ },
+ {
+  "name": "군인(장교)",
+  "major": "사관학교, 군사학과",
+  "salary": 5000,
+  "satisfaction": 58
+ },
+ {
+  "name": "공무원(행정직)",
+  "major": "행정학과, 정치외교학과",
+  "salary": 4000,
+  "satisfaction": 55
+ },
+ {
+  "name": "외교관",
+  "major": "정치외교학과, 국제학과",
+  "salary": 5500,
+  "satisfaction": 68
+ },
+ {
+  "name": "항공기 조종사",
+  "major": "항공운항학과",
+  "salary": 11000,
+  "satisfaction": 72
+ },
+ {
+  "name": "승무원",
+  "major": "항공서비스학과 등",
+  "salary": 4200,
+  "satisfaction": 55
+ },
+ {
+  "name": "건축가",
+  "major": "건축학과",
+  "salary": 4500,
+  "satisfaction": 63
+ },
+ {
+  "name": "토목기술자",
+  "major": "토목공학과",
+  "salary": 5200,
+  "satisfaction": 60
+ },
+ {
+  "name": "기계공학 엔지니어",
+  "major": "기계공학과",
+  "salary": 5500,
+  "satisfaction": 62
+ },
+ {
+  "name": "전기·전자 엔지니어",
+  "major": "전기전자공학과",
+  "salary": 5800,
+  "satisfaction": 63
+ },
+ {
+  "name": "반도체 엔지니어",
+  "major": "전자공학과, 신소재공학과",
+  "salary": 7500,
+  "satisfaction": 66
+ },
+ {
+  "name": "소프트웨어 개발자",
+  "major": "컴퓨터공학과, 소프트웨어학과",
+  "salary": 6000,
+  "satisfaction": 68
+ },
+ {
+  "name": "인공지능 개발자",
+  "major": "인공지능학과, 컴퓨터공학과",
+  "salary": 7000,
+  "satisfaction": 72
+ },
+ {
+  "name": "데이터 분석가",
+  "major": "통계학과, 산업공학과",
+  "salary": 6200,
+  "satisfaction": 68
+ },
+ {
+  "name": "정보보안 전문가",
+  "major": "정보보호학과, 컴퓨터공학과",
+  "salary": 6000,
+  "satisfaction": 66
+ },
+ {
+  "name": "게임 개발자",
+  "major": "게임공학과, 컴퓨터공학과",
+  "salary": 5000,
+  "satisfaction": 65
+ },
+ {
+  "name": "웹·앱 디자이너(UX/UI)",
+  "major": "디자인학과, 시각디자인학과",
+  "salary": 4200,
+  "satisfaction": 63
+ },
+ {
+  "name": "그래픽 디자이너",
+  "major": "시각디자인학과",
+  "salary": 3600,
+  "satisfaction": 60
+ },
+ {
+  "name": "제품 디자이너",
+  "major": "산업디자인학과",
+  "salary": 4000,
+  "satisfaction": 62
+ },
+ {
+  "name": "건축 인테리어 디자이너",
+  "major": "실내건축학과",
+  "salary": 3800,
+  "satisfaction": 61
+ },
+ {
+  "name": "PD·방송연출가",
+  "major": "신문방송학과, 미디어학과",
+  "salary": 5000,
+  "satisfaction": 66
+ },
+ {
+  "name": "기자",
+  "major": "신문방송학과, 언론정보학과",
+  "salary": 4700,
+  "satisfaction": 57
+ },
+ {
+  "name": "아나운서",
+  "major": "언론정보학과 등",
+  "salary": 5200,
+  "satisfaction": 64
+ },
+ {
+  "name": "영상편집자",
+  "major": "영상학과, 미디어학과",
+  "salary": 3500,
+  "satisfaction": 60
+ },
+ {
+  "name": "작곡가·음악프로듀서",
+  "major": "작곡과, 실용음악과",
+  "salary": 3800,
+  "satisfaction": 70
+ },
+ {
+  "name": "운동선수(프로)",
+  "major": "체육학과",
+  "salary": 6000,
+  "satisfaction": 72
+ },
+ {
+  "name": "스포츠 트레이너",
+  "major": "스포츠과학과, 체육학과",
+  "salary": 3400,
+  "satisfaction": 65
+ },
+ {
+  "name": "요리사(셰프)",
+  "major": "조리학과, 외식경영학과",
+  "salary": 3300,
+  "satisfaction": 62
+ },
+ {
+  "name": "제과·제빵사",
+  "major": "제과제빵학과, 조리학과",
+  "salary": 3000,
+  "satisfaction": 62
+ },
+ {
+  "name": "호텔 매니저",
+  "major": "호텔경영학과",
+  "salary": 4000,
+  "satisfaction": 58
+ },
+ {
+  "name": "마케팅 전문가",
+  "major": "경영학과, 광고홍보학과",
+  "salary": 4800,
+  "satisfaction": 62
+ },
+ {
+  "name": "MD·상품기획자",
+  "major": "경영학과, 의류학과",
+  "salary": 4400,
+  "satisfaction": 60
+ },
+ {
+  "name": "금융·증권 애널리스트",
+  "major": "경제학과, 경영학과",
+  "salary": 8000,
+  "satisfaction": 65
+ },
+ {
+  "name": "은행원",
+  "major": "경영학과, 경제학과",
+  "salary": 5600,
+  "satisfaction": 60
+ },
+ {
+  "name": "부동산 감정평가사",
+  "major": "부동산학과, 경영학과",
+  "salary": 6500,
+  "satisfaction": 64
+ },
+ {
+  "name": "사회복지사",
+  "major": "사회복지학과",
+  "salary": 3200,
+  "satisfaction": 60
+ },
+ {
+  "name": "임상심리사·상담사",
+  "major": "심리학과",
+  "salary": 3600,
+  "satisfaction": 66
+ },
+ {
+  "name": "유치원교사·보육교사",
+  "major": "유아교육과, 아동학과",
+  "salary": 3100,
+  "satisfaction": 58
+ },
+ {
+  "name": "통역·번역가",
+  "major": "어문계열 학과",
+  "salary": 4000,
+  "satisfaction": 63
+ },
+ {
+  "name": "농업인·스마트팜 운영자",
+  "major": "농업생명과학 계열",
+  "salary": 3500,
+  "satisfaction": 64
+ },
+ {
+  "name": "환경·에너지 연구원",
+  "major": "환경공학과, 에너지공학과",
+  "salary": 5200,
+  "satisfaction": 65
+ }
+]

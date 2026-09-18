@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2차시 · 결혼 비용 버는 시간 줄이기</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"><div class="inner">
+  <a class="home" href="index.html">← 홈</a>
+  <h1>2차시 · 결혼 비용 버는 시간 줄이기</h1>
+  <span class="step">2 / 5</span>
+</div></header>
+<div class="wrap">
+
+<div class="card">
+  <h3 style="margin-top:0">오늘의 목표</h3>
+  <p class="lead" style="margin-bottom:0">1차시에서 계산한 나이를 앞으로 당겨 봅시다.
+  방법은 두 가지입니다. <b>① 저축을 더 많이 하기</b>, <b>② 모은 돈을 투자해서 수익률을 얻기</b>.
+  그리고 돈의 가치는 시간이 지나면 떨어진다는 것(<b>물가 상승</b>)도 함께 계산에 넣습니다.</p>
+</div>
+
+<h2>1단계 · 1차시에서 가져온 내 정보</h2>
+<div id="missBox"></div>
+<div class="card">
+  <table class="t">
+    <tr><th>항목</th><th class="num">1차시에 적은 값</th><th>설명</th></tr>
+    <tr><td>① 처음 취직하게 될 나이</td><td class="num" id="v_jobAge">-</td><td>이 나이부터 월급 저축을 시작합니다.</td></tr>
+    <tr><td>② 취직 전에 저축하게 될 돈</td><td class="num" id="v_preSave">-</td><td>투자를 시작하는 첫 밑돈(원금)입니다.</td></tr>
+    <tr><td>③ 취직하면 받게 될 월급</td><td class="num" id="v_pay">-</td><td>저축할 수 있는 돈의 한계선입니다.</td></tr>
+    <tr><td>④ 한 달에 저축할 돈</td><td class="num" id="v_save">-</td><td id="v_save_s">월급 대비 저축률</td></tr>
+    <tr><td>⑥ 결혼하고 싶은 나이</td><td class="num" id="v_wishAge">-</td><td>우리가 맞추려는 목표 나이입니다.</td></tr>
+    <tr><td>⑦ 결혼할 때 내가 필요한 돈</td><td class="num" id="v_target">-</td><td id="v_target_s">결혼 비용 × 내가 준비할 비율</td></tr>
+  </table>
+  <div class="btnrow">
+    <a class="btn ghost sm" href="lesson1.html">1차시에서 값 고치기</a>
+    <button type="button" class="btn ghost sm" id="reloadL1">다시 불러오기</button>
+  </div>
+</div>
+
+<h3>돈을 모으는 동안 물가는 계속 오릅니다</h3>
+<div class="card">
+  <div class="grid2">
+    <label class="f"><span class="t">1년 물가 상승률</span>
+      <div class="unit"><input type="number" id="infl" data-store="l2_infl" value="3.1" step="0.1"><span class="u">% / 년</span></div>
+      <div class="chips"><button type="button" class="chip note">참고 · 2021~2025년 평균 물가 상승률 3.1%</button></div>
+      <span class="help">결혼 비용도 1년마다 이 비율만큼 비싸진다고 계산합니다.</span>
+    </label>
+    <div>
+      <div class="metric" style="margin-bottom:8px"><div class="l">오늘(15세) 기준 내가 모아야 하는 돈</div><div class="v" id="t_now">-</div></div>
+      <div class="metric"><div class="l">희망 결혼 나이가 되었을 때 필요한 돈</div><div class="v" id="t_wish">-</div><div class="s" id="t_wish_s">물가 상승률 반영</div></div>
+    </div>
+  </div>
+  <div class="formula" id="inflFormula"></div>
+  <div class="box" id="baseBox" style="margin-top:10px"></div>
+</div>
+
+<h2>2단계 · 세 가지 계획을 넣고 비교하기</h2>
+<p class="lead">칸마다 <b>투자 수익률</b>과 <b>한 달에 저축할 돈</b>을 다르게 넣고 <b>계산하기</b>를 눌러, 결혼할 수 있는 나이가 어떻게 달라지는지 비교해 봅시다.</p>
+<div class="grid3">
+  <div class="scen" id="scenBox1">
+    <h4>1번 계획</h4>
+    <label class="f"><span class="t">투자 수익률 (1년, %)</span>
+      <div class="unit"><input type="number" id="s1rate" data-store="l2_s1_rate" step="0.1" placeholder="예: 5"><span class="u">%</span></div>
+    </label>
+    <label class="f"><span class="t">한 달에 저축할 돈 (만원)</span>
+      <div class="unit"><input type="number" id="s1save" data-store="l2_s1_save" placeholder="예: 120"><span class="u">만원</span></div>
+      <span class="help" id="s1ratio"></span>
+    </label>
+    <div class="btnrow">
+      <button type="button" class="btn strong sm" data-calc="1">계산하기</button>
+      <button type="button" class="btn ghost sm" data-copy="1">1차시 값 넣기</button>
+    </div>
+    <div class="res" id="s1res">수익률과 월 저축액을 넣고 <b>계산하기</b>를 눌러 보세요.</div>
+  </div>
+  <div class="scen" id="scenBox2">
+    <h4>2번 계획</h4>
+    <label class="f"><span class="t">투자 수익률 (1년, %)</span>
+      <div class="unit"><input type="number" id="s2rate" data-store="l2_s2_rate" step="0.1" placeholder="예: 5"><span class="u">%</span></div>
+    </label>
+    <label class="f"><span class="t">한 달에 저축할 돈 (만원)</span>
+      <div class="unit"><input type="number" id="s2save" data-store="l2_s2_save" placeholder="예: 120"><span class="u">만원</span></div>
+      <span class="help" id="s2ratio"></span>
+    </label>
+    <div class="btnrow">
+      <button type="button" class="btn strong sm" data-calc="2">계산하기</button>
+      <button type="button" class="btn ghost sm" data-copy="2">1차시 값 넣기</button>
+    </div>
+    <div class="res" id="s2res">수익률과 월 저축액을 넣고 <b>계산하기</b>를 눌러 보세요.</div>
+  </div>
+  <div class="scen" id="scenBox3">
+    <h4>3번 계획</h4>
+    <label class="f"><span class="t">투자 수익률 (1년, %)</span>
+      <div class="unit"><input type="number" id="s3rate" data-store="l2_s3_rate" step="0.1" placeholder="예: 5"><span class="u">%</span></div>
+    </label>
+    <label class="f"><span class="t">한 달에 저축할 돈 (만원)</span>
+      <div class="unit"><input type="number" id="s3save" data-store="l2_s3_save" placeholder="예: 120"><span class="u">만원</span></div>
+      <span class="help" id="s3ratio"></span>
+    </label>
+    <div class="btnrow">
+      <button type="button" class="btn strong sm" data-calc="3">계산하기</button>
+      <button type="button" class="btn ghost sm" data-copy="3">1차시 값 넣기</button>
+    </div>
+    <div class="res" id="s3res">수익률과 월 저축액을 넣고 <b>계산하기</b>를 눌러 보세요.</div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h3 style="margin-top:0">세 계획 한눈에 비교</h3>
+  <table class="t">
+    <tr><th>구분</th><th class="num">수익률</th><th class="num">월 저축</th><th class="num">저축률</th>
+        <th class="num">모으는 기간</th><th class="num">결혼 가능 나이</th><th>희망 대비</th></tr>
+    <tbody id="cmpBody"><tr><td colspan="7">아직 계산한 계획이 없습니다.</td></tr></tbody>
+  </table>
+  <div id="cmpBars" style="margin-top:12px"></div>
+  <div style="margin-top:12px">
+    <div class="chips" style="align-items:center">
+      <span class="chip note">참고1 · 한국 은행 적금 평균 금리 3%</span>
+      <button type="button" class="btn ghost sm" data-ref="3" data-slot="1">1번 칸에 넣기</button>
+      <button type="button" class="btn ghost sm" data-ref="3" data-slot="2">2번 칸</button>
+      <button type="button" class="btn ghost sm" data-ref="3" data-slot="3">3번 칸</button>
+    </div>
+    <div class="chips" style="align-items:center">
+      <span class="chip note">참고2 · 미국 투자 전문 업체의 5년 연평균 수익률 9.2%</span>
+      <button type="button" class="btn ghost sm" data-ref="9.2" data-slot="1">1번 칸에 넣기</button>
+      <button type="button" class="btn ghost sm" data-ref="9.2" data-slot="2">2번 칸</button>
+      <button type="button" class="btn ghost sm" data-ref="9.2" data-slot="3">3번 칸</button>
+    </div>
+  </div>
+  <p class="help">세계에서 가장 유명한 투자 전문가들도 1년 평균 10%를 넘기기가 매우 어렵습니다.
+  20%, 50% 같은 수익률을 적으면 계산은 되지만 <b>현실에서는 거의 불가능한 계획</b>입니다.</p>
+  <label class="f" style="margin-top:8px"><span class="t">세 계획 중 내가 해보고 싶은 계획과 그 이유</span>
+    <textarea id="pick" data-store="l2_pick" placeholder="예: 2번 계획. 수익률 6%는 무리가 아니고, 월 저축도 지킬 수 있을 것 같아서."></textarea>
+  </label>
+</div>
+
+<h2>3단계 · AI의 추천</h2>
+<div class="card">
+  <p class="lead" style="margin-top:0">내가 1차시에 적은 정보(취직 나이, 월급, 희망 결혼 나이, 결혼 비용)를 바탕으로
+  <b>현실적인 수익률(최대 10%)</b> 안에서 목표 월 저축액과 수익률을 추천해 줍니다.</p>
+  <div class="btnrow"><button type="button" class="btn strong" id="aiBtn">추천 받아보기</button></div>
+  <div id="aiOut" style="margin-top:12px"></div>
+</div>
+
+<h2>4단계 · 현실적으로 결혼 나이를 맞추려면 무엇을 더 할 수 있는지 찾아봅시다</h2>
+<p class="lead">수익률과 저축액만으로 부족하면, <b>다른 조건</b>을 바꿔 볼 수 있습니다. 아래 버튼을 눌러 값을 바꾸면 결과가 바로 다시 계산됩니다.</p>
+<div class="card">
+  <h3 style="margin-top:0">바꿔볼 수 있는 방법들</h3>
+  <div class="chips">
+    <button type="button" class="chip" data-idea="jobAge-2">취직을 2년 일찍 한다 (취직 나이 −2세)</button>
+    <button type="button" class="chip" data-idea="jobAge-4">대학 대신 바로 취업·기술 자격 (취직 나이 −4세)</button>
+    <button type="button" class="chip" data-idea="local">사는 지역을 지방으로 옮긴다 (결혼 비용 3억)</button>
+    <button type="button" class="chip" data-idea="cost-20">결혼식·신혼여행을 줄인다 (결혼 비용 −20%)</button>
+    <button type="button" class="chip" data-idea="share30">둘이 함께 모으는 비율을 늘린다 (내 비율 30%)</button>
+    <button type="button" class="chip" data-idea="save+20">한 달 저축을 월급의 20%p 더 늘린다</button>
+    <button type="button" class="chip" data-idea="pre+1000">취직 전 저축을 1,000만원 더 모은다</button>
+    <button type="button" class="chip" data-idea="pay+20">월급이 더 높은 직업·승진을 노린다 (월급 +20%)</button>
+    <button type="button" class="chip" data-idea="wish+2">결혼 나이를 2년 늦춘다 (희망 나이 +2세)</button>
+    <button type="button" class="chip" data-idea="reset">1차시 값으로 되돌리기</button>
+  </div>
+  <div class="grid4" style="margin-top:12px">
+    <label class="f"><span class="t">취직 나이(세)</span><input type="number" id="a_jobAge" data-store="l2_adj_jobAge" step="0.5"></label>
+    <label class="f"><span class="t">취직 전 저축(만원)</span><input type="number" id="a_preSave" data-store="l2_adj_preSave"></label>
+    <label class="f"><span class="t">월급(만원)</span><input type="number" id="a_pay" data-store="l2_adj_monthlyPay"></label>
+    <label class="f"><span class="t">월 저축(만원)</span><input type="number" id="a_save" data-store="l2_adj_monthlySave"></label>
+    <label class="f"><span class="t">희망 결혼 나이(세)</span><input type="number" id="a_wishAge" data-store="l2_adj_wishAge" step="0.5"></label>
+    <label class="f"><span class="t">결혼 비용(만원)</span><input type="number" id="a_cost" data-store="l2_adj_weddingCost"></label>
+    <label class="f"><span class="t">내가 준비할 비율(%)</span><input type="number" id="a_share" data-store="l2_adj_share"></label>
+    <label class="f"><span class="t">투자 수익률(%)</span><input type="number" id="a_rate" data-store="l2_adj_rate" step="0.1"></label>
+  </div>
+  <div class="grid3">
+    <div class="metric"><div class="l">이 조건에서 결혼 가능 나이</div><div class="v" id="a_age">-</div><div class="s" id="a_age_s"></div></div>
+    <div class="metric"><div class="l">희망 나이와 차이</div><div class="v" id="a_gap">-</div><div class="s">(−)면 희망보다 빠름</div></div>
+    <div class="metric"><div class="l">희망 나이에 맞추려면</div><div class="v" id="a_need">-</div><div class="s" id="a_need_s">필요한 월 저축액</div></div>
+  </div>
+  <div class="formula" id="a_formula" style="margin-top:10px"></div>
+  <div id="a_judge" style="margin-top:10px"></div>
+  <label class="f" style="margin-top:12px"><span class="t">내가 고른 방법과 그 이유 (2가지 이상)</span>
+    <textarea id="plan" data-store="l2_adj_plan" placeholder="예: 1) 취직을 2년 일찍 하기 — 전문대·자격증으로 빨리 취업할 수 있다. 2) 지방에서 시작하기 — 집값이 훨씬 싸다. 그래서 수익률 6%로도 32세에 결혼할 수 있다."></textarea>
+  </label>
+  <div class="btnrow">
+    <button type="button" class="btn ghost" onclick="window.print()">결과 인쇄 / PDF 저장</button>
+    <a class="btn teal" href="lesson3.html">3차시로 이동 →</a>
+  </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/calc.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var num=function(id){var v=parseFloat($(id).value);return isFinite(v)?v:null;};
+  var NOW=15, MAXRATE_AI=10;
+  var L1={};
+
+  function loadL1(){
+    L1={ jobAge:STORE.num('l1_jobAge'), preSave:STORE.num('l1_preSave'),
+         pay:STORE.num('l1_monthlyPay'), save:STORE.num('l1_monthlySave'),
+         wishAge:STORE.num('l1_wishAge'), cost:STORE.num('l1_weddingCost'),
+         share:STORE.num('l1_share',50) };
+    var miss=[];
+    if(L1.jobAge===null) miss.push('취직 나이');
+    if(L1.preSave===null) miss.push('취직 전 저축');
+    if(L1.pay===null) miss.push('월급');
+    if(L1.save===null) miss.push('한 달 저축액');
+    if(L1.wishAge===null) miss.push('희망 결혼 나이');
+    if(L1.cost===null) miss.push('결혼 비용');
+    $('missBox').innerHTML = miss.length
+      ? '<div class="box bad">1차시에서 <b>'+miss.join(', ')+'</b> 값을 찾을 수 없습니다. <a href="lesson1.html">1차시 페이지</a>에서 먼저 입력해 주세요. (같은 기기·같은 브라우저에서 입력한 값만 불러옵니다.)</div>'
+      : '';
+    $('v_jobAge').textContent=(L1.jobAge===null)?'-':CALC.n1(L1.jobAge)+'세';
+    $('v_preSave').textContent=(L1.preSave===null)?'-':CALC.won(L1.preSave);
+    $('v_pay').textContent=(L1.pay===null)?'-':CALC.won(L1.pay)+' / 월';
+    $('v_save').textContent=(L1.save===null)?'-':CALC.won(L1.save)+' / 월';
+    $('v_save_s').textContent=(L1.save===null||!L1.pay)?'월급 대비 저축률'
+      :'월급의 '+CALC.n1(L1.save/L1.pay*100)+'% 를 저축';
+    var tg=(L1.cost===null)?null:L1.cost*L1.share/100;
+    $('v_target').textContent=(tg===null)?'-':CALC.won(tg);
+    $('v_target_s').textContent=(L1.cost===null)?'결혼 비용 × 내가 준비할 비율'
+      :CALC.won(L1.cost)+' × '+CALC.n1(L1.share)+'%';
+    return tg;
+  }
+
+  function opt(over){
+    var o={ jobAge:L1.jobAge, preSave:L1.preSave, monthlySave:L1.save, rate:0,
+            weddingCost:L1.cost, share:L1.share, infl:(num('infl')===null?3.1:num('infl')),
+            wishAge:L1.wishAge, nowAge:NOW };
+    if(over) Object.keys(over).forEach(function(k){ o[k]=over[k]; });
+    return o;
+  }
+  function ready(o){
+    return o.jobAge!==null&&o.preSave!==null&&o.monthlySave!==null&&o.weddingCost!==null;
+  }
+
+  /* ---- 물가 상승 / 기준선 ---- */
+  function topCalc(){
+    var tg=loadL1(); var o=opt();
+    var infl=o.infl;
+    $('t_now').textContent=(tg===null)?'-':CALC.won(tg);
+    if(tg===null||L1.wishAge===null){ $('t_wish').textContent='-'; $('inflFormula').textContent=''; $('baseBox').innerHTML=''; return; }
+    var yrs=Math.max(0,L1.wishAge-NOW), fut=CALC.targetAt(L1.wishAge,o);
+    $('t_wish').textContent=CALC.won(fut);
+    $('t_wish_s').textContent=CALC.n1(yrs)+'년 동안 물가 상승률 '+CALC.n1(infl)+'% 반영';
+    $('inflFormula').innerHTML=CALC.won(tg)+' × (1 + '+CALC.n1(infl)+'%)<sup>'+CALC.n1(yrs)+'년</sup> = <b>'+CALC.won(fut)+'</b>'
+      +' &nbsp;→ 지금 모아야 할 돈보다 <b>'+CALC.won(fut-tg)+'</b> 더 필요합니다.';
+    if(!ready(o)){ $('baseBox').innerHTML=''; return; }
+    var base=CALC.simulate(opt({rate:0}));
+    $('baseBox').innerHTML='<b>투자를 하지 않고 저축만 한다면</b> (수익률 0%, 물가 상승 '+CALC.n1(infl)+'% 반영) → 결혼 가능 나이 <b>'
+      +CALC.ageText(base.age)+'</b>. 희망하는 '+CALC.n1(L1.wishAge)+'세와 '
+      +(base.age===null?'비교할 수 없을 만큼 차이가 납니다.':('<b>'+CALC.n1(base.age-L1.wishAge)+'년</b> 차이가 납니다.'))
+      +' 이제 투자 수익률을 넣어 이 나이를 줄여 봅시다.';
+  }
+
+  /* ---- 세 칸 시나리오 ---- */
+  var results={};
+  function calcScen(i){
+    var r=num('s'+i+'rate'), s=num('s'+i+'save');
+    var box=$('s'+i+'res');
+    if(r===null||s===null){ box.innerHTML='<span style="color:#b91c1c">수익률과 월 저축액을 모두 적어 주세요.</span>'; return; }
+    var o=opt({rate:r,monthlySave:s});
+    if(!ready(o)){ box.innerHTML='<span style="color:#b91c1c">1차시 값이 없어 계산할 수 없습니다.</span>'; return; }
+    var sim=CALC.simulate(o);
+    var ratio=(L1.pay&&L1.pay>0)?s/L1.pay*100:null;
+    var warn='';
+    if(r>15) warn='<div class="box bad" style="margin-top:8px">수익률 '+CALC.n1(r)+'%는 현실에서 거의 불가능합니다. (참고: 적금 3%, 전문 투자업체 9.2%)</div>';
+    else if(r>10) warn='<div class="box" style="margin-top:8px">수익률 '+CALC.n1(r)+'%는 전문 투자업체보다 높습니다. 정말 가능할지 생각해 보세요.</div>';
+    if(ratio!==null&&ratio>100) warn+='<div class="box bad" style="margin-top:8px">월 저축액이 월급보다 많습니다. 다른 수입이 필요합니다.</div>';
+    var gap=(sim.age===null||L1.wishAge===null)?null:sim.age-L1.wishAge;
+    var badge=(gap===null)?'':(gap<=0?'<span class="badge g">희망 달성</span>':'<span class="badge '+(gap<=3?'w':'b')+'">희망보다 '+CALC.n1(gap)+'년 늦음</span>');
+    box.innerHTML='<div class="l" style="font-size:13px;color:#6b7280">결혼할 수 있는 나이</div>'
+      +'<div class="big">'+CALC.ageText(sim.age)+'</div>'+badge
+      +'<div style="margin-top:8px;font-size:13px;color:#374151">'
+      +'모으는 기간 '+(sim.months===null?'-':CALC.n1(sim.months/12)+'년')+'<br>'
+      +'필요한 돈 '+CALC.won(sim.target)+' (물가 반영)<br>'
+      +'모은 돈 '+CALC.won(sim.assets)+'<br>'
+      +'저축 원금 '+CALC.won((sim.months===null?0:s*sim.months)+o.preSave)
+      +' / 투자로 늘어난 돈 '+CALC.won(sim.assets-((sim.months===null?0:s*sim.months)+o.preSave))
+      +'</div>'+warn;
+    results[i]={rate:r,save:s,ratio:ratio,age:sim.age,months:sim.months,gap:gap};
+    document.querySelectorAll('.scen').forEach(function(e){e.classList.remove('sel');});
+    $('scenBox'+i).classList.add('sel');
+    drawCmp();
+  }
+  function drawCmp(){
+    var ks=Object.keys(results);
+    if(!ks.length){ $('cmpBody').innerHTML='<tr><td colspan="7">아직 계산한 계획이 없습니다.</td></tr>'; $('cmpBars').innerHTML=''; return; }
+    var rows='',bars='';
+    var ages=ks.map(function(k){return results[k].age;}).filter(function(a){return a!==null;});
+    var maxAge=Math.max.apply(null,ages.concat([L1.wishAge||30])) ;
+    ks.sort();
+    ks.forEach(function(k){
+      var r=results[k];
+      var tag=(r.gap===null)?'-':(r.gap<=0?'<span class="badge g">달성</span>':'<span class="badge '+(r.gap<=3?'w':'b')+'">+'+CALC.n1(r.gap)+'년</span>');
+      rows+='<tr><td>'+k+'번 계획</td><td class="num">'+CALC.n1(r.rate)+'%</td><td class="num">'+CALC.won(r.save)+'</td>'
+        +'<td class="num">'+(r.ratio===null?'-':CALC.n1(r.ratio)+'%')+'</td>'
+        +'<td class="num">'+(r.months===null?'-':CALC.n1(r.months/12)+'년')+'</td>'
+        +'<td class="num"><b>'+CALC.ageText(r.age)+'</b></td><td>'+tag+'</td></tr>';
+      var w=(r.age===null)?100:Math.max(4,Math.round((r.age-NOW)/(maxAge-NOW+2)*100));
+      var cls=(r.gap===null||r.age===null)?'b':(r.gap<=0?'g':(r.gap<=3?'w':'b'));
+      bars+='<div style="margin-bottom:8px"><div style="font-size:13px;display:flex;justify-content:space-between">'
+        +'<span>'+k+'번 · 수익률 '+CALC.n1(r.rate)+'% / 월 '+CALC.won(r.save)+'</span><b>'+CALC.ageText(r.age)+'</b></div>'
+        +'<div class="bar"><i class="'+cls+'" style="width:'+w+'%"></i></div></div>';
+    });
+    $('cmpBody').innerHTML=rows;
+    $('cmpBars').innerHTML=bars+(L1.wishAge!==null?'<p class="help">막대가 짧을수록 빨리 결혼할 수 있습니다. 희망 나이: '+CALC.n1(L1.wishAge)+'세</p>':'');
+  }
+  document.querySelectorAll('[data-calc]').forEach(function(b){
+    b.addEventListener('click',function(){ calcScen(b.getAttribute('data-calc')); });
+  });
+  document.querySelectorAll('[data-copy]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var i=b.getAttribute('data-copy');
+      if(L1.save!==null){ $('s'+i+'save').value=L1.save; STORE.set('l2_s'+i+'_save',String(L1.save)); }
+      if($('s'+i+'rate').value===''){ $('s'+i+'rate').value=3; STORE.set('l2_s'+i+'_rate','3'); }
+      showRatio(i); calcScen(i);
+    });
+  });
+  document.querySelectorAll('[data-ref]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var v=b.getAttribute('data-ref'), i=b.getAttribute('data-slot');
+      $('s'+i+'rate').value=v; STORE.set('l2_s'+i+'_rate',v);
+      if($('s'+i+'save').value===''&&L1.save!==null){ $('s'+i+'save').value=L1.save; STORE.set('l2_s'+i+'_save',String(L1.save)); }
+      showRatio(i); calcScen(i);
+    });
+  });
+  function showRatio(i){
+    var s=num('s'+i+'save');
+    $('s'+i+'ratio').textContent=(s===null||!L1.pay)?'':'월급 '+CALC.won(L1.pay)+' 의 '+CALC.n1(s/L1.pay*100)+'% 를 저축합니다.';
+  }
+  [1,2,3].forEach(function(i){
+    $('s'+i+'save').addEventListener('input',function(){ showRatio(i); });
+  });
+
+  /* ---- AI 추천 ---- */
+  $('aiBtn').addEventListener('click',function(){
+    var o=opt();
+    if(!ready(o)||L1.wishAge===null){ $('aiOut').innerHTML='<div class="box bad">1차시 값이 모두 있어야 추천할 수 있습니다.</div>'; return; }
+    if(L1.wishAge<=L1.jobAge){ $('aiOut').innerHTML='<div class="box bad">희망 결혼 나이가 취직 나이보다 빠릅니다. 1차시에서 취직 나이나 희망 나이를 조정해 보세요.</div>'; return; }
+    var pay=L1.pay||0, best=null, rows='';
+    for(var r=3;r<=MAXRATE_AI+0.001;r+=1){
+      var need=CALC.needMonthly(opt({rate:r}));
+      var ratio=pay>0?need/pay*100:null;
+      rows+='<tr><td class="num">'+CALC.n1(r)+'%</td><td class="num">'+CALC.won(need)+'</td><td class="num">'
+        +(ratio===null?'-':CALC.n1(ratio)+'%')+'</td><td>'+(ratio!==null&&ratio>100?'<span class="badge b">월급 초과</span>':(ratio!==null&&ratio>70?'<span class="badge w">매우 빡빡함</span>':'<span class="badge g">가능</span>'))+'</td></tr>';
+      if(best===null&&ratio!==null&&ratio<=60) best={rate:r,need:need,ratio:ratio};
+    }
+    var note='';
+    if(best===null){
+      var need10=CALC.needMonthly(opt({rate:MAXRATE_AI}));
+      best={rate:MAXRATE_AI,need:need10,ratio:pay>0?need10/pay*100:null};
+      note='<div class="box" style="margin-top:10px">현실적인 최대 수익률 <b>10%</b>로도 희망 나이에 맞추려면 월 <b>'+CALC.won(best.need)+'</b>을 저축해야 합니다.'
+        +(best.ratio!==null&&best.ratio>100?' 이는 <b>월급보다 많은 금액</b>이므로, 4단계에서 취직 나이·결혼 비용·내가 준비할 비율 같은 다른 조건도 함께 바꿔야 합니다.':' 저축률이 매우 높으니 4단계 조건 조정도 함께 생각해 보세요.')+'</div>';
+    }
+    var sim=CALC.simulate(opt({rate:best.rate,monthlySave:Math.round(best.need)}));
+    $('aiOut').innerHTML=
+      '<div class="grid3">'
+      +'<div class="metric"><div class="l">추천 · 한 달에 저축할 돈</div><div class="v">'+CALC.won(Math.round(best.need))+'</div><div class="s">'+(best.ratio===null?'':'월급의 '+CALC.n1(best.ratio)+'%')+'</div></div>'
+      +'<div class="metric"><div class="l">추천 · 투자 수익률</div><div class="v">'+CALC.n1(best.rate)+'%</div><div class="s">최대 10% 안에서 추천</div></div>'
+      +'<div class="metric"><div class="l">이대로 하면 결혼 나이</div><div class="v">'+CALC.ageText(sim.age)+'</div><div class="s">희망 '+CALC.n1(L1.wishAge)+'세</div></div>'
+      +'</div>'
+      +'<p class="help" style="margin-top:10px">아래 표는 수익률을 바꿀 때 <b>희망 나이에 맞추려면 매달 얼마를 저축해야 하는지</b> 보여줍니다. 수익률이 높아질수록 저축 부담이 줄어듭니다.</p>'
+      +'<table class="t"><tr><th class="num">수익률</th><th class="num">필요한 월 저축액</th><th class="num">월급 대비</th><th>판정</th></tr>'+rows+'</table>'
+      +note
+      +'<div class="btnrow"><button type="button" class="btn sm" id="aiApply1">1번 칸에 넣기</button>'
+      +'<button type="button" class="btn ghost sm" id="aiApply3">3번 칸에 넣기</button></div>';
+    function apply(i){
+      $('s'+i+'rate').value=CALC.n1(best.rate); STORE.set('l2_s'+i+'_rate',String(best.rate));
+      $('s'+i+'save').value=Math.round(best.need); STORE.set('l2_s'+i+'_save',String(Math.round(best.need)));
+      showRatio(i); calcScen(i);
+    }
+    $('aiApply1').addEventListener('click',function(){apply(1);});
+    $('aiApply3').addEventListener('click',function(){apply(3);});
+  });
+
+  /* ---- 4단계 조정 ---- */
+  function fillAdj(force){
+    var m={a_jobAge:L1.jobAge,a_preSave:L1.preSave,a_pay:L1.pay,a_save:L1.save,
+           a_wishAge:L1.wishAge,a_cost:L1.cost,a_share:L1.share};
+    Object.keys(m).forEach(function(id){
+      if(force||$(id).value===''){ if(m[id]!==null){ $(id).value=m[id]; STORE.set($(id).getAttribute('data-store'),String(m[id])); } }
+    });
+    if(force||$('a_rate').value===''){ $('a_rate').value=5; STORE.set('l2_adj_rate','5'); }
+    adjCalc();
+  }
+  function adjCalc(){
+    var o=opt({jobAge:num('a_jobAge'),preSave:num('a_preSave'),monthlySave:num('a_save'),
+               rate:(num('a_rate')===null?0:num('a_rate')),weddingCost:num('a_cost'),
+               share:(num('a_share')===null?50:num('a_share')),wishAge:num('a_wishAge')});
+    if(!ready(o)){ $('a_age').textContent='-'; $('a_formula').textContent='위 칸을 모두 채우면 계산됩니다.'; return; }
+    var sim=CALC.simulate(o), pay=num('a_pay');
+    $('a_age').textContent=CALC.ageText(sim.age);
+    $('a_age_s').textContent='취직 '+CALC.n1(o.jobAge)+'세 + '+(sim.months===null?'-':CALC.n1(sim.months/12)+'년');
+    var gap=(sim.age===null||o.wishAge===null)?null:sim.age-o.wishAge;
+    $('a_gap').textContent=(gap===null)?'-':(gap>0?'+':'')+CALC.n1(gap)+'년';
+    var need=(o.wishAge!==null)?CALC.needMonthly(o):null;
+    $('a_need').textContent=(need===null)?'-':CALC.won(Math.round(need));
+    $('a_need_s').textContent=(need===null||!pay)?'필요한 월 저축액':'월급의 '+CALC.n1(need/pay*100)+'%';
+    $('a_formula').innerHTML='필요한 돈 '+CALC.won(o.weddingCost)+' × '+CALC.n1(o.share)+'% = '+CALC.won(o.weddingCost*o.share/100)
+      +' → 물가 '+CALC.n1(o.infl)+'% 반영 시 '+CALC.won(sim.target)+'<br>'
+      +'취직 전 저축 '+CALC.won(o.preSave)+' + 매달 '+CALC.won(o.monthlySave)+' (수익률 '+CALC.n1(o.rate)+'%로 불리기) → '
+      +(sim.months===null?'목표 도달 못함':CALC.n1(sim.months/12)+'년 뒤 '+CALC.won(sim.assets));
+    var html='';
+    if(gap!==null&&gap<=0) html='<div class="box good"><b>성공!</b> 이 조건이면 희망하는 '+CALC.n1(o.wishAge)+'세'+(gap<0?'보다 '+CALC.n1(-gap)+'년 빠르게':'에 맞춰')+' 결혼 비용을 모을 수 있습니다. 어떤 조건을 바꿨는지 아래에 적어 두세요.</div>';
+    else if(gap!==null) html='<div class="box">아직 희망보다 <b>'+CALC.n1(gap)+'년</b> 늦습니다. 수익률을 올리기보다 <b>취직 나이, 결혼 비용, 내가 준비할 비율</b>을 먼저 바꿔 보세요.</div>';
+    if(pay&&num('a_save')!==null&&num('a_save')>pay) html+='<div class="box bad" style="margin-top:8px">월 저축액이 월급보다 많습니다. 실제로는 불가능한 계획입니다.</div>';
+    if(num('a_rate')!==null&&num('a_rate')>10) html+='<div class="box bad" style="margin-top:8px">수익률 '+CALC.n1(num('a_rate'))+'%는 전문 투자업체(9.2%)보다 높습니다. 현실적인 계획인지 다시 생각해 보세요.</div>';
+    $('a_judge').innerHTML=html;
+  }
+  document.querySelectorAll('[data-idea]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.getAttribute('data-idea'), set=function(id,v){ $(id).value=Math.round(v*10)/10; STORE.set($(id).getAttribute('data-store'),String(Math.round(v*10)/10)); };
+      var g=function(id){ var v=parseFloat($(id).value); return isFinite(v)?v:0; };
+      if(k==='reset'){ fillAdj(true); return; }
+      if(k==='jobAge-2') set('a_jobAge',g('a_jobAge')-2);
+      if(k==='jobAge-4') set('a_jobAge',g('a_jobAge')-4);
+      if(k==='local') set('a_cost',30000);
+      if(k==='cost-20') set('a_cost',g('a_cost')*0.8);
+      if(k==='share30') set('a_share',30);
+      if(k==='save+20') set('a_save',g('a_save')+g('a_pay')*0.2);
+      if(k==='pre+1000') set('a_preSave',g('a_preSave')+1000);
+      if(k==='pay+20'){ set('a_pay',g('a_pay')*1.2); }
+      if(k==='wish+2') set('a_wishAge',g('a_wishAge')+2);
+      adjCalc();
+    });
+  });
+  ['a_jobAge','a_preSave','a_pay','a_save','a_wishAge','a_cost','a_share','a_rate'].forEach(function(id){
+    $(id).addEventListener('input',adjCalc);
+  });
+  $('infl').addEventListener('input',function(){ topCalc(); adjCalc(); [1,2,3].forEach(function(i){ if(results[i]) calcScen(i); }); });
+  $('reloadL1').addEventListener('click',function(){ topCalc(); fillAdj(true); });
+
+  STORE.bind(document);
+  topCalc(); fillAdj(false);
+  [1,2,3].forEach(function(i){ showRatio(i); if($('s'+i+'rate').value!==''&&$('s'+i+'save').value!=='') calcScen(i); });
+})();
+</script>
+</div>
+<div class="sticky">
+  <span>입력 내용은 이 기기(브라우저)에 자동 저장됩니다.</span>
+  <span id="savedFlag" class="saved"></span>
+  <a href="index.html" style="margin-left:auto">홈으로</a>
+</div>
+</body></html>
