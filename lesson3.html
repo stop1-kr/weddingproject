@@ -52,12 +52,12 @@
 <!-- ========== 1단계 ========== -->
 <h2>1단계 · 내가 얻어야 하는 현실적인 투자 수익률</h2>
 <div class="card">
-  <p class="lead" style="margin-top:0">2차시 4단계에서 조건을 바꿔 보고 정한 값으로, <b>희망하는 결혼 나이에 맞추려면 1년에 평균 몇 %를 벌어야 하는지</b> 계산한 결과입니다.</p>
+  <p class="lead" style="margin-top:0">2차시 4단계에서 내가 직접 적은 <b>투자 수익률</b>을 그대로 가져왔습니다. 오늘은 이 수익률을 <b>나의 목표 수익률</b>로 삼고, 실제 회사에 투자했다면 이만큼 벌 수 있었는지 확인해 봅니다.</p>
   <div id="reqMissing"></div>
   <div id="reqBody"></div>
   <div class="btnrow">
     <a class="btn ghost sm" href="lesson2.html">2차시에서 조건 다시 바꾸기</a>
-    <button type="button" class="btn ghost sm" id="reqReload">2차시 값으로 다시 계산</button>
+    <button type="button" class="btn ghost sm" id="reqReload">2차시 값 다시 불러오기</button>
   </div>
 </div>
 
@@ -223,7 +223,7 @@
   <div class="btnrow"><button type="button" class="btn ghost sm" id="fromMemo">메모에 적은 회사 불러오기</button></div>
   <div id="pickMsg" class="help"></div>
   <div class="grid2" style="margin-top:12px">
-    <label class="f"><span class="t">내가 얻어야 하는 투자 수익률 (1단계 결과, 고칠 수 있어요)</span>
+    <label class="f"><span class="t">내가 얻어야 하는 투자 수익률 (1단계 = 2차시 4단계 값, 고칠 수 있어요)</span>
       <div class="unit"><input type="number" id="targetRate" data-store="l3_targetRate" step="0.1"><span class="u">% / 년</span></div></label>
     <div class="metric"><div class="l">내가 감당할 수 있는 최대 손실</div><div class="v" id="limShow">-</div><div class="s">4단계에서 정한 값</div></div>
   </div>
@@ -258,61 +258,78 @@
   /* 주식 조각 그림 */
   var pc=''; for(var i=0;i<10;i++) pc+='<span'+(i===0?' class="me"':'')+'></span>'; $('pieces').innerHTML=pc;
 
-  /* ========== 1단계 : 필요한 수익률 ========== */
+  /* ========== 1단계 : 2차시 4단계에서 학생이 적은 투자 수익률 그대로 가져오기 ========== */
   function gv(adj,l1,dv){ var v=STORE.num(adj); if(v===null) v=STORE.num(l1); return (v===null||v===undefined)?dv:v; }
   var REQ={rate:null};
+  function rateMsg(r){
+    if(r<=0) return {cls:'',msg:'수익률이 0% 이하입니다. 저축만 하는 것과 같습니다.'};
+    if(r<=3) return {cls:'good',msg:'은행 <b>적금 평균 금리(3%)</b> 이하입니다. 안정적인 상품으로도 가능한 수준입니다.'};
+    if(r<=6) return {cls:'good',msg:'적금보다는 높지만 <b>꾸준히 관리하면 도전해 볼 만한</b> 수준입니다.'};
+    if(r<=9.2) return {cls:'',msg:'<b>미국 투자 전문 업체의 5년 평균(9.2%)</b>에 가까운 수준입니다. 쉽지 않은 목표이니 손실 위험도 함께 생각해야 합니다.'};
+    if(r<=10) return {cls:'',msg:'현실적인 한계로 보는 <b>10%</b> 가까이 됩니다. 매우 어렵고 위험이 큰 목표입니다.'};
+    return {cls:'bad',msg:'현실적인 한계(10%)를 넘습니다. 실제로 이 수익률을 꾸준히 얻기는 매우 어렵습니다. 2차시 4단계에서 <b>다른 조건</b>을 함께 바꿔 보는 것도 좋습니다.'};
+  }
   function calcReq(){
-    var useAdj=STORE.has('l2_adj_jobAge');
-    var o={ jobAge:gv('l2_adj_jobAge','l1_jobAge',null), preSave:gv('l2_adj_preSave','l1_preSave',null),
-            monthlySave:gv('l2_adj_monthlySave','l1_monthlySave',null), weddingCost:gv('l2_adj_weddingCost','l1_weddingCost',null),
-            share:gv('l2_adj_share','l1_share',50), wishAge:gv('l2_adj_wishAge','l1_wishAge',null),
-            infl:STORE.num('l2_infl',3.1), nowAge:15, rate:0 };
-    var names={jobAge:'취직 나이',preSave:'취직 전 저축',monthlySave:'한 달 저축액',weddingCost:'결혼 비용',wishAge:'희망 결혼 나이'}, miss=[];
-    Object.keys(names).forEach(function(k){ if(o[k]===null) miss.push(names[k]); });
-    REQ.rate=null;
-    if(miss.length){
-      $('reqMissing').innerHTML='<div class="box bad">'+miss.join(', ')+' 값을 찾을 수 없습니다. 같은 기기에서 <a href="lesson1.html">1차시</a>와 <a href="lesson2.html">2차시</a>를 먼저 진행해 주세요.</div>';
+    var r=STORE.num('l2_adj_rate');
+    REQ.rate=(r===null||r===undefined||!isFinite(r))?null:r;
+    if(REQ.rate===null){
+      $('reqMissing').innerHTML='<div class="box bad">2차시 4단계의 <b>투자 수익률(%)</b> 값을 찾을 수 없습니다. 같은 기기에서 <a href="lesson2.html">2차시 4단계</a>를 먼저 진행해 주세요.<br>'
+        +'지금 바로 하려면 아래 <b>5단계의 「내가 얻어야 하는 투자 수익률」 칸</b>에 직접 적어도 됩니다.</div>';
       $('reqBody').innerHTML=''; return;
     }
     $('reqMissing').innerHTML='';
-    if(o.wishAge<=o.jobAge){
-      $('reqMissing').innerHTML='<div class="box bad">희망 결혼 나이가 취직 나이보다 빠릅니다. 2차시 4단계에서 값을 다시 조정해 주세요.</div>'; $('reqBody').innerHTML=''; return;
+    var rv=REQ.rate, rm=rateMsg(rv);
+
+    /* 참고 정보 : 이 수익률로 2차시 4단계 조건대로 하면 몇 살에 결혼할 수 있는지 (수익률은 바꾸지 않음) */
+    var o={ jobAge:gv('l2_adj_jobAge','l1_jobAge',null), preSave:gv('l2_adj_preSave','l1_preSave',null),
+            monthlySave:gv('l2_adj_monthlySave','l1_monthlySave',null), weddingCost:gv('l2_adj_weddingCost','l1_weddingCost',null),
+            share:gv('l2_adj_share','l1_share',50), wishAge:gv('l2_adj_wishAge','l1_wishAge',null),
+            infl:STORE.num('l2_infl',3.1), nowAge:15, rate:rv };
+    var ready=['jobAge','preSave','monthlySave','weddingCost'].every(function(k){ return o[k]!==null; });
+    var ageCard='', gapCard='', cond='';
+    if(ready){
+      var sim=CALC.simulate(o);
+      ageCard='<div class="metric"><div class="l">이 수익률로 결혼 가능한 나이</div><div class="v">'+CALC.ageText(sim.age)+'</div><div class="s">2차시 4단계 조건 그대로 계산</div></div>';
+      if(o.wishAge!==null){
+        var gap=(sim.age===null)?null:sim.age-o.wishAge, gt;
+        if(gap===null) gt='비교 불가';
+        else if(Math.abs(gap)<0.05) gt='딱 맞음';
+        else gt=CALC.n1(Math.abs(gap))+'년 '+(gap>0?'늦음':'빠름');
+        gapCard='<div class="metric"><div class="l">희망 결혼 나이와 비교</div><div class="v">'+gt+'</div><div class="s">희망 '+CALC.n1(o.wishAge)+'세</div></div>';
+      }
+      cond='<div class="formula">2차시 4단계 조건 · 취직 '+CALC.n1(o.jobAge)+'세, 취직 전 저축 '+CALC.won(o.preSave)
+        +', 매달 저축 '+CALC.won(o.monthlySave)+', 결혼 비용 '+CALC.won(o.weddingCost)+' × 내 비율 '+CALC.n1(o.share)+'%, 물가 '+CALC.n1(o.infl)+'%</div>';
     }
-    var tg=o.weddingCost*o.share/100, fut=CALC.targetAt(o.wishAge,o), yrs=o.wishAge-o.jobAge;
-    var r=CALC.needRate(o); REQ.rate=r;
-    var big, msg, cls='';
-    if(r===null){ big='60% 초과'; cls='bad';
-      msg='이 조건에서는 필요한 수익률이 <b>60%</b>를 넘어 투자만으로는 불가능합니다. 2차시 4단계에서 <b>취직 나이, 결혼 비용, 내가 준비할 비율, 희망 결혼 나이</b> 같은 다른 조건을 먼저 바꿔 보세요.'; }
-    else if(r<0.05){ big='0%'; cls='good'; msg='저축만으로도 희망 나이에 목표 금액을 모을 수 있습니다. 투자는 더 안전한 여유를 만드는 용도입니다.'; }
-    else {
-      big='연 '+CALC.n1(r)+'%';
-      if(r<=3){ cls='good'; msg='은행 <b>적금 평균 금리(3%)</b> 이하입니다. 안정적인 상품으로도 가능한 수준입니다.'; }
-      else if(r<=6){ cls='good'; msg='적금보다는 높지만 <b>꾸준히 관리하면 도전해 볼 만한</b> 수준입니다.'; }
-      else if(r<=9.2){ msg='<b>미국 투자 전문 업체의 5년 평균(9.2%)</b>에 가까운 수준입니다. 쉽지 않은 목표이니 손실 위험도 함께 생각해야 합니다.'; }
-      else if(r<=10){ msg='현실적인 한계로 보는 <b>10%</b> 가까이 됩니다. 매우 어렵고 위험이 큰 목표입니다.'; }
-      else { cls='bad'; msg='현실적인 한계(10%)를 넘습니다. 투자 수익률만 올리기보다 <b>2차시 4단계의 다른 조건</b>을 함께 바꾸는 편이 안전합니다.'; }
-    }
-    var adjR=STORE.num('l2_adj_rate');
-    var mx=15, pos=function(v){return Math.min(100,v/mx*100);};
+
+    var mx=15, pos=function(v){return Math.max(0,Math.min(100,v/mx*100));};
     var scale='<div class="scale">'
       +'<div class="zone" style="left:0;width:'+pos(3)+'%;background:#bbf7d0"></div>'
       +'<div class="zone" style="left:'+pos(3)+'%;width:'+(pos(10)-pos(3))+'%;background:#fde68a"></div>'
       +'<div class="zone" style="left:'+pos(10)+'%;width:'+(100-pos(10))+'%;background:#fecaca"></div>'
       +'<div class="tick" style="left:'+pos(3)+'%"></div><div class="tick" style="left:'+pos(9.2)+'%"></div><div class="tick" style="left:'+pos(10)+'%"></div>';
     [0,5,10,15].forEach(function(v){ scale+='<div class="ax" style="left:'+pos(v)+'%">'+v+'%</div>'; });
-    if(r!==null) scale+='<div class="me" style="left:'+pos(r)+'%">필요 '+CALC.n1(r)+'%</div>';
+    scale+='<div class="me" style="left:'+pos(rv)+'%">내 목표 '+CALC.n1(rv)+'%'+(rv>mx?' →':'')+'</div>';
     scale+='</div><div class="help">초록 : 적금 수준(3% 이하) · 노랑 : 도전 구간(3~10%) · 빨강 : 현실적 한계(10%) 초과 &nbsp;|&nbsp; 세로선 : 적금 3%, 전문 투자업체 5년 평균 9.2%, 현실적 한계 10%</div>';
+
     $('reqBody').innerHTML=
       '<div class="grid3">'
-      +'<div class="metric"><div class="l">내가 얻어야 하는 투자 수익률</div><div class="v">'+big+'</div><div class="s">1년 평균, 월 복리 기준</div></div>'
-      +'<div class="metric"><div class="l">희망 나이에 필요한 돈 (물가 반영)</div><div class="v">'+CALC.won(fut)+'</div><div class="s">오늘 기준 '+CALC.won(tg)+' · 물가 '+CALC.n1(o.infl)+'%</div></div>'
-      +'<div class="metric"><div class="l">투자하는 기간</div><div class="v">'+CALC.n1(yrs)+'년</div><div class="s">'+CALC.n1(o.jobAge)+'세 → '+CALC.n1(o.wishAge)+'세</div></div>'
+      +'<div class="metric"><div class="l">내가 얻어야 하는 투자 수익률</div><div class="v">연 '+CALC.n1(rv)+'%</div><div class="s">2차시 4단계에 내가 적은 값</div></div>'
+      +ageCard+gapCard
       +'</div>'
-      +'<div class="box'+(cls?' '+cls:'')+'" style="margin-top:10px">'+msg+'</div>'
-      +scale
-      +'<div class="formula">'+(useAdj?'2차시 4단계에서 조정한 값':'1차시에서 입력한 값')+' · 취직 '+CALC.n1(o.jobAge)+'세, 취직 전 저축 '+CALC.won(o.preSave)
-      +', 매달 저축 '+CALC.won(o.monthlySave)+', 결혼 비용 '+CALC.won(o.weddingCost)+' × 내 비율 '+CALC.n1(o.share)+'%'
-      +(adjR!==null?'<br>(참고) 2차시 4단계 계산표에 넣어 둔 수익률은 '+CALC.n1(adjR)+'% 였습니다.':'')+'</div>';
+      +'<div class="box'+(rm.cls?' '+rm.cls:'')+'" style="margin-top:10px">'+rm.msg+'</div>'
+      +scale+cond;
+  }
+
+  /* 5단계 비교 칸 동기화 : 2차시 값이 바뀌었거나 예전(자동 계산) 값이 남아 있으면 2차시 값으로 덮어씀.
+     학생이 5단계 칸을 직접 고친 경우에는 2차시 값이 그대로인 동안 유지됨 */
+  function syncTarget(force){
+    if(REQ.rate===null) return;
+    var src=String(STORE.get('l3_targetRate_src',''));
+    var cur=String(REQ.rate);
+    if(force||$('targetRate').value===''||src!==cur){
+      setField('targetRate',cur);
+      STORE.set('l3_targetRate_src',cur);
+    }
   }
 
   /* ========== 3단계 : 순위표 ========== */
@@ -468,12 +485,12 @@
   STORE.bind(document);
   renderRank();
   calcReq();
-  if($('targetRate').value===''&&REQ.rate!==null){ var rr=Math.round(REQ.rate*10)/10; setField('targetRate',String(rr)); }
+  syncTarget(false);
   var ml=num('maxLoss'); if(ml!==null) $('maxLossRange').value=Math.min(90,Math.max(1,ml));
   lossUi(); runAnalysis();
   $('reqReload').addEventListener('click',function(){
     calcReq();
-    if(REQ.rate!==null) setField('targetRate',String(Math.round(REQ.rate*10)/10));
+    syncTarget(true);
     runAnalysis();
   });
 })();
