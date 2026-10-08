@@ -93,6 +93,9 @@
   <p class="lead" style="margin-bottom:0">15살 중학교 3학년부터 시작합니다. 갈림길마다 나오는 <b>카드 3장 중 하나</b>를 고르며 내 인생을 만들어 가세요.
   어떤 선택은 <b>룰렛</b>을 돌려야 결과를 알 수 있습니다. 마지막에 <b>"나는 몇 살에 결혼했습니다"</b>가 나옵니다.
   1~4차시에서 배운 저축, 물가, 투자 비율, 위험한 투자가 모두 게임 속에 들어 있습니다.</p>
+  <div class="box plain" style="margin-top:10px;font-size:14px"><b>❤️ 행복 규칙</b> : 행복 2개로 시작해요. 아끼고 참는 선택은 행복이 줄고, 즐기는 선택은 행복이 늘어요.
+  행복이 <b>0개가 되면 "행복을 찾아 여행을 떠났습니다"</b>가 나오고, 취직 나이가 1년 늦어지는 대신 행복이 1개 생겨요.<br>
+  <b>🏅 점수</b> : 결혼 나이 50점 + 행복 50점 = 100점 만점. 일찍 결혼할수록, 행복이 많을수록 점수가 높아요.</div>
   <div class="g-start" role="group" aria-label="성별 선택">
     <button type="button" class="pick" data-g="m" aria-pressed="false"></button>
     <button type="button" class="pick" data-g="f" aria-pressed="false"></button>
@@ -231,7 +234,7 @@
   var S;
   function fresh(g){
     return {g:g,age:15,track:null,edu:null,pre:0,payMul:1,pay:null,jobAge:null,grad:null,saveRate:null,adj:0,rate:null,
-            cost:null,costMul:1,parent:0,happy:3,stage:'school',album:['school'],albumAge:[15],log:[]};
+            cost:null,costMul:1,parent:0,happy:2,travels:0,lastTravel:-9,stage:'school',album:['school'],albumAge:[15],log:[]};
   }
   function addPre(v){ S.pre=Math.round(S.pre+v); }
   function monthly(){ return (S.pay===null||S.saveRate===null)?null:Math.max(0,Math.round(S.pay*S.saveRate/100+S.adj)); }
@@ -254,14 +257,14 @@
     {ic:'💒',t:'친구 결혼식',d:'친한 친구들이 줄줄이 결혼해요. 축의금!',go:function(){ addPre(-100); S.happy+=1; return '모은 돈 −100만원, 행복 +1'; }},
     {ic:'📱',t:'스마트폰 고장',d:'떨어뜨려서 화면이 깨졌어요.',go:function(){ addPre(-150); return '모은 돈 −150만원'; }},
     {ic:'🏥',t:'병원비',d:'다쳐서 한동안 치료를 받았어요.',go:function(){ addPre(-200); S.happy-=1; return '모은 돈 −200만원, 행복 −1'; }},
-    {ic:'📉',t:'경기 침체',d:'주가가 떨어져 투자한 돈이 줄었어요.',go:function(){ var l=Math.round(Math.max(0,S.pre)*(S.rate>3?0.15:0.02)); addPre(-l); return '모은 돈 −'+won(l)+(S.rate>3?' (투자 비중이 클수록 손실이 큼)':' (예적금 위주라 손실이 작음)'); }},
+    {ic:'📉',t:'경기 침체',d:'주가가 떨어져 투자한 돈이 줄었어요.',go:function(){ var l=Math.round(Math.max(0,S.pre)*(S.rate>3?0.15:0.02)); addPre(-l); if(S.rate>3) S.happy-=1; return '모은 돈 −'+won(l)+(S.rate>3?' (투자 비중이 클수록 손실이 큼), 행복 −1':' (예적금 위주라 손실이 작음)'); }},
     {ic:'🎁',t:'이벤트 당첨',d:'응모한 이벤트에 당첨됐어요!',go:function(){ addPre(50); S.happy+=1; return '모은 돈 +50만원, 행복 +1'; }}
   ];
   var EV=[
     {stop:'고등학교',when:function(){return true;},age:function(){return 15;},title:'중학교 3학년, 어떤 고등학교에 갈까?',desc:'첫 번째 갈림길입니다. 고등학교에 따라 졸업 후의 길이 달라져요.',cards:function(){ return [
       {ic:'📚',t:'일반고',d:'대학 진학을 준비해요. 공부할 게 많지만 선택지가 넓어져요.',tg:['대학 준비'],go:function(){ S.track='acad'; return '일반고에 입학했어요. 다양한 진로를 열어 둡니다.'; }},
       {ic:'🔧',t:'특성화고·마이스터고',d:'기술을 배워 졸업하면 바로 취업할 수 있어요.',tg:['빠른 취업','바로 취업 시 월급 ↑'],go:function(){ S.track='voc'; return '기술을 배우는 고등학교에 입학했어요. 바로 취업하면 월급을 더 받을 수 있어요.'; }},
-      {ic:'🎨',t:'예술·체육고',d:'좋아하는 일에 마음껏 도전해요.',tg:['행복 +2'],go:function(){ S.track='art'; S.happy+=2; return '좋아하는 일을 하니 매일이 즐거워요! 행복 +2'; }}
+      {ic:'🎨',t:'예술·체육고',d:'좋아하는 일에 마음껏 도전해요.',tg:['행복 +1'],go:function(){ S.track='art'; S.happy+=1; return '좋아하는 일을 하니 매일이 즐거워요! 행복 +1'; }}
     ];}},
     {stop:'용돈',when:function(){return true;},age:function(){return 16;},title:'고등학교 3년, 용돈은 어떻게 쓸까?',desc:'매달 용돈 20만원, 3년 동안 모두 720만원을 받아요.',cards:function(){ return [
       {ic:'🍔',t:'다 쓴다',d:'친구들과 맛있는 것 먹고 놀러 다녀요.',tg:['행복 +1','저축 0원'],go:function(){ S.happy+=1; return '추억은 많지만 남은 돈은 0원이에요. 행복 +1'; }},
@@ -281,20 +284,20 @@
     {stop:'자기계발',when:function(){return S.g==='f'&&S.edu!=='work';},age:function(){return 20;},title:'스무 살, 나에게 무엇을 투자할까?',desc:'방학과 시간을 어떻게 쓰느냐에 따라 나중이 달라져요.',cards:function(){ return [
       {ic:'✈️',t:'어학연수',d:'외국에서 6개월 동안 언어를 배워요.',tg:['−800만원','월급 +5%','행복 +1'],go:function(){ addPre(-800); S.payMul*=1.05; S.happy+=1; return '외국어 실력이 늘었어요. 월급 +5%, 하지만 −800만원.'; }},
       {ic:'🏢',t:'인턴·대외활동',d:'회사에서 일을 미리 경험해요.',tg:['월급 +5%','+200만원'],go:function(){ S.payMul*=1.05; addPre(200); return '경력이 생겼어요. 월급 +5%, 인턴 월급으로 +200만원.'; }},
-      {ic:'☕',t:'아르바이트',d:'방학마다 열심히 일해요.',tg:['+600만원'],go:function(){ addPre(600); return '아르바이트로 600만원을 모았어요.'; }}
+      {ic:'☕',t:'아르바이트',d:'방학마다 쉬지 않고 일해요.',tg:['+600만원','행복 −1'],go:function(){ addPre(600); S.happy-=1; return '아르바이트로 600만원을 모았어요. 쉬지 못해서 조금 지쳤어요. 행복 −1'; }}
     ];}},
     {stop:'학교생활',when:function(){return S.edu==='univ'||S.edu==='college';},age:function(){return S.g==='m'?22:21;},title:'학교 다니는 동안 아르바이트는?',desc:'공부와 아르바이트, 어디에 시간을 더 쓸까요?',cards:function(){ setStage('college'); var y=(S.edu==='univ')?3:1.5; return [
       {ic:'📖',t:'공부에 집중',d:'장학금을 받고 실력을 쌓아요.',tg:['+400만원','월급 +5%'],go:function(){ addPre(400); S.payMul*=1.05; return '장학금 400만원을 받고 실력도 쌓았어요. 월급 +5%'; }},
       {ic:'🧋',t:'주말 아르바이트',d:'주말에만 일해요.',tg:['+'+won(300*y)],go:function(){ addPre(300*y); return '주말 아르바이트로 '+won(300*y)+'을 모았어요.'; }},
-      {ic:'🌙',t:'아르바이트 많이',d:'매일 일해서 돈을 많이 모아요. 공부할 시간은 줄어요.',tg:['+'+won(700*y),'취직 0.5년 늦음','행복 −1'],go:function(){ addPre(700*y); S.grad=0.5; S.happy-=1; return won(700*y)+'을 모았지만 취업 준비가 조금 늦어졌어요.'; }}
+      {ic:'🌙',t:'아르바이트 많이',d:'매일 일해서 돈을 많이 모아요. 공부할 시간은 줄어요.',tg:['+'+won(700*y),'취직 0.5년 늦음','행복 −1'],go:function(){ addPre(700*y); S.grad=(S.grad||0)+0.5; S.happy-=1; return won(700*y)+'을 모았지만 취업 준비가 조금 늦어졌어요.'; }}
     ];}},
     {stop:'취업',when:function(){return true;},age:function(){ return gradAge()+(S.grad||0); },title:'드디어 취업 준비! 어떤 회사에 도전할까?',desc:'어떤 회사는 룰렛을 돌려야 합격 여부를 알 수 있어요.',cards:function(){ var g=gradAge()+(S.grad||0), b=basePay(); return [
-      {ic:'🏙️',t:'대기업 도전',d:'월급이 많지만 합격하기 어려워요.',tg:['룰렛','합격하면 월급 ↑↑'],spin:[
-        {w:40,label:'합격!',c:'#16a34a',go:function(){ S.pay=Math.round(b*1.35); S.jobAge=g+0.5; return '대기업에 합격했어요! 월 '+won(S.pay)+'을 받아요.'; }},
-        {w:60,label:'불합격',c:'#dc2626',go:function(){ S.pay=Math.round(b*1.05); S.jobAge=g+1.5; S.happy-=1; return '1년 더 준비했지만 떨어져서 중견기업에 들어갔어요. 월 '+won(S.pay)+'.'; }}]},
-      {ic:'🏛️',t:'공무원·공기업 시험',d:'안정적이고 오래 다닐 수 있어요.',tg:['룰렛','안정','행복 +1'],spin:[
-        {w:50,label:'1년 만에 합격',c:'#2563eb',go:function(){ S.pay=Math.round(b*0.95); S.jobAge=g+1; S.happy+=1; return '1년 공부해서 합격했어요! 월 '+won(S.pay)+'.'; }},
-        {w:50,label:'2년 만에 합격',c:'#d97706',go:function(){ S.pay=Math.round(b*0.95); S.jobAge=g+2; return '2년 공부한 끝에 합격했어요. 월 '+won(S.pay)+'.'; }}]},
+      {ic:'🏙️',t:'대기업 도전',d:'월급이 많지만 합격하기 어려워요.',tg:['룰렛','합격하면 월급 ↑↑','합격 행복 +1 / 불합격 −1'],spin:[
+        {w:40,label:'합격!',c:'#16a34a',go:function(){ S.pay=Math.round(b*1.35); S.jobAge=g+0.5; S.happy+=1; return '대기업에 합격했어요! 월 '+won(S.pay)+'을 받아요. 행복 +1'; }},
+        {w:60,label:'불합격',c:'#dc2626',go:function(){ S.pay=Math.round(b*1.05); S.jobAge=g+1.5; S.happy-=1; return '1년 더 준비했지만 떨어져서 중견기업에 들어갔어요. 월 '+won(S.pay)+'. 행복 −1'; }}]},
+      {ic:'🏛️',t:'공무원·공기업 시험',d:'안정적이고 오래 다닐 수 있어요.',tg:['룰렛','안정','1년 합격 행복 +1 / 2년 −1'],spin:[
+        {w:50,label:'1년 만에 합격',c:'#2563eb',go:function(){ S.pay=Math.round(b*0.95); S.jobAge=g+1; S.happy+=1; return '1년 공부해서 합격했어요! 월 '+won(S.pay)+'. 행복 +1'; }},
+        {w:50,label:'2년 만에 합격',c:'#d97706',go:function(){ S.pay=Math.round(b*0.95); S.jobAge=g+2; S.happy-=1; return '2년 공부한 끝에 합격했어요. 월 '+won(S.pay)+'. 오랜 수험 생활에 지쳤어요. 행복 −1'; }}]},
       {ic:'🚀',t:'중소기업 바로 입사',d:'바로 일을 시작해서 경력을 쌓아요.',tg:['취직 빠름','월급 조금 낮음'],go:function(){ S.pay=Math.round(b*0.92); S.jobAge=g+0.3; return '바로 입사했어요! 월 '+won(S.pay)+'. 일찍 시작한 만큼 돈을 더 오래 모을 수 있어요.'; }}
     ];},after:function(){ S.age=S.jobAge; setStage('work'); }},
     {stop:'첫 월급',when:function(){return true;},age:function(){return S.jobAge;},title:'첫 월급! 얼마를 저축할까?',desc:function(){ return '월급 '+won(S.pay)+' 중에서 매달 저축할 비율을 정해요. (1차시 참고 · 1인 가구 평균 저축률 8.2%)'; },cards:function(){ return [
@@ -318,7 +321,7 @@
         {w:50,label:'반토막',c:'#dc2626',go:function(){ addPre(-Math.round(amt/2)); S.rate=4; S.happy-=2; return '반토막! '+won(Math.round(amt/2))+'을 잃었어요. 그 뒤로는 연 4%.'; }}]}
     ];}},
     {stop:'자동차',when:function(){return true;},age:function(){return S.jobAge+1.5;},title:'자동차를 살까?',desc:'출퇴근도 편하고 여행도 갈 수 있지만 돈이 들어요.',cards:function(){ return [
-      {ic:'🚘',t:'새 차 (할부)',d:'매달 할부금과 보험료를 내요.',tg:['저축 −40만원/월','행복 +2'],go:function(){ S.adj-=40; S.happy+=2; return '반짝이는 새 차! 매달 40만원이 나가요.'; }},
+      {ic:'🚘',t:'새 차 (할부)',d:'매달 할부금과 보험료를 내요.',tg:['저축 −40만원/월','행복 +1'],go:function(){ S.adj-=40; S.happy+=1; return '반짝이는 새 차! 매달 40만원이 나가요. 행복 +1'; }},
       {ic:'🚗',t:'중고차 (현금)',d:'모은 돈으로 한 번에 사요.',tg:['−1,000만원','행복 +1'],go:function(){ addPre(-1000); S.happy+=1; return '중고차를 샀어요. 모은 돈 −1,000만원.'; }},
       {ic:'🚌',t:'대중교통',d:'버스와 지하철을 타요.',tg:['돈 그대로'],go:function(){ return '차 없이 지내며 돈을 아꼈어요.'; }}
     ];}},
@@ -356,7 +359,7 @@
   function drawStat(){
     var m=monthly();
     var v={sAge:n1(S.age)+'세',sPre:money(S.pre),sPay:S.pay===null?'-':won(S.pay),sSave:m===null?'-':won(m),
-           sRate:S.rate===null?'-':'연 '+n1(S.rate)+'%',sHappy:S.happy>0?new Array(Math.min(S.happy,8)+1).join('❤️'):'🤍'};
+           sRate:S.rate===null?'-':'연 '+n1(S.rate)+'%',sHappy:S.happy>0?new Array(Math.min(S.happy,10)+1).join('❤️'):'🤍 0'};
     Object.keys(v).forEach(function(k){ var el=$(k); if(prevStat[k]!==undefined&&prevStat[k]!==v[k]){ el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } el.textContent=v[k]; prevStat[k]=v[k]; });
   }
   var STAGE_DESC={school:'교복을 입고 학교에 다니는 시절',college:'후드티를 입고 가방을 멘 대학생',army:'군복을 입고 나라를 지키는 중',
@@ -385,7 +388,22 @@
   $('zoomBg').addEventListener('click',function(e){ if(e.target===$('zoomBg')) zoomClose(); });
   document.addEventListener('keydown',function(e){ if($('zoomBg').hidden) return;
     if(e.key==='Escape') zoomClose(); else if(e.key==='ArrowLeft') zoomShow(zi-1); else if(e.key==='ArrowRight') zoomShow(zi+1); });
+  /* 행복이 0 이하가 되면 : 여행을 떠나 1년 쉬고(취직 나이 +1년) 행복 +1 */
+  function travel(){
+    var pre=(S.jobAge===null);
+    if(pre) S.grad=(S.grad||0)+1; else S.jobAge+=1;
+    S.age+=1; S.happy+=1; S.travels+=1;
+    var res=(pre?'취직 나이가 1년 늦어졌어요.':'회사를 1년 쉬어서 돈을 모으기 시작한 나이가 1년 늦어진 것으로 계산해요.')+' 행복 +1';
+    S.log.push({age:n1(S.age-1)+'세',stop:'✈️ 여행',pick:'행복을 찾아 여행을 떠났습니다.',res:res});
+    $('ev').innerHTML='<span class="age">'+n1(S.age-1)+'세</span><h3>✈️ 행복을 찾아 여행을 떠났습니다.</h3>'
+      +'<p class="desc">행복(❤️)이 하나도 남지 않았어요. 돈만 모으느라 너무 지쳤거든요. 1년 동안 쉬면서 여행을 다녀왔어요.</p>'
+      +'<div class="box">'+res+'</div>'
+      +'<div class="btnrow"><button type="button" class="btn strong" id="nextBtn">다시 힘내서 출발! →</button></div>';
+    $('nextBtn').addEventListener('click',next); $('nextBtn').focus({preventScroll:true});
+    drawStat();
+  }
   function next(){
+    if(S.happy<=0&&S.lastTravel!==cur){ S.lastTravel=cur; travel(); return; }
     if(cur>=0&&done.indexOf(cur)<0) done.push(cur);
     var i=cur+1; while(i<EV.length&&!EV[i].when()) i++;
     cur=i;
@@ -452,6 +470,15 @@
     });
   }
 
+  /* ================= 점수 : 결혼 나이 50점 + 행복 50점 ================= */
+  var SCORE_AGE_FULL=28, SCORE_AGE_ZERO=48, HAPPY_PER=7;   /* 28세 이하 50점 → 48세 이상 0점 / 행복 1개당 7점(최대 50점) */
+  function scoreOf(age,happy){
+    var a=(age===null)?0:Math.max(0,Math.min(50,50*(SCORE_AGE_ZERO-age)/(SCORE_AGE_ZERO-SCORE_AGE_FULL)));
+    var h=Math.max(0,Math.min(50,happy*HAPPY_PER));
+    return {age:Math.round(a),happy:Math.round(h),total:Math.round(a)+Math.round(h)};
+  }
+  function grade(t){ return t>=85?'🏆 인생게임 마스터':t>=70?'🥇 돈과 행복을 모두 챙긴 인생':t>=50?'🙂 무난하게 균형 잡힌 인생':'💪 다음 판에는 더 잘할 수 있어요'; }
+
   /* ================= 결말 ================= */
   function finish(){
     var cost=Math.max(0,Math.round(S.cost*S.costMul-2*S.parent));
@@ -461,7 +488,9 @@
     S.age=(age===null)?70:age;
     setStage('wedding');
     drawRoad(); drawStat(); drawAlbum();
-    STORE.set('l5_result',age===null?'70세까지 못 모음':n1(age)+'세');
+    var sc=scoreOf(age,S.happy);
+    STORE.set('l5_result',(age===null?'70세까지 못 모음':n1(age)+'세')+' · 행복 '+Math.max(0,S.happy)+' · '+sc.total+'점');
+    STORE.set('l5_score',String(sc.total));
     STORE.set('l5_log',JSON.stringify(S.log));
     var my=STORE.num('l2_adj_wishAge')||STORE.num('l1_wishAge');
     var conf=''; if(age!==null&&!REDUCED){ var cs=['#f43f5e','#fbbf24','#34d399','#60a5fa','#a78bfa','#fb923c'];
@@ -469,10 +498,17 @@
     var head=(age===null)
       ?'<div class="big">70세까지 결혼 비용을 모으지 못했어요</div><p>저축률, 사는 곳, 투자 방법을 바꿔 다시 도전해 보세요.</p>'
       :'<div style="font-size:16px;color:#9a3412;font-weight:700">'+esc(STORE.get('name')||'나')+'의 인생게임 결과</div><div class="big">나는 '+n1(age)+'세에 결혼했습니다! 💍</div>'
-        +'<p style="margin:0">'+(S.happy>=6?'행복도 가득한 인생이었어요!':S.happy>=3?'적당히 즐기며 차근차근 모았어요.':'돈을 모으느라 조금 힘든 시간도 있었어요.')+'</p>'
+        +'<p style="margin:0">'+(S.happy>=7?'행복도 가득한 인생이었어요!':S.happy>=3?'적당히 즐기며 차근차근 모았어요.':'돈을 모으느라 조금 힘든 시간도 있었어요.')+(S.travels?' (여행 '+S.travels+'번)':'')+'</p>'
         +(my?'<p style="margin:4px 0 0">내가 희망한 나이는 <b>'+n1(my)+'세</b> → '+(age<=my+0.05?'희망보다 '+n1(Math.max(0,my-age))+'년 빨리 결혼했어요!':'희망보다 <b>'+n1(age-my)+'년</b> 늦었어요. 아래에서 어떤 선택이 나이를 늦췄는지 찾아봅시다.')+'</p>':'');
     var rows=S.log.map(function(l){ return '<tr><td>'+l.age+'</td><td>'+l.stop+'</td><td><b>'+l.pick+'</b><span style="display:block;font-size:12px;color:#6b7280">'+l.res+'</span></td></tr>'; }).join('');
-    $('ev').innerHTML='<div class="end"><div class="confetti">'+conf+'</div>'+avatar(S.g,'wedding',190)+head+'</div>'
+    function bar(v,c){ return '<div class="bar" style="height:14px;margin-top:6px"><i style="width:'+(v*2)+'%;background:'+c+'"></i></div>'; }
+    var scoreHtml='<div class="card" style="margin:12px 0 0;text-align:center"><div style="font-size:15px;color:#6b7280">나의 인생 점수</div>'
+      +'<div style="font-size:40px;font-weight:800;line-height:1.2">'+sc.total+'<span style="font-size:20px">점</span></div><div style="font-weight:700;margin-bottom:10px">'+grade(sc.total)+'</div>'
+      +'<div class="grid2" style="text-align:left">'
+      +'<div class="metric"><div class="l">💍 결혼 나이 점수</div><div class="v">'+sc.age+' / 50</div>'+bar(sc.age,'#2563eb')+'<div class="s">'+(age===null?'결혼 비용을 못 모아 0점':n1(age)+'세')+' · '+SCORE_AGE_FULL+'세 이하 50점, 1년 늦을 때마다 2.5점씩 줄어 '+SCORE_AGE_ZERO+'세 이상 0점</div></div>'
+      +'<div class="metric"><div class="l">❤️ 행복 점수</div><div class="v">'+sc.happy+' / 50</div>'+bar(sc.happy,'#e11d48')+'<div class="s">행복 '+Math.max(0,S.happy)+'개 · 1개당 '+HAPPY_PER+'점, 8개 이상이면 50점</div></div>'
+      +'</div><p class="help" style="margin:8px 0 0">빨리 결혼해도 행복이 적으면, 행복해도 너무 늦게 결혼하면 점수가 낮아져요. 두 가지의 균형을 찾아보세요!</p></div>';
+    $('ev').innerHTML='<div class="end"><div class="confetti">'+conf+'</div>'+avatar(S.g,'wedding',190)+head+'</div>'+scoreHtml
       +'<div class="grid4" style="margin-top:12px">'
       +'<div class="metric"><div class="l">취직한 나이</div><div class="v">'+n1(S.jobAge)+'세</div><div class="s">월급 '+won(S.pay)+'</div></div>'
       +'<div class="metric"><div class="l">매달 저축</div><div class="v">'+won(o.monthlySave)+'</div><div class="s">월급의 '+S.saveRate+'%'+(S.adj?(S.adj>0?' +':' ')+won(S.adj).replace('-','−'):'')+'</div></div>'

@@ -62,10 +62,11 @@ def mask(text):
 
 
 class ApiError(RuntimeError):
-    def __init__(self, msg, code=None, fatal=False):
+    def __init__(self, msg, code=None, fatal=False, net=False):
         RuntimeError.__init__(self, msg)
         self.code = code
         self.fatal = fatal
+        self.net = net
 
 
 def explain(code, msg):
@@ -100,16 +101,25 @@ def num(v, default=0.0):
         return default
 
 
-def call(params, key, retries=4, base=None):
+NET_WAIT = [5, 10, 20, 30, 60, 60]          # 접속이 안 될 때 기다렸다가 다시 시도하는 시간(초)
+
+
+def call(params, key, retries=6, base=None):
     p = {"serviceKey": key, "resultType": "json"}
     p.update(params)
     last = None
+    url = base or BASE
+    net_fail = 0
     for t in range(retries):
         try:
             try:
-                r = requests.get(base or BASE, params=p, timeout=60)
+                r = requests.get(url, params=p, timeout=(15, 90))   # (접속 15초, 응답 90초)
             except requests.exceptions.RequestException as e:
-                raise ApiError("서버에 접속하지 못했습니다(네트워크/해외 접속 차단 가능성): %s" % mask(e))
+                net_fail += 1
+                if net_fail == 2 and url.startswith("https://"):
+                    url = "http://" + url[len("https://"):]     # https 접속이 계속 막히면 http 주소로도 시도
+                    print("  https 접속이 안 되어 http 주소로 다시 시도합니다.")
+                raise ApiError("서버에 접속하지 못했습니다(네트워크/해외 접속 차단 가능성): %s" % mask(e), net=True)
             text = r.text
             try:
                 js = r.json()
@@ -135,7 +145,12 @@ def call(params, key, retries=4, base=None):
             last = e
             if e.fatal:
                 raise
-            time.sleep(1.5 * (t + 1))                # 잠깐 실패하면 다시 시도
+            if getattr(e, "net", False) and t < retries - 1:
+                w = NET_WAIT[min(t, len(NET_WAIT) - 1)]
+                print("  접속 실패 (%d/%d) → %d초 뒤 다시 시도" % (t + 1, retries, w))
+                time.sleep(w)
+            else:
+                time.sleep(1.5 * (t + 1))            # 잠깐 실패하면 다시 시도
         except Exception as e:
             last = ApiError(mask(e))
             time.sleep(1.5 * (t + 1))
