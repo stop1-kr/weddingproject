@@ -1,16 +1,20 @@
-name: 주가 자료 갱신 (3차시)
+name: 주가 자료 갱신 (3~4차시)
 
 on:
   workflow_dispatch:
     inputs:
       asof:
-        description: "시가총액 순위 기준일 (YYYYMMDD)"
+        description: "기준일 (YYYYMMDD)"
         required: true
         default: "20260930"
-      all:
-        description: "코스피·코스닥 상장 회사 전체 저장 (체크하면 extra_companies.txt 대신 전체)"
-        type: boolean
-        default: false
+      kind:
+        description: "만들 자료"
+        type: choice
+        default: "주식 (TOP10 + extra_companies.txt)"
+        options:
+          - "주식 (TOP10 + extra_companies.txt)"
+          - "주식 (코스피·코스닥 전체)"
+          - "ETF (etf_list.txt, 4차시)"
 
 permissions:
   contents: write
@@ -24,14 +28,20 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install requests
-      - name: 주가 자료 만들기
-        run: python tools/build_stocks.py --asof "${{ inputs.asof }}" ${{ inputs.all && '--all' || '' }}
+      - name: 자료 만들기
         env:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+        run: |
+          case "${{ inputs.kind }}" in
+            *전체*) OPT="--all" ;;
+            ETF*)   OPT="--etf" ;;
+            *)      OPT="" ;;
+          esac
+          python tools/build_stocks.py --asof "${{ inputs.asof }}" $OPT
       - name: 결과 저장(commit)
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git add data/stocks.json js/stocks-data.js
-          git commit -m "주가 자료 갱신" || echo "변경 없음"
+          git add -A data js
+          git commit -m "자료 갱신: ${{ inputs.kind }}" || echo "변경 없음"
           git push
