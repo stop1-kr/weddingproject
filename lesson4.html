@@ -41,6 +41,7 @@
   document.write('<script src="js/'+(location.search.indexOf('demo=1')>=0?'stocks-demo.js':'stocks-data.js')+'"><\/script>');
 </script>
 <script src="js/etf-data.js" onerror="window.ETF_DATA=null"></script>
+<script src="js/us-data.js" onerror="window.US_DATA=null"></script>
 </head>
 <body>
 <header class="top"><div class="inner">
@@ -75,9 +76,10 @@
   </div>
 </div>
 
-<h3 class="sec-sub">많이 오른 회사, 떨어진 회사, 그리고 모두 담은 그릇</h3>
+<h3 class="sec-sub">같은 분야에서 많이 오른 회사, 적게 오른 회사, 그리고 모두 담은 그릇</h3>
 <div class="card">
-  <p class="lead" style="margin-top:0" id="etfIntro">3차시에서 본 회사들에 <span class="startTxt">2020년 1월</span>에 100만원씩 투자했다면 어떻게 되었을까요?</p>
+  <p class="lead" style="margin-top:0">같은 분야의 회사들에 <span class="startTxt">2020년 1월</span>에 100만원씩 투자했다면 어떻게 되었을까요? 분야를 바꿔 가며 비교해 보세요.</p>
+  <label class="f" style="max-width:420px"><span class="t">비교할 분야</span><select id="secPick"></select></label>
   <div id="etfDemo"></div>
 </div>
 
@@ -147,6 +149,30 @@
   <div id="fxJudge" style="margin-top:10px"></div>
 </div>
 
+<h3 class="sec-sub">미국 주식 vs 한국 주식 : 환율까지 넣어 비교하기</h3>
+<div class="card">
+  <div id="usNone"></div>
+  <div id="usWrap" hidden>
+    <p class="lead" style="margin-top:0">미국 주식은 <b>달러로 오른 만큼</b>과 <b>그동안 환율이 변한 만큼</b>을 함께 따져야 원화로 얼마를 벌었는지 알 수 있습니다.
+    미국 회사와 한국 회사를 골라 같은 기간, 같은 100만원으로 비교해 보세요.</p>
+    <details><summary>미국 시가총액 TOP 10 보기</summary><div class="inner" id="usTop"></div></details>
+    <div id="usFx" style="margin-top:12px"></div>
+    <div class="grid2" style="margin-top:6px">
+      <label class="f" style="margin-bottom:6px"><span class="t">미국·한국 회사나 ETF 이름 찾기</span>
+        <input type="text" id="usPk" list="usList" placeholder="예: 애플, 엔비디아, 삼성전자, KODEX 200" autocomplete="off"></label>
+      <div><span class="t" style="display:block;font-size:14px;font-weight:600;margin-bottom:6px">&nbsp;</span>
+        <div class="btnrow" style="margin-top:0"><button type="button" class="btn sm" id="usAdd">비교에 넣기</button>
+          <button type="button" class="btn ghost sm" id="usClear">비우기</button></div></div>
+    </div>
+    <datalist id="usList"></datalist>
+    <div id="usMsg" class="help"></div>
+    <div class="bowl cmp" id="usBox2"></div>
+    <div id="usOut" style="margin-top:12px"></div>
+    <label class="f" style="margin-top:12px"><span class="t">비교해 보고 알게 된 점 (환율이 내 수익을 어떻게 바꿨나요?)</span>
+      <textarea data-store="l4_us_cmp_memo" placeholder="예: 애플은 달러로 +150%였는데 그동안 환율이 올라서 원화로는 +200%가 되었다. 환율이 내렸다면 수익이 줄었을 것이다."></textarea></label>
+  </div>
+</div>
+
 <h3 class="sec-sub">해외 주식이 어려운 이유</h3>
 <div class="card">
   <div class="know">
@@ -172,6 +198,8 @@
     <button type="button" class="chip" data-lev="zigzag">상황 3 · +10%, −10%를 5번 반복</button>
     <button type="button" class="chip" data-lev="crash">상황 4 · 잘 오르다가 하루 −35% 폭락</button>
   </div>
+  <p class="help" style="margin:6px 0 0"><b>왜 정확히 2배가 아닐까?</b> 레버리지 ETF는 <b>'하루'</b> 수익률만 2배로 맞추고, 다음 날은 바뀐 금액에서 다시 시작합니다.
+  그래서 여러 날을 모은 수익률은 일반 투자 수익률의 2배보다 많을 수도, 적을 수도 있습니다. (실제 상품은 수수료도 있어 조금 더 적습니다.)</p>
   <div class="grid2" style="margin-top:10px">
     <label class="f"><span class="t">하루 주가 변화 (%, 쉼표로 구분 · 직접 고쳐도 됩니다)</span>
       <input type="text" id="levDays" data-store="l4_lev_days" value="10,-10,10,-10,10,-10,10,-10,10,-10"></label>
@@ -181,7 +209,7 @@
   <div class="grid3">
     <div class="metric"><div class="l">주가(일반 투자) 100만원 →</div><div class="v" id="levA">-</div><div class="s" id="levAs"></div></div>
     <div class="metric"><div class="l"><span id="levXt">2</span>배 레버리지 100만원 →</div><div class="v" id="levB">-</div><div class="s" id="levBs"></div></div>
-    <div class="metric"><div class="l">레버리지가 주가의 '<span id="levXt2">2</span>배'만큼 움직였을까?</div><div class="v" id="levC">-</div><div class="s" id="levCs"></div></div>
+    <div class="metric"><div class="l">일반 투자 수익률의 <span id="levXt2">2</span>배와 비교하면?</div><div class="v" id="levC">-</div><div class="s" id="levCs"></div></div>
   </div>
   <div id="levChart" style="margin-top:10px"></div>
   <div class="tw"><table class="t" id="levTable" style="margin-top:8px"></table></div>
@@ -280,52 +308,45 @@
 <!-- ================= 5단계 ================= -->
 <h2>5단계 · 나에게 맞는 투자 비율 찾기</h2>
 <div class="card">
-  <p class="lead" style="margin-top:0">취직한 뒤 모으는 돈을 <b>3가지 투자 방법</b>에 나눠 담아 봅시다. 비율의 합은 <b>100%</b>가 되어야 합니다.
-  결과는 2차시 4단계에서 정한 내 조건(취직 나이, 월 저축, 결혼 비용 등)으로 계산합니다.</p>
-  <div id="pfMissing"></div>
+  <p class="lead" style="margin-top:0">내 돈을 <b>3가지 투자 방법</b>에 나눠 담아 봅시다. <b><span class="startTxt">2020년 1월</span>부터 <span class="endTxt">2026년 9월</span>까지</b>
+  정한 비율대로 <b>매달 꾸준히</b> 투자했다면 어떻게 되었을지 실제 자료로 확인합니다. 중간에 투자 방법이나 비율은 바꾸지 않습니다.</p>
+  <ol class="help" style="margin:0 0 10px;padding-left:20px;font-size:14px;color:#374151">
+    <li>투자 방법을 고릅니다. (예금·적금, 국내/해외 주식 ETF, 국내/해외 개별 주식, 금, 코인, 현금)</li>
+    <li>그 아래에서 회사나 ETF를 고릅니다. 잘 모르겠으면 <b>추천받기</b>를 누르세요.</li>
+    <li>비율을 적습니다. 세 비율의 합은 <b>100%</b>가 되어야 합니다.</li>
+  </ol>
+  <div class="grid2">
+    <label class="f"><span class="t">처음에 넣을 돈 (2020년 1월)</span><div class="unit"><input type="number" id="pfPre" data-store="l4_pf_pre" min="0" step="100"><span class="u">만원</span></div>
+      <span class="help" id="pfPreH">2차시 4단계의 '취직 전 저축'</span></label>
+    <label class="f"><span class="t">매달 넣을 돈</span><div class="unit"><input type="number" id="pfMon" data-store="l4_pf_mon" min="0" step="10"><span class="u">만원</span></div>
+      <span class="help" id="pfMonH">2차시 4단계의 '월 저축'</span></label>
+  </div>
   <div class="chips">
-    <button type="button" class="chip" data-pf="deposit:50,bond:30,krEtf:20">예시 · 안정형</button>
+    <button type="button" class="chip" data-pf="deposit:50,krEtf:30,gold:20">예시 · 안정형</button>
     <button type="button" class="chip" data-pf="deposit:30,krEtf:40,usEtf:30">예시 · 균형형</button>
-    <button type="button" class="chip" data-pf="krEtf:40,usEtf:40,stock:20">예시 · 공격형</button>
+    <button type="button" class="chip" data-pf="krEtf:30,usEtf:40,krStock:30">예시 · 공격형</button>
   </div>
   <div class="grid3" style="margin-top:10px">
-    <div class="slot"><h4><span class="dot" style="background:#2563eb"></span>투자 방법 1</h4>
-      <select id="pf1" data-store="l4_pf1"></select>
-      <div class="unit" style="margin-top:8px"><input type="number" id="pf1w" data-store="l4_pf1w" min="0" max="100" step="5" placeholder="비율"><span class="u">%</span></div>
-      <div class="help" id="pf1i"></div></div>
-    <div class="slot"><h4><span class="dot" style="background:#0f766e"></span>투자 방법 2</h4>
-      <select id="pf2" data-store="l4_pf2"></select>
-      <div class="unit" style="margin-top:8px"><input type="number" id="pf2w" data-store="l4_pf2w" min="0" max="100" step="5" placeholder="비율"><span class="u">%</span></div>
-      <div class="help" id="pf2i"></div></div>
-    <div class="slot"><h4><span class="dot" style="background:#d97706"></span>투자 방법 3</h4>
-      <select id="pf3" data-store="l4_pf3"></select>
-      <div class="unit" style="margin-top:8px"><input type="number" id="pf3w" data-store="l4_pf3w" min="0" max="100" step="5" placeholder="비율"><span class="u">%</span></div>
-      <div class="help" id="pf3i"></div></div>
+    <div class="slot"><h4><span class="dot" style="background:#2563eb"></span>투자 방법 1</h4><div id="slot1"></div></div>
+    <div class="slot"><h4><span class="dot" style="background:#0f766e"></span>투자 방법 2</h4><div id="slot2"></div></div>
+    <div class="slot"><h4><span class="dot" style="background:#d97706"></span>투자 방법 3</h4><div id="slot3"></div></div>
   </div>
   <div class="mix" id="pfMix"></div>
   <div id="pfSum" class="help"></div>
-  <div class="grid4" style="margin-top:10px">
-    <div class="metric"><div class="l">내 투자 바구니의 예상 수익률</div><div class="v" id="pfRate">-</div><div class="s" id="pfRateS">1년 평균 (가정)</div></div>
-    <div class="metric"><div class="l">희망 결혼 나이에 모인 돈</div><div class="v" id="pfMoney">-</div><div class="s" id="pfMoneyS"></div></div>
-    <div class="metric"><div class="l">결혼할 수 있는 나이</div><div class="v" id="pfAge">-</div><div class="s" id="pfAgeS"></div></div>
-    <div class="metric"><div class="l">가장 나쁜 해가 오면</div><div class="v" id="pfWorst">-</div><div class="s" id="pfWorstS"></div></div>
-  </div>
-  <div class="formula" id="pfCond" style="margin-top:10px"></div>
-  <div id="pfJudge" style="margin-top:10px"></div>
+  <div id="pfOut"></div>
   <details>
-    <summary>투자 방법별 예상 수익률과 '가장 나쁜 해' 표 보기</summary>
-    <div class="inner"><div class="tw"><table class="t" id="assetTable"></table></div>
-    <p class="help">예상 수익률은 과거 평균을 참고해 <b>수업용으로 어림잡은 가정</b>이며 미래를 보장하지 않습니다. '가장 나쁜 해'는 과거에 실제로 있었던 큰 하락을 참고한 값입니다.</p></div>
+    <summary>투자 방법 설명 보기</summary>
+    <div class="inner"><div class="tw"><table class="t" id="typeTable"></table></div>
+    <p class="help">예금·적금은 연 3% 월 복리로 계산합니다. 해외 상품과 코인은 그 달 말 환율로 원화로 바꿔 계산합니다. 모든 가격은 월말 종가이며 배당금은 넣지 않았습니다.</p></div>
   </details>
   <label class="f" style="margin-top:12px"><span class="t">내가 고른 투자 비율과 그 이유</span>
-    <textarea data-store="l4_memo" placeholder="예: 예적금 40%, 국내 ETF 40%, 미국 ETF 20%. 나쁜 해에도 내가 버틸 수 있는 손실(20%) 안에 들어오면서 32세에 결혼할 수 있어서."></textarea></label>
+    <textarea data-store="l4_memo" placeholder="예: 예적금 40%, KODEX 200 40%, 미국 S&P500 ETF 20%. 최대 손실폭이 내가 버틸 수 있는 20% 안에 들어오면서 32세에 결혼할 수 있어서."></textarea></label>
   <div class="btnrow">
     <a class="btn ghost" href="lesson3.html">← 3차시</a>
     <button type="button" class="btn ghost" onclick="window.print()">결과 인쇄 / PDF 저장</button>
     <a class="btn teal" href="lesson5.html">5차시로 이동 →</a>
   </div>
 </div>
-
 </div>
 <div class="sticky"><span>입력 내용은 이 기기(브라우저)에 자동 저장됩니다.</span><span id="savedFlag" class="saved"></span>
 <a href="index.html" style="margin-left:auto">홈으로</a></div>
@@ -342,24 +363,39 @@
   var COLORS=['#2563eb','#c2410c','#15803d','#7c3aed','#0891b2','#be185d'];
   function setField(id,v){ var el=$(id); el.value=v; if(el.getAttribute('data-store')) STORE.set(el.getAttribute('data-store'),String(v)); }
 
-  /* ============ 자료 준비 : 주식(3차시와 같은 자료) + ETF(있으면) ============ */
+  /* ============ 자료 준비 : 국내 주식 + 국내 ETF + 미국 주식·환율 (있는 것만) ============ */
   function expand(D,key){
     if(!D||!D[key]) return {};
     Object.keys(D[key]).forEach(function(c){ var o=D[key][c];
       if(!o.months&&D.months){ o.prices=o.p; o.months=D.months.slice(o.s,o.s+o.p.length); } });
     return D[key];
   }
-  var SD=window.STOCK_DATA||null, ED=window.ETF_DATA||null;
-  var ITEMS={}, RANK={};
-  var stocks=expand(SD,'companies'), etfs=expand(ED,'etfs');
-  Object.keys(stocks).forEach(function(c){ ITEMS['s'+c]={id:'s'+c,code:c,name:stocks[c].name,kind:'주식',months:stocks[c].months,prices:stocks[c].prices}; });
-  Object.keys(etfs).forEach(function(c){ ITEMS['e'+c]={id:'e'+c,code:c,name:etfs[c].name,kind:'ETF',months:etfs[c].months,prices:etfs[c].prices}; });
+  var SD=window.STOCK_DATA||null, ED=window.ETF_DATA||null, UD=window.US_DATA||null;
+  var ITEMS={}, RANK={}, URANK={};
+  var stocks=expand(SD,'companies'), etfs=expand(ED,'etfs'), usd=expand(UD,'companies');
+  Object.keys(stocks).forEach(function(c){ ITEMS['s'+c]={id:'s'+c,code:c,name:stocks[c].name,kind:'주식',cur:'KRW',months:stocks[c].months,prices:stocks[c].prices}; });
+  Object.keys(etfs).forEach(function(c){ ITEMS['e'+c]={id:'e'+c,code:c,name:etfs[c].name,kind:'ETF',cur:'KRW',months:etfs[c].months,prices:etfs[c].prices}; });
+  var UKIND={'주식':'미국주식','ETF':'미국ETF','코인':'코인','금':'금'};
+  Object.keys(usd).forEach(function(t){ var o=usd[t]; ITEMS['u'+t]={id:'u'+t,code:t,name:o.name,kind:UKIND[o.kind]||'미국주식',cur:'USD',months:o.months,prices:o.prices}; });
   if(SD&&SD.ranking) SD.ranking.forEach(function(r){ RANK['s'+r.code]=r.rank; });
-  var IDS=Object.keys(ITEMS), HAS=IDS.length>0, HAS_ETF=Object.keys(etfs).length>0;
+  if(UD&&UD.ranking) UD.ranking.forEach(function(r){ URANK['u'+r.code]=r.rank; });
+  var IDS=Object.keys(ITEMS).filter(function(id){ return ITEMS[id].cur==='KRW'; });
+  var UIDS=Object.keys(ITEMS).filter(function(id){ return ITEMS[id].cur==='USD'; });
+  var HAS=IDS.length>0, HAS_ETF=Object.keys(etfs).length>0;
+  var FX={}; if(UD&&UD.fx&&UD.months) UD.months.forEach(function(m,i){ if(UD.fx[i]) FX[m]=UD.fx[i]; });
+  var HAS_US=UIDS.length>0&&Object.keys(FX).length>=12;
   var DSTART='2020-01', DEND='2026-09';
   IDS.forEach(function(id,i){ var m=ITEMS[id].months; if(!m||!m.length) return;
     if(i===0||m[0]<DSTART) DSTART=m[0]; if(i===0||m[m.length-1]>DEND) DEND=m[m.length-1]; });
   document.querySelectorAll('.startTxt').forEach(function(el){ el.textContent=ym(DSTART); });
+  document.querySelectorAll('.endTxt').forEach(function(el){ el.textContent=ym(DEND); });
+  /* 달러 종목을 원화로 바꾼 가격 (그 달 말 환율 × 달러 가격) */
+  function krw(it){
+    if(!it||it.cur!=='USD') return it;
+    if(it._k) return it._k;
+    var ms=[],ps=[]; it.months.forEach(function(m,i){ if(FX[m]){ ms.push(m); ps.push(it.prices[i]*FX[m]); } });
+    it._k={id:it.id,code:it.code,name:it.name,kind:it.kind,cur:'KRW',months:ms,prices:ps}; return it._k;
+  }
 
   /* 여러 종목의 공통 기간을 잘라 냄 */
   function common(list){
@@ -380,31 +416,71 @@
     for(var i=0;i<n;i++){ var t=0; parts.forEach(function(p){ t+=p.prices[i]/p.prices[0]; }); out.push(t/parts.length); }
     return {months:parts[0].months,prices:out};
   }
-  function fullItems(kind){ return IDS.filter(function(id){ return ITEMS[id].kind===kind&&ITEMS[id].months[0]===DSTART&&ITEMS[id].months[ITEMS[id].months.length-1]===DEND; }); }
+  function isFull(id){ var m=ITEMS[id].months; return m[0]===DSTART&&m[m.length-1]===DEND; }
+  function fullItems(kind){ return IDS.filter(function(id){ return ITEMS[id].kind===kind&&isFull(id); }); }
   function topIds(){ return IDS.filter(function(id){ return RANK[id]; }).sort(function(a,b){ return RANK[a]-RANK[b]; }); }
-
-  /* ============ 1단계 : 자동 비교 ============ */
+  function norm(s){ return String(s||'').toLowerCase().replace(/\[[^\]]*\]/g,'').replace(/[\s()\-\.·&]/g,''); }
+  var BYNAME={}; Object.keys(ITEMS).forEach(function(id){ var k=norm(ITEMS[id].name); if(!BYNAME[k]) BYNAME[k]=id; });
+  function byName(nm){ return BYNAME[norm(nm)]||null; }
+  /* ============ 1단계 : 분야별 자동 비교 ============ */
+  var DEMO_DEFAULT='';   /* 처음에 보여 줄 분야를 고정하려면 이름을 적으세요. 예: '자동차'  (비워 두면 자동으로 고름) */
+  var SECTORS=[
+    {n:'자동차',l:['현대차','기아','현대모비스','HL만도','한온시스템','현대위아','현대글로비스','에스엘','화신','서연이화']},
+    {n:'건설',l:['현대건설','GS건설','대우건설','HDC현대산업개발','삼성E&A','삼성엔지니어링','계룡건설','동부건설','금호건설','KCC건설']},
+    {n:'에너지·화학',l:['LG화학','SK이노베이션','S-Oil','롯데케미칼','한화솔루션','금호석유','금호석유화학','GS','SK가스','한국가스공사','한국전력']},
+    {n:'금융',l:['KB금융','신한지주','하나금융지주','우리금융지주','기업은행','삼성생명','삼성화재','메리츠금융지주','DB손해보험','한국금융지주','BNK금융지주']},
+    {n:'인터넷·게임',l:['NAVER','카카오','엔씨소프트','넷마블','펄어비스','위메이드','컴투스','네오위즈','NHN','더존비즈온']},
+    {n:'음식료',l:['CJ제일제당','오리온','농심','삼양식품','롯데칠성','하이트진로','오뚜기','빙그레','동원F&B']},
+    {n:'반도체',l:['삼성전자','SK하이닉스','한미반도체','DB하이텍','리노공업','원익IPS','이오테크닉스','하나마이크론','ISC','주성엔지니어링','솔브레인','동진쎄미켐']},
+    {n:'바이오·제약',l:['삼성바이오로직스','셀트리온','유한양행','한미약품','알테오젠','HLB','녹십자','종근당','대웅제약']},
+    {n:'조선·방산',l:['HD한국조선해양','삼성중공업','한화오션','한화에어로스페이스','LIG넥스원','현대로템','한국항공우주']},
+    {n:'시가총액 TOP10',top:true}
+  ];
+  if(SD&&SD.all) SECTORS.push({n:'코스피·코스닥 전체',all:true});
+  function secMembers(sec){
+    if(sec.top) return topIds().filter(isFull);
+    if(sec.all) return fullItems('주식');
+    var out=[]; sec.l.forEach(function(nm){ var id=byName(nm); if(id&&ITEMS[id].kind==='주식'&&isFull(id)&&out.indexOf(id)<0) out.push(id); });
+    return out;
+  }
+  function secStats(sec){
+    var ids=secMembers(sec); if(ids.length<3) return {sec:sec,n:ids.length};
+    var res=ids.map(function(id){ var it=ITEMS[id]; return {it:it,a:INVEST.analyze({months:it.months,prices:it.prices},null)}; });
+    res.sort(function(x,y){ return y.a.total-x.a.total; });
+    var b=bowl(ids.map(function(id){return ITEMS[id];}),DSTART,DEND), ba=INVEST.analyze(b,null);
+    var avgMdd=res.reduce(function(t,r){return t+r.a.mdd;},0)/res.length;
+    return {sec:sec,n:ids.length,res:res,best:res[0],worst:res[res.length-1],b:b,ba:ba,avgMdd:avgMdd,
+      worstMdd:Math.min.apply(null,res.map(function(r){return r.a.mdd;})),below:res.filter(function(r){ return r.a.mdd<ba.mdd; }).length};
+  }
+  var SECST=[];
+  function secFill(){
+    SECST=HAS?SECTORS.map(secStats):[];
+    var def=null;
+    if(DEMO_DEFAULT) SECST.forEach(function(s,i){ if(s.sec.n===DEMO_DEFAULT&&s.n>=3) def=i; });
+    if(def===null){   /* 자동 : 가장 좋은 회사 +400% 이하, 가장 나쁜 회사 −60% 이상, 그릇이 평균보다 덜 떨어진 분야 중 차이가 가장 큰 것 */
+      var bestScore=-1;
+      SECST.forEach(function(s,i){ if(s.n<4||s.sec.all) return;
+        if(s.best.a.total<=4&&s.worst.a.total>=-0.6&&s.ba.mdd>s.avgMdd){ var sc=s.best.a.total-s.worst.a.total; if(sc>bestScore){ bestScore=sc; def=i; } } });
+    }
+    if(def===null){ var lo=Infinity; SECST.forEach(function(s,i){ if(s.n>=3&&!s.sec.all&&s.best.a.total<lo){ lo=s.best.a.total; def=i; } }); }
+    $('secPick').innerHTML=SECST.map(function(s,i){ return '<option value="'+esc(s.sec.n)+'"'+(s.n<3?' disabled':'')+(i===def?' selected':'')+'>'+esc(s.sec.n)+(s.n<3?' (자료 부족)':' ('+s.n+'곳)')+'</option>'; }).join('');
+  }
   function etfDemo(){
     if(!HAS){ $('etfDemo').innerHTML='<div class="box bad">주가 자료가 없습니다. 3차시 주가 자료(js/stocks-data.js)를 먼저 준비해 주세요.</div>'; return; }
-    var full=fullItems('주식');
-    if(full.length<3){ $('etfDemo').innerHTML='<div class="box">비교할 회사가 부족합니다.</div>'; return; }
-    var res=full.map(function(id){ var it=ITEMS[id]; return {it:it,a:INVEST.analyze({months:it.months,prices:it.prices},null)}; });
-    res.sort(function(x,y){ return y.a.total-x.a.total; });
-    var best=res[0], worst=res[res.length-1];
-    var b=bowl(full.map(function(id){return ITEMS[id];}),DSTART,DEND), ba=INVEST.analyze(b,null);
-    var avgMdd=res.reduce(function(t,r){return t+r.a.mdd;},0)/res.length, worstMdd=Math.min.apply(null,res.map(function(r){return r.a.mdd;}));
-    var below=res.filter(function(r){ return r.a.mdd<ba.mdd; }).length;
+    var st=null; SECST.forEach(function(s){ if(s.sec.n===$('secPick').value) st=s; });
+    if(!st||st.n<3){ $('etfDemo').innerHTML='<div class="box">이 분야는 비교할 회사가 부족합니다. 다른 분야를 골라 주세요.</div>'; return; }
+    var best=st.best, worst=st.worst, ba=st.ba, b=st.b, nm=st.sec.n;
     function card(title,sub,a,color){
       return '<div class="metric" style="border-top:4px solid '+color+'"><div class="l">'+title+'</div>'
         +'<div class="v">'+Math.round(100*(1+a.total)).toLocaleString()+'만원</div>'
         +'<div class="s">'+sub+'</div><div class="s">전체 수익률 '+pct(a.total,0)+' · 최대 손실폭 <b class="down">'+pct(a.mdd,0)+'</b></div></div>';
     }
     var html='<div class="cmp4">'
-      +card('가장 많이 오른 회사',esc(best.it.name),best.a,'#15803d')
-      +card('가장 적게 오른(떨어진) 회사',esc(worst.it.name),worst.a,'#b91c1c')
-      +card(res.length+'개 회사를 모두 담은 그릇','같은 금액씩 나눠 담음',ba,'#111827')
-      +'<div class="metric" style="border-top:4px solid #6b7280"><div class="l">회사 하나만 골랐을 때 최대 손실폭</div><div class="v down">'+pct(avgMdd,0)+'</div>'
-      +'<div class="s">'+res.length+'개 회사 평균 · 가장 심한 회사는 '+pct(worstMdd,0)+'</div></div>'
+      +card(nm+'에서 가장 많이 오른 회사',esc(best.it.name),best.a,'#15803d')
+      +card(nm+'에서 가장 적게 오른 회사',esc(worst.it.name),worst.a,'#b91c1c')
+      +card(nm+' '+st.n+'곳을 모두 담은 그릇','같은 금액씩 나눠 담음',ba,'#111827')
+      +'<div class="metric" style="border-top:4px solid #6b7280"><div class="l">회사 하나만 골랐을 때 최대 손실폭</div><div class="v down">'+pct(st.avgMdd,0)+'</div>'
+      +'<div class="s">'+st.n+'곳 평균 · 가장 심한 회사는 '+pct(st.worstMdd,0)+'</div></div>'
       +'</div>';
     var g=[{color:'#15803d',values:best.it.prices.map(function(p){return 100*p/best.it.prices[0];})},
            {color:'#b91c1c',values:worst.it.prices.map(function(p){return 100*p/worst.it.prices[0];})},
@@ -412,13 +488,15 @@
     html+='<div style="font-size:13px;margin:10px 0 4px"><span class="dot" style="background:#15803d"></span>'+esc(best.it.name)
       +' &nbsp; <span class="dot" style="background:#b91c1c"></span>'+esc(worst.it.name)+' &nbsp; <span class="dot" style="background:#111827"></span>모두 담은 그릇</div>'
       +INVEST.lineChart({months:b.months,series:g,yMin:0,unit:'만',label:'100만원 투자 결과 비교',height:260})
+      +(st.n<=15?'<p class="help">그릇에 담은 회사 : '+st.res.map(function(r){ return esc(r.it.name)+' '+pct(r.a.total,0); }).join(', ')+'</p>':'<p class="help">그릇에 담은 회사 '+st.n+'곳</p>')
       +'<div class="box good" style="margin-top:10px"><b>무엇을 알 수 있나요?</b><br>'
-      +'결과를 미리 알았다면 '+esc(best.it.name)+'만 사면 되겠지만, '+ym(DSTART)+'에 투자하는 날에는 어느 회사가 오를지 아무도 몰랐습니다. '
+      +'결과를 미리 알았다면 '+esc(best.it.name)+'만 사면 되겠지만, '+ym(DSTART)+'에 투자하는 날에는 '+esc(nm)+' 회사 중 어디가 오를지 아무도 몰랐습니다. '
       +'운 나쁘게 '+esc(worst.it.name)+'만 샀다면 '+pct(worst.a.total,0)+'였고, 중간에 '+pct(worst.a.mdd,0)+'까지 떨어지는 것을 견뎌야 했습니다.<br>'
-      +'모두 담은 그릇은 <b>가장 좋은 회사만큼은 아니지만 최악을 피했고</b>, 최대 손실폭('+pct(ba.mdd,0)+')이 회사 '+res.length+'곳 중 '+below+'곳보다 작았습니다. '
+      +'모두 담은 그릇은 <b>가장 좋은 회사만큼은 아니지만 최악을 피했고</b>, 최대 손실폭('+pct(ba.mdd,0)+')이 '+st.n+'곳 중 '+st.below+'곳보다 작았습니다. '
       +'이것이 ETF가 <b>더 안정적일 가능성이 높은 이유</b>입니다.</div>';
     $('etfDemo').innerHTML=html;
   }
+  $('secPick').addEventListener('change',function(){ STORE.set('l4_sector',$('secPick').value); etfDemo(); });
 
   /* ============ 1단계 : 나만의 ETF 만들기 ============ */
   var BOWL=[], CMP=[];
@@ -431,7 +509,6 @@
     ids.forEach(function(id){ var l=label(ITEMS[id]); if(!seen[l]){ seen[l]=1; h+='<option value="'+esc(l)+'">'; } });
     $('itemList').innerHTML=h;
   }
-  function norm(s){ return String(s||'').toLowerCase().replace(/\[etf\]/g,'').replace(/[\s()\-\.]/g,''); }
   function findItem(q){
     var n=norm(q); if(!n) return null;
     var i, pref=/\[ETF\]/i.test(q)?'ETF':null;
@@ -498,7 +575,7 @@
   }
 
   /* ============ 2단계 ============ */
-  $('usBox').innerHTML=window.US_DATA
+  $('usBox').innerHTML=HAS_US
     ?''
     :'<div class="box plain"><b>미국 주식과 한국 주식 직접 비교하기</b>는 자료를 준비한 뒤 이곳에 추가됩니다. 오늘은 아래 환율 계산기로 미국 주식 투자의 특징을 알아봅니다.</div>';
   function fx(){
@@ -524,6 +601,101 @@
   document.querySelectorAll('[data-fx]').forEach(function(b){ b.addEventListener('click',function(){
     var v=b.getAttribute('data-fx').split(','); setField('fxP0',v[0]); setField('fxP1',v[1]); setField('fxR0',v[2]); setField('fxR1',v[3]); fx(); }); });
 
+  /* ============ 2단계 : 미국 vs 한국 (환율 반영) ============ */
+  var KTAG={'주식':'한국 주식','ETF':'한국 ETF','미국주식':'미국 주식','미국ETF':'미국 ETF','코인':'코인','금':'금'};
+  function uLabel(it){ return it.name+(it.cur==='USD'&&it.kind!=='코인'&&it.kind!=='금'&&it.name.indexOf(it.code)<0?' ('+it.code+')':'')+' ['+KTAG[it.kind]+']'; }
+  var USL=[];
+  function usFind(q){
+    var all=UIDS.concat(IDS), i, nq=String(q).trim();
+    for(i=0;i<all.length;i++) if(uLabel(ITEMS[all[i]])===nq) return all[i];
+    var n=norm(nq); if(!n) return null;
+    for(i=0;i<all.length;i++){ var it=ITEMS[all[i]]; if(norm(it.name)===n||norm(it.code)===n) return all[i]; }
+    for(i=0;i<all.length;i++){ if(norm(ITEMS[all[i]].name).indexOf(n)>=0) return all[i]; }
+    return null;
+  }
+  function usInit(){
+    if(!HAS_US){
+      $('usNone').innerHTML='<div class="box plain">미국 주식·환율 자료(js/us-data.js)가 아직 없습니다. 선생님이 자료를 만들어 올리면 이곳에서 미국 주식과 한국 주식을 환율까지 넣어 비교할 수 있습니다. (README의 미국 주식 자료 만들기 참고)</div>';
+      return;
+    }
+    $('usBox').innerHTML=''; $('usWrap').hidden=false;
+    var ids=UIDS.slice().sort(function(a,b){ var x=URANK[a]||99, y=URANK[b]||99; return x-y; }).concat(topIds()).concat(IDS.filter(function(id){ return ITEMS[id].kind==='ETF'; }));
+    if(!(SD&&SD.all)) ids=ids.concat(IDS.filter(function(id){ return ids.indexOf(id)<0; }));
+    $('usList').innerHTML=ids.map(function(id){ return '<option value="'+esc(uLabel(ITEMS[id]))+'">'; }).join('');
+    var top=UD.ranking||[], rate=FX[UD.months[UD.months.length-1]];
+    $('usTop').innerHTML=top.length?'<div class="tw"><table class="t"><tr><th>순위</th><th>회사</th><th class="num">시가총액</th><th class="num">원화로 약</th></tr>'
+      +top.map(function(r){ return '<tr><td>'+r.rank+'</td><td>'+esc(r.name)+' <span class="help">'+esc(r.code)+'</span></td><td class="num">'+(r.mcap/1000).toFixed(2)+'조 달러</td><td class="num">'+(rate?Math.round(r.mcap*1e9*rate/1e12).toLocaleString()+'조원':'-')+'</td></tr>'; }).join('')
+      +'</table></div><p class="help">기준일 '+esc(String(UD.asof||'').replace(/(\d{4})(\d{2})(\d{2})/,'$1.$2.$3'))+' · 자료 : '+esc(UD.source||'')+'</p>':'<p class="help">시가총액 순위 자료가 없습니다.</p>';
+    var fm=Object.keys(FX).sort(), fv=fm.map(function(m){return FX[m];});
+    var mx=Math.max.apply(null,fv), mn=Math.min.apply(null,fv);
+    $('usFx').innerHTML='<div style="font-size:14px;font-weight:600">원/달러 환율 (1달러가 몇 원인지, 월말 기준)</div>'
+      +INVEST.lineChart({months:fm,series:[{color:'#0f766e',values:fv}],unit:'원',height:200,label:'원달러 환율'})
+      +'<p class="help">'+ym(fm[0])+' '+Math.round(fv[0]).toLocaleString()+'원 → '+ym(fm[fm.length-1])+' '+Math.round(fv[fv.length-1]).toLocaleString()+'원 · 가장 낮을 때 '+Math.round(mn).toLocaleString()+'원, 가장 높을 때 '+Math.round(mx).toLocaleString()+'원 · 자료 : '+esc(UD.fxSource||'')+'</p>';
+    var v=STORE.get('l4_us_list','');
+    USL=v?String(v).split(',').filter(function(id){ return ITEMS[id]; }):[];
+    if(!USL.length){
+      ['uAAPL','uSPY'].forEach(function(id){ if(ITEMS[id]) USL.push(id); });
+      if(!USL.length&&UIDS.length) USL.push(UIDS[0]);
+      var k1=topIds()[0]; if(k1) USL.push(k1);
+      var k2=byName('KODEX 200'); if(k2) USL.push(k2);
+    }
+    usDraw(); usCompare();
+  }
+  function usDraw(){
+    $('usBox2').innerHTML=USL.length?USL.map(function(id,i){ var it=ITEMS[id];
+      return '<span class="pill"><span class="dot" style="background:'+COLORS[i%COLORS.length]+';margin-right:2px"></span>'+esc(it.name)+' <span class="kind">'+KTAG[it.kind]+'</span><button type="button" aria-label="'+esc(it.name)+' 빼기" data-udel="'+id+'">×</button></span>'; }).join('')
+      :'<span class="empty">아직 없습니다. 미국 회사와 한국 회사를 1개 이상씩 넣어 보세요.</span>';
+    STORE.set('l4_us_list',USL.join(','));
+  }
+  function usCompare(){
+    var out=$('usOut');
+    if(!USL.length){ out.innerHTML=''; return; }
+    var ks=USL.map(function(id){ return krw(ITEMS[id]); });
+    var p=common(ks);
+    if(!p.start||p.start>=p.end){ out.innerHTML='<div class="box bad">함께 비교할 수 있는 기간이 없습니다.</div>'; return; }
+    var series=[], body='', firstUs=null, firstKr=null, months=null;
+    USL.forEach(function(id,i){
+      var it=ITEMS[id], k=cut(krw(it),p.start,p.end); if(!k) return;
+      var a=INVEST.analyze(k,null); if(!a) return;
+      months=k.months;
+      series.push({color:COLORS[i%COLORS.length],values:k.prices.map(function(v){return 100*v/k.prices[0];})});
+      var loc=null, fxr=null;
+      if(it.cur==='USD'){ var u=cut(it,p.start,p.end); loc=u.prices[u.prices.length-1]/u.prices[0]-1; fxr=FX[p.end]/FX[p.start]-1; }
+      if(it.cur==='USD'&&!firstUs) firstUs={it:it,loc:loc,fx:fxr,a:a};
+      if(it.cur!=='USD'&&!firstKr) firstKr={it:it,a:a};
+      body+='<tr><td><span class="dot" style="background:'+COLORS[i%COLORS.length]+'"></span>'+esc(it.name)+'<span class="sub">'+KTAG[it.kind]+(it.cur==='USD'?' · 달러':' · 원화')+'</span></td>'
+        +'<td class="num">'+(loc===null?'-':'<span class="'+(loc>=0?'up':'down')+'">'+pct(loc,0)+'</span>')+'</td>'
+        +'<td class="num">'+(fxr===null?'-':'<span class="'+(fxr>=0?'up':'down')+'">'+pct(fxr,1)+'</span>')+'</td>'
+        +'<td class="num"><b class="'+(a.total>=0?'up':'down')+'">'+pct(a.total,0)+'</b></td>'
+        +'<td class="num">'+Math.round(100*(1+a.total)).toLocaleString()+'만원</td>'
+        +'<td class="num down">'+pct(a.mdd,0)+'</td></tr>';
+    });
+    if(!months){ out.innerHTML=''; return; }
+    var sum='';
+    if(firstUs){
+      sum='<div class="box '+(firstUs.fx>=0?'good':'bad')+'" style="margin-top:10px"><b>'+esc(firstUs.it.name)+'</b>은(는) 달러로 <b>'+pct(firstUs.loc,0)+'</b> 변했고, 같은 기간 환율이 '
+        +Math.round(FX[p.start]).toLocaleString()+'원 → '+Math.round(FX[p.end]).toLocaleString()+'원(<b>'+pct(firstUs.fx,1)+'</b>)으로 바뀌어 원화로는 <b>'+pct(firstUs.a.total,0)+'</b>가 되었습니다. '
+        +(firstUs.fx>=0?'환율이 올라서 원화로 바꿀 때 <b>더 이득</b>이었습니다.':'환율이 내려서 원화로 바꿀 때 <b>손해</b>를 봤습니다.')
+        +(firstKr?' 같은 기간 한국의 '+esc(firstKr.it.name)+'은(는) '+pct(firstKr.a.total,0)+'였습니다.':'')
+        +'<br><span class="help" style="color:inherit">원화 수익률 = (1 + 달러 수익률) × (1 + 환율 변화) − 1</span></div>';
+    }
+    out.innerHTML='<p class="help" style="margin:0 0 6px">비교 기간 : '+ym(p.start)+' ~ '+ym(p.end)+' · 처음에 100만원(원화)을 넣었다고 계산 · 배당금 제외</p>'
+      +'<div class="tw"><table class="t"><tr><th>이름</th><th class="num">현지 통화 수익률</th><th class="num">환율 변화</th><th class="num">원화로 본 수익률</th><th class="num">100만원 →</th><th class="num">최대 손실폭(원화)</th></tr>'+body+'</table></div>'
+      +INVEST.lineChart({months:months,series:series,yMin:0,unit:'만',label:'미국 한국 비교(원화)',height:260})+sum;
+  }
+  $('usAdd').addEventListener('click',function(){
+    var q=$('usPk').value, id=usFind(q);
+    if(!q.trim()){ $('usMsg').textContent='먼저 이름을 적어 주세요.'; return; }
+    if(!id){ $('usMsg').textContent='"'+q+'" 은(는) 자료에 없습니다. 목록에서 골라 주세요.'; return; }
+    if(USL.indexOf(id)>=0){ $('usMsg').textContent='이미 들어 있습니다.'; return; }
+    if(USL.length>=6){ $('usMsg').textContent='최대 6개까지 비교할 수 있습니다.'; return; }
+    USL.push(id); $('usPk').value=''; $('usMsg').textContent=ITEMS[id].name+' 추가'; usDraw(); usCompare();
+  });
+  $('usPk').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); $('usAdd').click(); } });
+  $('usClear').addEventListener('click',function(){ USL=[]; usDraw(); usCompare(); });
+  $('usBox2').addEventListener('click',function(e){ var b=e.target.closest('button[data-udel]'); if(!b) return;
+    var i=USL.indexOf(b.getAttribute('data-udel')); if(i>=0) USL.splice(i,1); usDraw(); usCompare(); });
+
   /* ============ 3단계 ① 레버리지 ============ */
   var LEV={up:'2,2,2,2,2,2,2,2,2,2',down:'-2,-2,-2,-2,-2,-2,-2,-2,-2,-2',zigzag:'10,-10,10,-10,10,-10,10,-10,10,-10',crash:'5,5,5,5,-35,5,5,5,5,5'};
   function miniChart(labels,series,unit){
@@ -543,30 +715,45 @@
     $('levXt').textContent=x; $('levXt2').textContent=x;
     var days=String($('levDays').value).split(/[,\s]+/).map(parseFloat).filter(function(v){return isFinite(v);}).slice(0,40);
     if(!days.length){ $('levA').textContent='-'; return; }
-    var a=[100],b=[100],rows='<tr><th>날</th><th class="num">주가 변화</th><th class="num">일반 투자</th><th class="num">'+x+'배 레버리지 변화</th><th class="num">'+x+'배 레버리지</th></tr>', zero=null;
+    var a=[100],b=[100],rows='<tr><th>날</th><th class="num">주가 변화</th><th class="num">일반 투자</th><th class="num">'+x+'배 레버리지 변화</th><th class="num">'+x+'배 레버리지</th></tr>', zero=null, bigDrop=null;
     rows+='<tr><td>시작</td><td class="num">-</td><td class="num">100만원</td><td class="num">-</td><td class="num">100만원</td></tr>';
     days.forEach(function(d,i){
       var na=a[i]*(1+d/100), lb=Math.max(-100,d*x), nb=Math.max(0,b[i]*(1+lb/100));
       if(nb===0&&zero===null) zero=i+1;
+      if(d<=-20&&bigDrop===null) bigDrop={day:i+1,d:d,lb:lb};
       a.push(na); b.push(nb);
       rows+='<tr><td>'+(i+1)+'일</td><td class="num '+(d>=0?'up':'down')+'">'+(d>0?'+':'')+d+'%</td><td class="num">'+n1(na)+'만원</td>'
         +'<td class="num '+(lb>=0?'up':'down')+'">'+(lb>0?'+':'')+n1(lb)+'%</td><td class="num"><b>'+n1(nb)+'만원</b></td></tr>';
     });
-    var A=a[a.length-1], Bv=b[b.length-1], ra=A/100-1, rb=Bv/100-1;
+    var A=a[a.length-1], Bv=b[b.length-1], ra=A/100-1, rb=Bv/100-1, E=ra*x, tol=0.005;
+    var hasUp=days.some(function(d){return d>0;}), hasDown=days.some(function(d){return d<0;});
     $('levA').innerHTML='<span class="'+(ra>=0?'up':'down')+'">'+n1(A)+'만원</span>'; $('levAs').textContent='수익률 '+pct(ra);
     $('levB').innerHTML='<span class="'+(rb>=0?'up':'down')+'">'+n1(Bv)+'만원</span>'; $('levBs').textContent='수익률 '+pct(rb);
-    var expect=ra*x;
-    $('levC').textContent=(Math.abs(rb-expect)<0.005)?'거의 그렇다':(rb<expect?'아니요':'더 벌었다');
-    $('levCs').textContent='단순히 '+x+'배라면 '+pct(expect)+' → 실제 '+pct(rb);
+    /* 일반 투자 수익률의 x배(E)와 실제 레버리지 수익률(rb) 비교 */
+    var verdict;
+    if(zero!==null) verdict='모두 잃었어요';
+    else if(Math.abs(rb-E)<tol) verdict='거의 '+x+'배';
+    else if(ra>=0) verdict=(rb>E)?x+'배보다 더 벌었어요':(rb<0?'오히려 잃었어요':x+'배보다 덜 벌었어요');
+    else verdict=(rb<E)?x+'배보다 더 잃었어요':x+'배보다는 덜 잃었어요';
+    $('levC').textContent=verdict;
+    $('levCs').innerHTML='일반 투자 '+pct(ra)+' × '+x+' = <b>'+pct(E)+'</b> (단순 '+x+'배)<br>실제 레버리지 <b>'+pct(rb)+'</b>';
     $('levTable').innerHTML=rows;
     $('levChart').innerHTML='<div style="font-size:13px"><span class="dot" style="background:#2563eb"></span>일반 투자 &nbsp; <span class="dot" style="background:#b91c1c"></span>'+x+'배 레버리지</div>'
       +miniChart(['시작'].concat(days.map(function(d,i){return (i+1)+'일';})),[{color:'#2563eb',values:a},{color:'#b91c1c',values:b}],'만');
+    var ex='(+10% 다음 −10%이면 일반 투자는 100 → 110 → 99로 <b>−1%</b>, '+x+'배 레버리지는 100 → '+n1(100*(1+0.1*x))+' → '+n1(100*(1+0.1*x)*(1-0.1*x))+'로 <b>'+pct((1+0.1*x)*(1-0.1*x)-1,0)+'</b>입니다. −1%의 '+x+'배인 −'+x+'%보다 더 많이 잃습니다.)';
     var j;
-    if(zero!==null) j='<div class="box bad"><b>'+zero+'일째에 레버리지 투자 돈이 0원이 되었습니다.</b> 하루에 '+n1(100/x)+'% 이상 떨어지면 '+x+'배 레버리지는 모두 사라집니다. 그 뒤에 주가가 다시 올라도 돌아오지 않습니다.</div>';
-    else if(Math.min.apply(null,days)<0&&Math.max.apply(null,days)>0&&rb<expect-0.02) j='<div class="box bad"><b>주가는 '+pct(ra)+'인데 레버리지는 '+pct(rb)+'</b>입니다. 단순히 '+x+'배라면 '+pct(expect)+'여야 하지만 훨씬 더 잃었습니다. 오르락내리락할수록 레버리지는 조금씩 돈이 새어 나갑니다. (+10% 다음 −10%면 주가는 99, '+x+'배 레버리지는 '+n1(100*(1+0.1*x)*(1-0.1*x))+')</div>';
-    else if(ra<0) j='<div class="box bad">주가가 '+pct(ra)+' 떨어질 때 레버리지는 '+pct(rb)+' 떨어졌습니다. 손실도 몇 배로 커집니다.</div>';
-    else if(rb<expect-0.01) j='<div class="box">주가가 '+pct(ra)+' 올라서 레버리지도 '+pct(rb)+' 벌었지만, 중간에 흔들린 만큼 단순 '+x+'배('+pct(expect)+')보다는 적게 벌었습니다.</div>';
-    else j='<div class="box good">매일 꾸준히 오르면 레버리지가 '+x+'배보다 더 많이 법니다. 하지만 현실의 주가는 이렇게 매일 오르기만 하지 않습니다. 다른 상황도 눌러 보세요.</div>';
+    if(zero!==null) j='<div class="box bad"><b>'+zero+'일째에 레버리지에 넣은 돈이 0원이 되었습니다.</b> 주가가 하루에 '+n1(100/x)+'% 이상 떨어지면 '+x+'배 레버리지는 그날 100%를 잃습니다. 그 뒤에 주가가 다시 올라도 0원은 돌아오지 않습니다. 일반 투자는 같은 날 '+pct(ra)+'로 끝났습니다.</div>';
+    else if(hasUp&&!hasDown) j='<div class="box good">매일 오르기만 하면 레버리지는 <b>오른 돈 위에서 또 '+x+'배씩</b> 불어나서, 일반 투자 수익률의 '+x+'배('+pct(E)+')보다도 많은 <b>'+pct(rb)+'</b>를 벌었습니다. 하지만 현실의 주가는 이렇게 매일 오르기만 하지 않습니다. 다른 상황도 눌러 보세요.</div>';
+    else if(hasDown&&!hasUp) j='<div class="box bad">주가가 '+pct(ra)+' 떨어지는 동안 레버리지는 <b>'+pct(rb)+'</b> 떨어져, 일반 투자보다 약 <b>'+n1(rb/ra)+'배</b> 많이 잃었습니다. '
+      +'단순 '+x+'배('+pct(E)+')보다 조금 덜 잃은 것은, 매일 <b>줄어든 돈을 기준으로</b> 다시 '+x+'배씩 잃기 때문입니다. 남은 돈이 작아지면 잃는 금액도 조금씩 작아질 뿐, 손실이 훨씬 큰 것은 변하지 않습니다.</div>';
+    else if(bigDrop&&rb<E-tol) j='<div class="box bad">일반 투자는 <b>'+pct(ra)+'</b>'+(Math.abs(ra)<0.05?'로 거의 제자리인데':'인데')+', 레버리지는 <b>'+pct(rb)+'</b>입니다. '
+      +bigDrop.day+'일째 주가가 하루에 '+Math.abs(bigDrop.d)+'% 떨어진 날 레버리지는 그날 <b>'+Math.abs(bigDrop.lb)+'%</b>를 잃었습니다. '
+      +'그 뒤 주가가 다시 올라 일반 투자는 회복했지만, 레버리지는 크게 줄어든 돈에서 다시 시작해야 해서 회복하지 못했습니다. '
+      +'(100만원이 '+Math.abs(bigDrop.lb)+'% 줄면 '+n1(100*(1+bigDrop.lb/100))+'만원이 되고, 다시 100만원이 되려면 <b>'+n1((100/(100+bigDrop.lb)-1)*100)+'%</b>나 올라야 합니다.)</div>';
+    else if(rb<E-tol) j='<div class="box bad">일반 투자는 오르락내리락한 끝에 <b>'+pct(ra)+'</b>였지만, 레버리지는 <b>'+pct(rb)+'</b>였습니다. 일반 투자 수익률의 '+x+'배('+pct(E)+')보다도 훨씬 나쁩니다. '
+      +'오르락내리락할 때마다 레버리지는 돈이 조금씩 새어 나갑니다. '+ex
+      +'</div>';
+    else j='<div class="box">레버리지 수익률은 '+pct(rb)+', 일반 투자 수익률의 '+x+'배는 '+pct(E)+'입니다. 날마다 주가가 어떻게 움직였느냐에 따라 '+x+'배보다 많아지기도, 적어지기도 합니다.</div>';
     $('levJudge').innerHTML=j;
   }
   $('levDays').addEventListener('input',lev); $('levX').addEventListener('change',lev);
@@ -640,15 +827,18 @@
 
   /* ============ 4단계 : 코로나 ============ */
   function cvFill(){
-    var full=fullItems('주식'), h='';
-    if(full.length>1) h+='<option value="bowl">'+full.length+'개 회사를 모두 담은 그릇</option>';
-    topIds().concat(IDS.filter(function(id){ return !RANK[id]; })).forEach(function(id){
-      if(ITEMS[id].months[0]===DSTART) h+='<option value="'+id+'">'+esc(label(ITEMS[id]))+'</option>'; });
+    var h='', tf=topIds().filter(isFull), all=fullItems('주식');
+    if(tf.length>1) h+='<option value="bowlTop">시가총액 TOP10 중 '+tf.length+'곳을 담은 그릇</option>';
+    if(all.length>tf.length) h+='<option value="bowlAll">'+(SD&&SD.all?'코스피·코스닥 ':'')+all.length.toLocaleString()+'개 회사를 모두 담은 그릇</option>';
+    IDS.filter(function(id){ return ITEMS[id].kind==='ETF'&&ITEMS[id].months[0]===DSTART; }).forEach(function(id){ h+='<option value="'+id+'">'+esc(label(ITEMS[id]))+'</option>'; });
+    var list=(SD&&SD.all)?topIds():topIds().concat(IDS.filter(function(id){ return ITEMS[id].kind==='주식'&&!RANK[id]; }));
+    list.forEach(function(id){ if(ITEMS[id].months[0]===DSTART) h+='<option value="'+id+'">'+esc(label(ITEMS[id]))+'</option>'; });
     $('cvItem').innerHTML=h;
   }
   function cvSeries(){
     var v=$('cvItem').value;
-    if(v==='bowl') return bowl(fullItems('주식').map(function(id){return ITEMS[id];}),DSTART,DEND);
+    if(v==='bowlTop') return bowl(topIds().filter(isFull).map(function(id){return ITEMS[id];}),DSTART,DEND);
+    if(v==='bowlAll') return bowl(fullItems('주식').map(function(id){return ITEMS[id];}),DSTART,DEND);
     var it=ITEMS[v]; return it?{months:it.months,prices:it.prices}:null;
   }
   function cv(){
@@ -683,25 +873,113 @@
   }
   $('cvItem').addEventListener('change',cv); $('cvWait').addEventListener('input',function(){ STORE.set('l4_cv_wait',$('cvWait').value); cv(); });
 
-  /* ============ 5단계 : 투자 비율 ============ */
-  /* 수업용 가정치 : 선생님이 바꿔도 됩니다 (r: 1년 예상 수익률 %, worst: 과거 큰 하락을 참고한 '가장 나쁜 해' %) */
-  var ASSETS=[
-    {k:'cash',  n:'현금 (비상금)',        r:0,   worst:0,   c:'#9ca3af', why:'이자가 없지만 언제든 쓸 수 있음'},
-    {k:'deposit',n:'예금·적금',            r:3,   worst:0,   c:'#60a5fa', why:'원금이 보장됨 (예금자보호)'},
-    {k:'bond',  n:'채권 (국채)',          r:3.5, worst:-10, c:'#34d399', why:'금리가 크게 오른 2022년에 약 10% 하락한 적 있음'},
-    {k:'gold',  n:'금',                   r:5,   worst:-28, c:'#fbbf24', why:'2013년 한 해 약 28% 하락'},
-    {k:'krEtf', n:'국내 주식 ETF',        r:6,   worst:-40, c:'#2563eb', why:'2008년 코스피 약 40% 하락'},
-    {k:'usEtf', n:'미국 주식 ETF',        r:8,   worst:-37, c:'#7c3aed', why:'2008년 미국 S&P500 약 37% 하락 (환율 변화는 빼고 계산)'},
-    {k:'stock', n:'개별 주식 (한 회사)',  r:7,   worst:-60, c:'#c2410c', why:'3차시처럼 한 회사가 60% 넘게 떨어지기도 함'},
-    {k:'coin',  n:'코인',                 r:10,  worst:-75, c:'#d97706', why:'2022년 비트코인 약 75% 하락. 예상 수익률은 근거가 없는 가정'}
+  /* ============ 5단계 : 투자 비율 (2020년부터 매달 꾸준히 투자했다면) ============ */
+  var DEPOSIT_RATE=3, REAL_LIMIT=10;
+  var GOLD_RE=/골드|금현물|금선물|gold/i, OVERSEA_RE=/미국|나스닥|S&P|중국|차이나|일본|인도|베트남|글로벌|선진국|유로|MSCI/i;
+  var TYPES=[
+    {k:'deposit',n:'예금·적금',fixed:DEPOSIT_RATE,d:'원금 보장, 연 3% 이자 (예금자보호)'},
+    {k:'cash',n:'현금',fixed:0,d:'이자 없음, 언제든 꺼내 쓸 수 있음'},
+    {k:'krEtf',n:'국내 주식 ETF',d:'국내 여러 회사를 한 그릇에 담은 상품',rec:['KODEX 200','TIGER 200','KODEX 코스닥150']},
+    {k:'usEtf',n:'해외 주식 ETF',d:'미국 등 해외 여러 회사를 담은 상품 (환율 반영)',rec:['uSPY','TIGER 미국S&P500','uQQQ','TIGER 미국나스닥100']},
+    {k:'krStock',n:'국내 개별 주식',d:'국내 회사 한 곳',rec:['#krtop']},
+    {k:'usStock',n:'해외 개별 주식',d:'미국 회사 한 곳 (환율 반영)',rec:['uAAPL','uMSFT','#ustop']},
+    {k:'gold',n:'금',d:'금 가격을 따라가는 상품',rec:['KODEX 골드선물(H)','uGC=F']},
+    {k:'coin',n:'코인',d:'비트코인 같은 가상자산 (환율 반영)',rec:['uBTC-USD','uETH-USD']}
   ];
-  var AM={}; ASSETS.forEach(function(a){ AM[a.k]=a; });
+  var TM={}; TYPES.forEach(function(t){ TM[t.k]=t; });
   var SLOTC=['#2563eb','#0f766e','#d97706'];
-  function pfOpts(){
-    var h='<option value="">투자 방법 고르기</option>'+ASSETS.map(function(a){ return '<option value="'+a.k+'">'+a.n+'</option>'; }).join('');
-    [1,2,3].forEach(function(i){ $('pf'+i).innerHTML=h; });
-    $('assetTable').innerHTML='<tr><th>투자 방법</th><th class="num">예상 수익률 (1년)</th><th class="num">가장 나쁜 해</th><th>참고</th></tr>'
-      +ASSETS.map(function(a){ return '<tr><td><span class="dot" style="background:'+a.c+'"></span>'+a.n+'</td><td class="num">'+n1(a.r)+'%</td><td class="num down">'+(a.worst?a.worst+'%':'0%')+'</td><td>'+a.why+'</td></tr>'; }).join('');
+  function typeOf(it){
+    if(it.kind==='주식') return 'krStock';
+    if(it.kind==='ETF') return GOLD_RE.test(it.name)?'gold':(OVERSEA_RE.test(it.name)?'usEtf':'krEtf');
+    return {'미국주식':'usStock','미국ETF':'usEtf','코인':'coin','금':'gold','그릇':'krEtf'}[it.kind]||null;
+  }
+  var TYPEITEMS={};
+  function buildTypes(){
+    if(!HAS_ETF&&HAS){   /* ETF 자료가 없으면 '시가총액 TOP10 그릇'을 국내 주식 ETF 대신 씀 */
+      var tf=topIds().filter(isFull), b=tf.length?bowl(tf.map(function(id){return ITEMS[id];}),DSTART,DEND):null;
+      if(b) ITEMS.bowlTop={id:'bowlTop',code:'',name:'시가총액 TOP10 그릇 (직접 만든 ETF)',kind:'그릇',cur:'KRW',months:b.months,prices:b.prices};
+    }
+    TYPES.forEach(function(t){ TYPEITEMS[t.k]=[]; });
+    Object.keys(ITEMS).forEach(function(id){ var k=typeOf(ITEMS[id]); if(k&&TYPEITEMS[k]) TYPEITEMS[k].push(id); });
+    TYPEITEMS.krStock.sort(function(a,b){ return (RANK[a]||9999)-(RANK[b]||9999); });
+    TYPEITEMS.usStock.sort(function(a,b){ return (URANK[a]||99)-(URANK[b]||99); });
+  }
+  function avail(k){ return TM[k].fixed!==undefined||TYPEITEMS[k].length>0; }
+  function recommend(k){
+    var t=TM[k], list=TYPEITEMS[k]||[];
+    for(var i=0;t.rec&&i<t.rec.length;i++){
+      var r=t.rec[i], id=null;
+      if(r==='#krtop') id=topIds()[0]; else if(r==='#ustop') id=TYPEITEMS.usStock[0];
+      else if(r.charAt(0)==='u'&&ITEMS[r]) id=r; else id=byName(r);
+      if(id&&list.indexOf(id)>=0) return id;
+    }
+    return list[0]||null;
+  }
+  function slotHtml(i){
+    var opts='<option value="">투자 방법 고르기</option>'+TYPES.map(function(t){ return '<option value="'+t.k+'"'+(avail(t.k)?'':' disabled')+'>'+t.n+(avail(t.k)?'':' (자료 없음)')+'</option>'; }).join('');
+    return '<select id="pf'+i+'" data-store="l4_pf'+i+'" aria-label="투자 방법 '+i+'">'+opts+'</select>'
+      +'<div id="pf'+i+'pick" style="margin-top:8px" hidden><div style="display:flex;gap:6px">'
+      +'<input type="text" id="pf'+i+'q" list="pf'+i+'list" placeholder="회사·ETF 이름" autocomplete="off" aria-label="투자 방법 '+i+' 상품">'
+      +'<button type="button" class="btn ghost sm" id="pf'+i+'rec" style="white-space:nowrap">추천받기</button></div><datalist id="pf'+i+'list"></datalist></div>'
+      +'<div class="help" id="pf'+i+'i"></div>'
+      +'<div class="unit" style="margin-top:8px"><input type="number" id="pf'+i+'w" data-store="l4_pf'+i+'w" min="0" max="100" step="5" placeholder="비율" aria-label="투자 방법 '+i+' 비율"><span class="u">%</span></div>';
+  }
+  function slotType(i){ return $('pf'+i).value; }
+  function slotItem(i){ var v=STORE.get('l4_pf'+i+'_item',''); var k=slotType(i); return (v&&ITEMS[v]&&(TYPEITEMS[k]||[]).indexOf(v)>=0)?v:null; }
+  function setItem(i,id){ STORE.set('l4_pf'+i+'_item',id||''); $('pf'+i+'q').value=id?uLabel(ITEMS[id]):''; }
+  function slotUi(i){
+    var k=slotType(i), t=TM[k];
+    $('pf'+i+'pick').hidden=!(t&&t.fixed===undefined);
+    if(t&&t.fixed===undefined){
+      $('pf'+i+'list').innerHTML=TYPEITEMS[k].map(function(id){ return '<option value="'+esc(uLabel(ITEMS[id]))+'">'; }).join('');
+      var it=slotItem(i); $('pf'+i+'q').value=it?uLabel(ITEMS[it]):'';
+    }
+    var it2=slotItem(i);
+    $('pf'+i+'i').innerHTML=!t?'':(t.fixed!==undefined?t.d:(it2?esc(ITEMS[it2].name)+' · 자료 '+ym(krw(ITEMS[it2]).months[0])+'부터':'<span class="down">상품을 골라 주세요 (추천받기 가능)</span>'));
+  }
+  function wireSlot(i){
+    $('pf'+i).addEventListener('change',function(){ setItem(i,null); slotUi(i); pf(); });
+    $('pf'+i+'rec').addEventListener('click',function(){ var id=recommend(slotType(i)); if(id){ setItem(i,id); slotUi(i); pf(); } });
+    $('pf'+i+'q').addEventListener('change',function(){
+      var q=$('pf'+i+'q').value.trim(), k=slotType(i), list=TYPEITEMS[k]||[], id=null, n=norm(q);
+      list.forEach(function(x){ if(!id&&(uLabel(ITEMS[x])===q||norm(ITEMS[x].name)===n||norm(ITEMS[x].code)===n)) id=x; });
+      if(!id) list.forEach(function(x){ if(!id&&n&&norm(ITEMS[x].name).indexOf(n)>=0) id=x; });
+      if(id){ setItem(i,id); } else if(q){ $('pf'+i+'i').innerHTML='<span class="down">"'+esc(q)+'" 은(는) '+TM[k].n+' 목록에 없습니다.</span>'; return; }
+      slotUi(i); pf();
+    });
+    $('pf'+i+'w').addEventListener('input',pf);
+  }
+  /* 매달 꾸준히 투자한 결과 계산 */
+  function backtest(slots,pre,mon){
+    var ser=slots.map(function(s){ return s.fixed!==undefined?null:krw(ITEMS[s.item]); });
+    var withS=ser.filter(Boolean), p=withS.length?common(withS):{start:DSTART,end:DEND};
+    if(p.start<DSTART) p.start=DSTART;
+    var months=INVEST.monthRange([[p.start,p.end]]);
+    if(months.length<13) return null;
+    var px=ser.map(function(s){ if(!s) return null; var map={},out=[],prev=null; s.months.forEach(function(m,i){ map[m]=s.prices[i]; });
+      months.forEach(function(m){ prev=(map[m]!==undefined)?map[m]:prev; out.push(prev); }); return out; });
+    var units=slots.map(function(){return 0;}), bal=units.slice(), paid=units.slice();
+    var V=[],P=[],C=[],I=[1],idx=1,prevV=0,principal=0;
+    months.forEach(function(m,t){
+      var c=(t===0?pre:0)+mon;
+      slots.forEach(function(s,i){
+        var add=c*s.w/100;
+        if(s.fixed!==undefined){ var r=Math.pow(1+s.fixed/100,1/12)-1; bal[i]=(t===0?0:bal[i]*(1+r))+add; }
+        else units[i]+=add/px[i][t];
+        paid[i]+=add;
+      });
+      var v=0; slots.forEach(function(s,i){ v+=(s.fixed!==undefined)?bal[i]:units[i]*px[i][t]; });
+      principal+=c;
+      if(t>0){ idx*=(prevV>0?(v-c)/prevV:1); I.push(idx); }
+      V.push(v); P.push(principal); C.push(c); prevV=v;
+    });
+    var n=months.length, Vend=V[n-1];
+    var f=function(r){ var s=0; for(var t=0;t<n;t++) s+=C[t]*Math.pow(1+r,n-1-t); return s-Vend; };
+    var lo=-0.3,hi=0.3; for(var k=0;k<80;k++){ var mid=(lo+hi)/2; if(f(mid)<0) lo=mid; else hi=mid; }
+    var irr=Math.pow(1+(lo+hi)/2,12)-1;
+    var pk=0,mdd=0,mp=0,mt=0; for(var q=0;q<I.length;q++){ if(I[q]>I[pk]) pk=q; var d=I[q]/I[pk]-1; if(d<mdd){ mdd=d; mp=pk; mt=q; } }
+    var parts=slots.map(function(s,i){ return {paid:paid[i],val:(s.fixed!==undefined)?bal[i]:units[i]*px[i][n-1]}; });
+    return {months:months,V:V,P:P,irr:irr,mdd:mdd,peakM:months[mp],troughM:months[mt],parts:parts,principal:principal,value:Vend};
   }
   function gv(adj,l1,dv){ var v=STORE.num(adj); if(v===null) v=STORE.num(l1); return (v===null||v===undefined)?dv:v; }
   function cond(){
@@ -710,66 +988,89 @@
       share:gv('l2_adj_share','l1_share',50), wishAge:gv('l2_adj_wishAge','l1_wishAge',null),
       infl:STORE.num('l2_infl',3.1), nowAge:15 };
   }
-  function moneyAt(o,age){
-    var n=Math.round((age-o.jobAge)*12); if(n<0) return null;
-    var m=Math.pow(1+o.rate/100,1/12)-1, a=o.preSave;
-    for(var i=0;i<n;i++) a=a*(1+m)+o.monthlySave;
-    return a;
-  }
   function pf(){
-    var picks=[1,2,3].map(function(i){ return {k:$('pf'+i).value,w:num('pf'+i+'w')}; });
-    picks.forEach(function(p,i){ var a=AM[p.k]; $('pf'+(i+1)+'i').textContent=a?('예상 '+n1(a.r)+'% · 가장 나쁜 해 '+a.worst+'%'):''; });
-    var sum=0, dup=false, seen={}, ok=true;
-    picks.forEach(function(p){ if(!p.k||p.w===null) ok=false; else { sum+=p.w; if(seen[p.k]) dup=true; seen[p.k]=1; } });
-    $('pfMix').innerHTML=picks.map(function(p,i){ return (p.k&&p.w>0)?'<i style="width:'+Math.min(100,p.w)+'%;background:'+SLOTC[i]+'" title="'+(AM[p.k]?AM[p.k].n:'')+' '+p.w+'%"></i>':''; }).join('');
-    var clear=function(){ ['pfRate','pfMoney','pfAge','pfWorst'].forEach(function(id){ $(id).textContent='-'; }); $('pfJudge').innerHTML=''; };
-    if(!ok){ $('pfSum').textContent='투자 방법 3가지를 고르고 비율을 적어 주세요.'; clear(); return; }
-    if(dup){ $('pfSum').innerHTML='<span class="down">서로 다른 투자 방법 3가지를 골라 주세요.</span>'; clear(); return; }
-    if(Math.abs(sum-100)>0.01){ $('pfSum').innerHTML='<span class="down">비율의 합이 '+n1(sum)+'%입니다. 100%가 되도록 맞춰 주세요. ('+(sum<100?n1(100-sum)+'% 더 필요':n1(sum-100)+'% 넘음')+')</span>'; clear(); return; }
-    $('pfSum').textContent=picks.map(function(p){ return AM[p.k].n+' '+n1(p.w)+'%'; }).join(' + ')+' = 100%';
-    var rate=0, worst=0; picks.forEach(function(p){ rate+=AM[p.k].r*p.w/100; worst+=AM[p.k].worst*p.w/100; });
-    STORE.set('l4_pf_rate',String(Math.round(rate*100)/100));
-    $('pfRate').textContent='연 '+n1(rate)+'%';
-    $('pfRateS').textContent=picks.map(function(p){ return n1(AM[p.k].r)+'%×'+n1(p.w)+'%'; }).join(' + ');
-    var maxLoss=STORE.num('l3_maxLoss');
-    $('pfWorst').innerHTML='<span class="down">'+n1(worst)+'%</span>';
-    $('pfWorstS').textContent='1,000만원이면 '+n1(-worst*10)+'만원 줄어듦'+(maxLoss!==null?' · 내 한도 '+n1(maxLoss)+'%':'');
-    var o=cond();
-    var ready=['jobAge','preSave','monthlySave','weddingCost'].every(function(k){ return o[k]!==null; });
-    if(!ready){ $('pfMissing').innerHTML='<div class="box bad">1·2차시 값(취직 나이, 취직 전 저축, 월 저축, 결혼 비용)을 찾을 수 없어 결혼 나이를 계산할 수 없습니다. 같은 기기에서 <a href="lesson2.html">2차시</a>를 먼저 진행해 주세요.</div>';
-      $('pfAge').textContent='-'; $('pfMoney').textContent='-'; return; }
-    $('pfMissing').innerHTML='';
-    o.rate=rate;
-    var sim=CALC.simulate(o), base=CALC.simulate(Object.assign({},o,{rate:3}));
-    $('pfAge').textContent=CALC.ageText(sim.age);
-    $('pfAgeS').textContent=(o.wishAge!==null&&sim.age!==null)?('희망 '+n1(o.wishAge)+'세보다 '+(sim.age<=o.wishAge?n1(o.wishAge-sim.age)+'년 빠름':n1(sim.age-o.wishAge)+'년 늦음')):'';
-    if(o.wishAge!==null&&o.wishAge>o.jobAge){
-      var mw=moneyAt(o,o.wishAge), need=CALC.targetAt(o.wishAge,o);
-      $('pfMoney').textContent=won(mw);
-      $('pfMoneyS').textContent=n1(o.wishAge)+'세에 필요한 돈 '+won(need)+(mw>=need?' · 충분함':' · '+won(need-mw)+' 부족');
-    } else { $('pfMoney').textContent='-'; $('pfMoneyS').textContent='희망 결혼 나이가 필요합니다'; }
-    $('pfCond').innerHTML='계산 조건 (2차시 4단계) · 취직 '+n1(o.jobAge)+'세, 취직 전 저축 '+won(o.preSave)+', 매달 저축 '+won(o.monthlySave)
-      +', 결혼 비용 '+won(o.weddingCost)+' × 내 비율 '+n1(o.share)+'%, 물가 '+n1(o.infl)+'%';
-    var j='', tr=STORE.num('l3_targetRate'); if(tr===null) tr=STORE.num('l2_adj_rate');
-    if(base.age!==null&&sim.age!==null) j+='<div class="box plain">모두 예금·적금(3%)에 넣었다면 결혼 나이는 <b>'+CALC.ageText(base.age)+'</b>입니다. 내 투자 비율로는 <b>'+(base.age>=sim.age?n1(base.age-sim.age)+'년 빨라졌습니다':n1(sim.age-base.age)+'년 늦어졌습니다')+'</b>.</div>';
-    if(tr!==null) j+='<div class="box '+(rate>=tr?'good':'')+'" style="margin-top:8px">3차시에서 정한 목표 수익률 <b>'+n1(tr)+'%</b>와 비교하면, 내 투자 바구니의 예상 수익률('+n1(rate)+'%)은 '+(rate>=tr?'목표를 넘습니다.':'목표보다 '+n1(tr-rate)+'%p 낮습니다.')+'</div>';
-    if(maxLoss!==null) j+=(-worst>maxLoss)
-      ?'<div class="box bad" style="margin-top:8px">가장 나쁜 해에는 <b>'+n1(-worst)+'%</b>가 줄어듭니다. 3차시에서 정한 내 한도 <b>'+n1(maxLoss)+'%</b>를 넘으므로, 그 해에 겁이 나서 팔아 버릴 수도 있습니다. 위험한 투자의 비율을 줄여 보세요.</div>'
-      :'<div class="box good" style="margin-top:8px">가장 나쁜 해(−'+n1(-worst)+'%)에도 3차시에서 정한 내 한도 '+n1(maxLoss)+'% 안에 들어옵니다. 끝까지 버틸 수 있는 비율입니다.</div>';
-    $('pfJudge').innerHTML=j;
+    var slots=[1,2,3].map(function(i){ var k=slotType(i), t=TM[k]; return {i:i,k:k,t:t,w:num('pf'+i+'w'),item:slotItem(i),fixed:t?t.fixed:undefined}; });
+    slots.forEach(function(s){ slotUi(s.i); });
+    $('pfMix').innerHTML=slots.map(function(s,i){ return (s.k&&s.w>0)?'<i style="width:'+Math.min(100,s.w)+'%;background:'+SLOTC[i]+'"></i>':''; }).join('');
+    var out=$('pfOut'), sum=0, ok=true, keys={}, dup=false;
+    slots.forEach(function(s){ if(!s.k||s.w===null||(s.fixed===undefined&&!s.item)) ok=false; else { sum+=s.w; var key=s.k+':'+(s.item||''); if(keys[key]) dup=true; keys[key]=1; } });
+    if(!ok){ $('pfSum').textContent='투자 방법 3가지와 상품을 고르고 비율을 적어 주세요.'; out.innerHTML=''; return; }
+    if(dup){ $('pfSum').innerHTML='<span class="down">같은 투자 방법·상품이 두 번 들어 있습니다. 서로 다르게 골라 주세요.</span>'; out.innerHTML=''; return; }
+    if(Math.abs(sum-100)>0.01){ $('pfSum').innerHTML='<span class="down">비율의 합이 '+n1(sum)+'%입니다. 100%가 되도록 맞춰 주세요. ('+(sum<100?n1(100-sum)+'% 더 필요':n1(sum-100)+'% 넘음')+')</span>'; out.innerHTML=''; return; }
+    function sname(s){ return s.fixed!==undefined?s.t.n:ITEMS[s.item].name; }
+    $('pfSum').textContent=slots.map(function(s){ return sname(s)+' '+n1(s.w)+'%'; }).join(' + ')+' = 100%';
+    var pre=num('pfPre')||0, mon=num('pfMon')||0;
+    if(pre<=0&&mon<=0){ out.innerHTML='<div class="box bad">처음에 넣을 돈이나 매달 넣을 돈을 적어 주세요.</div>'; return; }
+    var r=backtest(slots,pre,mon);
+    if(!r){ out.innerHTML='<div class="box bad">고른 상품들이 함께 자료가 있는 기간이 1년보다 짧습니다. 다른 상품을 골라 주세요.</div>'; return; }
+    var dep=backtest([{w:100,fixed:DEPOSIT_RATE}],pre,mon);
+    var gain=r.value-r.principal, irr=r.irr*100, n=r.months.length;
+    STORE.set('l4_pf_rate',String(Math.round(irr*100)/100)); STORE.set('l4_pf_mdd',String(Math.round(-r.mdd*1000)/10));
+    var h='<p class="help" style="margin:10px 0 6px">계산 기간 : '+ym(r.months[0])+' ~ '+ym(r.months[n-1])+' ('+n+'개월) · 처음 '+won(pre)+' + 매달 '+won(mon)+'</p>'
+      +'<div class="grid4">'
+      +'<div class="metric"><div class="l">넣은 돈 (원금)</div><div class="v">'+won(r.principal)+'</div><div class="s">'+n+'개월 동안</div></div>'
+      +'<div class="metric"><div class="l">'+ym(r.months[n-1])+' 지금 가치</div><div class="v">'+won(r.value)+'</div><div class="s '+(gain>=0?'up':'down')+'">'+(gain>=0?'+':'')+won(gain)+' ('+pct(r.value/r.principal-1)+')</div></div>'
+      +'<div class="metric"><div class="l">1년 평균 수익률</div><div class="v '+(irr>=0?'up':'down')+'">연 '+n1(irr)+'%</div><div class="s">매달 넣은 돈까지 고려한 값</div></div>'
+      +'<div class="metric"><div class="l">최대 손실폭</div><div class="v down">'+pct(r.mdd,0)+'</div><div class="s">'+ym(r.peakM)+' → '+ym(r.troughM)+'</div></div>'
+      +'</div>';
+    h+='<div style="font-size:13px;margin:10px 0 4px"><span class="dot" style="background:#2563eb"></span>내 투자 가치 &nbsp; <span class="dot" style="background:#9ca3af"></span>넣은 돈(원금)</div>'
+      +INVEST.lineChart({months:r.months,series:[{color:'#9ca3af',dash:'6 4',values:r.P},{color:'#2563eb',width:3,values:r.V}],yMin:0,unit:'만',height:250,label:'내 투자 가치와 원금'});
+    h+='<div class="tw"><table class="t" style="margin-top:8px"><tr><th>투자 방법</th><th>상품</th><th class="num">비율</th><th class="num">넣은 돈</th><th class="num">지금 가치</th><th class="num">수익률</th></tr>'
+      +slots.map(function(s,i){ var pt=r.parts[i], rr=pt.paid>0?pt.val/pt.paid-1:0;
+        return '<tr><td><span class="dot" style="background:'+SLOTC[i]+'"></span>'+s.t.n+'</td><td>'+(s.fixed!==undefined?'연 '+s.fixed+'%':esc(ITEMS[s.item].name))+'</td><td class="num">'+n1(s.w)+'%</td><td class="num">'+won(pt.paid)+'</td><td class="num">'+won(pt.val)+'</td><td class="num '+(rr>=0?'up':'down')+'">'+pct(rr)+'</td></tr>'; }).join('')
+      +'</table></div>';
+    h+='<div class="box plain" style="margin-top:10px">같은 돈을 <b>모두 예금·적금(연 3%)</b>에 넣었다면 '+won(dep.value)+'입니다. 내 투자 비율은 그보다 <b>'+(r.value>=dep.value?won(r.value-dep.value)+' 더 많습니다':won(dep.value-r.value)+' 적습니다')+'</b>.</div>';
+    /* 결혼 나이 */
+    var o=cond(), ready=['jobAge','preSave','monthlySave','weddingCost'].every(function(k){ return o[k]!==null; });
+    if(ready){
+      var useR=irr, sim=CALC.simulate(Object.assign({},o,{rate:useR})), base=CALC.simulate(Object.assign({},o,{rate:DEPOSIT_RATE}));
+      var cap=(irr>REAL_LIMIT)?CALC.simulate(Object.assign({},o,{rate:REAL_LIMIT})):null;
+      h+='<h3 style="margin:18px 0 8px">이 수익률이 앞으로도 계속된다면, 나는 몇 살에 결혼할까?</h3><div class="grid3">'
+        +'<div class="metric"><div class="l">연 '+n1(irr)+'%일 때 결혼 가능 나이</div><div class="v">'+CALC.ageText(sim.age)+'</div><div class="s">'+((o.wishAge!==null&&sim.age!==null)?'희망 '+n1(o.wishAge)+'세보다 '+(sim.age<=o.wishAge?n1(o.wishAge-sim.age)+'년 빠름':n1(sim.age-o.wishAge)+'년 늦음'):'')+'</div></div>'
+        +'<div class="metric"><div class="l">모두 예금·적금(3%)이라면</div><div class="v">'+CALC.ageText(base.age)+'</div><div class="s">'+((base.age!==null&&sim.age!==null)?(base.age>=sim.age?n1(base.age-sim.age)+'년 차이':''):'')+'</div></div>'
+        +'<div class="metric"><div class="l">'+(cap?'현실적 한계 10%로 계산하면':'3차시 목표 수익률')+'</div><div class="v">'+(cap?CALC.ageText(cap.age):(function(){ var tr=STORE.num('l3_targetRate'); if(tr===null) tr=STORE.num('l2_adj_rate'); return tr===null?'-':'연 '+n1(tr)+'%'; })())+'</div><div class="s">'+(cap?'과거 수익률이 계속된다는 보장은 없음':(irr>=(STORE.num('l3_targetRate')||STORE.num('l2_adj_rate')||0)?'목표를 넘음':'목표보다 낮음'))+'</div></div>'
+        +'</div>'
+        +'<div class="formula">계산 조건 (2차시 4단계) · 취직 '+n1(o.jobAge)+'세, 취직 전 저축 '+won(o.preSave)+', 매달 저축 '+won(o.monthlySave)+', 결혼 비용 '+won(o.weddingCost)+' × 내 비율 '+n1(o.share)+'%, 물가 '+n1(o.infl)+'%</div>';
+      if(irr>REAL_LIMIT) h+='<div class="box" style="margin-top:8px">이 기간의 수익률(연 '+n1(irr)+'%)은 3차시에서 본 <b>현실적 한계 10%</b>보다 높습니다. 주가가 크게 오른 시기였기 때문이며, 앞으로도 그렇다는 보장은 없습니다. 5차시 게임에서는 최대 10%까지만 씁니다.</div>';
+    } else h+='<div class="box bad" style="margin-top:10px">결혼 나이를 계산하려면 1·2차시 값(취직 나이, 취직 전 저축, 월 저축, 결혼 비용)이 필요합니다. 같은 기기에서 <a href="lesson2.html">2차시</a>를 먼저 진행해 주세요.</div>';
+    var ml=STORE.num('l3_maxLoss');
+    if(ml!==null) h+=(-r.mdd*100>ml)
+      ?'<div class="box bad" style="margin-top:8px">투자하는 동안 가장 크게 떨어졌을 때 <b>'+pct(r.mdd,0)+'</b>였습니다. 3차시에서 정한 내 한도 <b>'+n1(ml)+'%</b>를 넘으므로, 그때 겁이 나서 팔아 버렸을 수도 있습니다. 위험한 투자의 비율을 줄여 보세요.</div>'
+      :'<div class="box good" style="margin-top:8px">가장 크게 떨어졌을 때도 '+pct(r.mdd,0)+'로, 3차시에서 정한 내 한도 '+n1(ml)+'% 안에 들어옵니다. 끝까지 버틸 수 있는 비율입니다.</div>';
+    out.innerHTML=h;
   }
-  [1,2,3].forEach(function(i){ $('pf'+i).addEventListener('change',pf); $('pf'+i+'w').addEventListener('input',pf); });
-  document.querySelectorAll('[data-pf]').forEach(function(b){ b.addEventListener('click',function(){
-    b.getAttribute('data-pf').split(',').forEach(function(x,i){ var t=x.split(':'); setField('pf'+(i+1),t[0]); setField('pf'+(i+1)+'w',t[1]); }); pf(); }); });
+  function pfInit(){
+    buildTypes();
+    [1,2,3].forEach(function(i){ $('slot'+i).innerHTML=slotHtml(i); });
+    /* 예전 방식 값 정리 (채권 삭제, stock → 국내 개별 주식) */
+    [1,2,3].forEach(function(i){ var v=STORE.get('l4_pf'+i,''); if(v==='stock') STORE.set('l4_pf'+i,'krStock'); else if(v&&!TM[v]) STORE.set('l4_pf'+i,''); });
+    var o=cond();
+    if(!STORE.has('l4_pf_pre')&&o.preSave!==null) $('pfPre').value=o.preSave; else if(!STORE.has('l4_pf_pre')) $('pfPre').value=1000;
+    if(!STORE.has('l4_pf_mon')&&o.monthlySave!==null) $('pfMon').value=o.monthlySave; else if(!STORE.has('l4_pf_mon')) $('pfMon').value=100;
+    if(o.preSave===null) $('pfPreH').textContent='2차시 값이 없어 예시 금액을 넣었습니다';
+    if(o.monthlySave===null) $('pfMonH').textContent='2차시 값이 없어 예시 금액을 넣었습니다';
+    $('typeTable').innerHTML='<tr><th>투자 방법</th><th>설명</th><th>추천 상품</th><th class="num">고를 수 있는 상품</th></tr>'
+      +TYPES.map(function(t){ var rid=t.fixed===undefined?recommend(t.k):null;
+        return '<tr><td>'+t.n+'</td><td>'+t.d+'</td><td>'+(t.fixed!==undefined?'-':(rid?esc(ITEMS[rid].name):'자료 없음'))+'</td><td class="num">'+(t.fixed!==undefined?'-':TYPEITEMS[t.k].length+'개')+'</td></tr>'; }).join('');
+    document.querySelectorAll('[data-pf]').forEach(function(b){ b.addEventListener('click',function(){
+      var used=[], parts=b.getAttribute('data-pf').split(',');
+      parts.forEach(function(x){ var k=x.split(':')[0]; if(avail(k)) used.push(k); });
+      parts.forEach(function(x,j){ var t=x.split(':'), i=j+1, k=t[0];
+        if(!avail(k)){ k=['deposit','krEtf','krStock','cash'].filter(function(f){ return used.indexOf(f)<0&&avail(f); })[0]||'cash'; used.push(k); }   /* 자료가 없는 투자 방법은 다른 것으로 바꿈 */
+        setField('pf'+i,k); setField('pf'+i+'w',t[1]); setItem(i,TM[k].fixed===undefined?recommend(k):null); });
+      pf(); }); });
+    $('pfPre').addEventListener('input',pf); $('pfMon').addEventListener('input',pf);
+  }
 
   /* ============ 시작 ============ */
-  fillItemList(); cvFill(); pfOpts();
+  fillItemList(); cvFill(); secFill(); pfInit(); [1,2,3].forEach(wireSlot);
   STORE.bind(document);
+  var sv=STORE.get('l4_sector'); if(sv){ [].slice.call($('secPick').options).forEach(function(o){ if(o.value===sv&&!o.disabled) $('secPick').value=sv; }); }
   if(!HAS_ETF) $('etfBanner').innerHTML='<div class="box plain" style="margin-bottom:10px">지금은 <b>회사 주식만</b> 고를 수 있습니다. 실제 ETF(KODEX 200 등)를 함께 비교하려면 선생님이 ETF 자료를 만들어 올려야 합니다. (README의 ETF 자료 만들기 참고)</div>';
   BOWL=loadList('l4_bowl'); CMP=loadList('l4_cmp');
-  if(!BOWL.length&&!CMP.length&&HAS){ BOWL=topIds().filter(function(id){ return ITEMS[id].months[0]===DSTART; }); if(BOWL.length) CMP=[BOWL[0]]; }
+  if(!BOWL.length&&!CMP.length&&HAS){ BOWL=topIds().filter(isFull); var k200=byName('KODEX 200'); CMP=k200?[k200]:(BOWL.length?[BOWL[0]]:[]); }
   var w0=STORE.num('l4_cv_wait'); if(w0!==null) $('cvWait').value=w0;
-  drawLists(); etfDemo(); compare(); fx(); lev(); levReal(); db(); nwDraw(); if(HAS) cv(); pf();
+  drawLists(); etfDemo(); compare(); fx(); usInit(); lev(); levReal(); db(); nwDraw(); if(HAS) cv(); pf();
 })();
 </script>
 </body></html>
