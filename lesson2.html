@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>2차시 · 결혼 비용 버는 시간 줄이기</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+  .chip.danger{background:var(--badbg);border-color:#fecaca;color:var(--bad);font-weight:700}
+  .chip.danger[aria-expanded="true"]{background:#fee2e2;border-color:#f87171}
+  .chip.family{background:var(--goodbg);border-color:#86efac;color:#14532d;font-weight:600}
+  .modal-bg{position:fixed;inset:0;background:rgba(17,24,39,.55);display:flex;align-items:center;justify-content:center;
+    padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));z-index:50}
+  .modal-bg[hidden]{display:none}
+  .modal{word-break:keep-all;background:#fff;border-radius:var(--radius);max-width:560px;width:100%;max-height:100%;overflow-y:auto;padding:18px 18px 16px}
+  .modal h3{margin:0 0 10px}
+  .modal ol{margin:6px 0 10px;padding-left:20px;font-size:14px}
+  .modal ol li{margin-bottom:6px}
+  .modal .sum{font-size:15px;font-weight:700;border:1px solid #bbf7d0;background:var(--goodbg);color:#14532d;border-radius:6px;padding:10px 12px;margin:8px 0}
+</style>
 </head>
 <body>
 <header class="top"><div class="inner">
@@ -159,6 +172,11 @@
     <button type="button" class="chip" data-idea="wish+2">결혼 나이를 2년 늦춘다 (희망 나이 +2세)</button>
     <button type="button" class="chip" data-idea="reset">1차시 값으로 되돌리기</button>
   </div>
+  <div class="chips" style="margin-top:10px">
+    <button type="button" class="chip danger" id="emergencyBtn" aria-expanded="false" aria-controls="parentBtn">나는 어떻게 해서든 적절한 나이에 결혼하기 힘든 비상상황이다!!</button>
+    <button type="button" class="chip family" id="parentBtn" hidden>부모님께 도움을 받는다</button>
+  </div>
+  <div id="parentNote"></div>
   <div class="grid4" style="margin-top:12px">
     <label class="f"><span class="t">취직 나이(세)</span><input type="number" id="a_jobAge" data-store="l2_adj_jobAge" step="0.5"></label>
     <label class="f"><span class="t">취직 전 저축(만원)</span><input type="number" id="a_preSave" data-store="l2_adj_preSave"></label>
@@ -182,6 +200,34 @@
   <div class="btnrow">
     <button type="button" class="btn ghost" onclick="window.print()">결과 인쇄 / PDF 저장</button>
     <a class="btn teal" href="lesson3.html">3차시로 이동 →</a>
+  </div>
+</div>
+
+<div class="modal-bg" id="parentModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <h3 id="pmTitle">부모님께 결혼 자금을 도움받는다면?</h3>
+    <div id="pmForm">
+      <p style="margin:0 0 6px;font-size:14px">다른 사람에게 돈을 대가 없이 받는 것을 <b>증여</b>라고 하고, 받은 사람은 나라에 <b>증여세</b>를 내야 합니다.
+      하지만 부모님이 자녀에게 주는 돈은 아래 금액까지 <b>세금을 내지 않아도 됩니다.</b></p>
+      <ol>
+        <li><b>어른이 된 자녀 기본 공제 5,000만원</b><br>만 19세 이상 자녀는 부모님(엄마·아빠 합쳐서)께 <b>10년 동안 모두 합쳐 5,000만원</b>까지 세금 없이 받을 수 있습니다.</li>
+        <li><b>결혼 공제 1억원</b><br>결혼할 때(혼인신고 전후 2년 안)에 받는 돈은 <b>1억원을 더</b> 세금 없이 받을 수 있습니다. 2024년에 새로 생긴 제도입니다. (아이를 낳을 때 받는 공제와 합쳐서 평생 1억원까지)</li>
+      </ol>
+      <div class="sum">① 5,000만원 + ② 1억원 = 한 사람당 최대 1억 5,000만원까지 세금 없이 도움받을 수 있습니다.</div>
+      <p class="help" style="margin:0 0 12px">그보다 많이 받으면 넘는 금액에 증여세를 내야 합니다. 그리고 부모님께도 노후에 쓸 돈이 필요하다는 것을 꼭 함께 생각해 봅시다. (세법은 바뀔 수 있습니다.)</p>
+      <label class="f"><span class="t">부모님께 지원 받는 금액</span>
+        <div class="unit"><input type="number" id="parentAmt" min="0" max="15000" step="100" placeholder="예: 5000" inputmode="numeric"><span class="u">만원 (최대 15,000만원)</span></div>
+        <span class="help" id="parentErr"></span>
+      </label>
+      <div class="btnrow">
+        <button type="button" class="btn strong" id="parentOk">확인</button>
+        <button type="button" class="btn ghost" id="parentCancel">취소</button>
+      </div>
+    </div>
+    <div id="pmDone" hidden>
+      <div class="box good" id="pmDoneMsg"></div>
+      <div class="btnrow"><button type="button" class="btn strong" id="parentClose">닫기</button></div>
+    </div>
   </div>
 </div>
 
@@ -213,6 +259,7 @@
     $('v_preSave').textContent=(L1.preSave===null)?'-':CALC.won(L1.preSave);
     $('v_pay').textContent=(L1.pay===null)?'-':CALC.won(L1.pay)+' / 월';
     $('v_save').textContent=(L1.save===null)?'-':CALC.won(L1.save)+' / 월';
+    $('v_wishAge').textContent=(L1.wishAge===null)?'-':CALC.n1(L1.wishAge)+'세';
     $('v_save_s').textContent=(L1.save===null||!L1.pay)?'월급 대비 저축률'
       :'월급의 '+CALC.n1(L1.save/L1.pay*100)+'% 를 저축';
     var tg=(L1.cost===null)?null:L1.cost*L1.share/100;
@@ -396,7 +443,9 @@
     var need=(o.wishAge!==null)?CALC.needMonthly(o):null;
     $('a_need').textContent=(need===null)?'-':CALC.won(Math.round(need));
     $('a_need_s').textContent=(need===null||!pay)?'필요한 월 저축액':'월급의 '+CALC.n1(need/pay*100)+'%';
-    $('a_formula').innerHTML='필요한 돈 '+CALC.won(o.weddingCost)+' × '+CALC.n1(o.share)+'% = '+CALC.won(o.weddingCost*o.share/100)
+    var pa=parentAmt();
+    $('a_formula').innerHTML=(pa>0?'부모님 도움 반영 : 신랑·신부 각 '+CALC.won(pa)+' → 결혼 비용에서 '+CALC.won(pa*2)+' 뺀 값<br>':'')
+      +'필요한 돈 '+CALC.won(o.weddingCost)+' × '+CALC.n1(o.share)+'% = '+CALC.won(o.weddingCost*o.share/100)
       +' → 물가 '+CALC.n1(o.infl)+'% 반영 시 '+CALC.won(sim.target)+'<br>'
       +'취직 전 저축 '+CALC.won(o.preSave)+' + 매달 '+CALC.won(o.monthlySave)+' (수익률 '+CALC.n1(o.rate)+'%로 불리기) → '
       +(sim.months===null?'목표 도달 못함':CALC.n1(sim.months/12)+'년 뒤 '+CALC.won(sim.assets));
@@ -411,10 +460,10 @@
     b.addEventListener('click',function(){
       var k=b.getAttribute('data-idea'), set=function(id,v){ $(id).value=Math.round(v*10)/10; STORE.set($(id).getAttribute('data-store'),String(Math.round(v*10)/10)); };
       var g=function(id){ var v=parseFloat($(id).value); return isFinite(v)?v:0; };
-      if(k==='reset'){ fillAdj(true); return; }
+      if(k==='reset'){ fillAdj(true); clearParent(); return; }
       if(k==='jobAge-2') set('a_jobAge',g('a_jobAge')-2);
       if(k==='jobAge-4') set('a_jobAge',g('a_jobAge')-4);
-      if(k==='local') set('a_cost',30000);
+      if(k==='local') set('a_cost',Math.max(0,30000-2*parentAmt()));
       if(k==='cost-20') set('a_cost',g('a_cost')*0.8);
       if(k==='share30') set('a_share',30);
       if(k==='save+20') set('a_save',g('a_save')+g('a_pay')*0.2);
@@ -427,11 +476,67 @@
   ['a_jobAge','a_preSave','a_pay','a_save','a_wishAge','a_cost','a_share','a_rate'].forEach(function(id){
     $(id).addEventListener('input',adjCalc);
   });
+  /* ---- 비상상황 · 부모님 도움 ---- */
+  var PARENT_MAX=15000, lastFocus=null;
+  function parentAmt(){ return STORE.num('l2_adj_parent',0)||0; }
+  function showEmergency(open){
+    $('emergencyBtn').setAttribute('aria-expanded',open?'true':'false');
+    $('parentBtn').hidden=!open;
+    STORE.set('l2_emergency',open?'1':'');
+  }
+  function drawParentNote(){
+    var a=parentAmt();
+    $('parentNote').innerHTML=a>0
+      ?'<div class="box good" style="margin-top:8px">부모님 도움 반영 중 · 신랑·신부 각각 <b>'+CALC.won(a)+'</b>씩 → 결혼 비용 <b>'+CALC.won(a*2)+'</b> 줄임 '
+        +'<button type="button" class="btn ghost sm" id="parentUndo" style="margin-left:6px">부모님 도움 취소</button></div>'
+      :'';
+    var u=$('parentUndo'); if(u) u.addEventListener('click',function(){
+      var c=num('a_cost'); if(c!==null){ $('a_cost').value=Math.round(c+2*parentAmt()); STORE.set('l2_adj_weddingCost',$('a_cost').value); }
+      clearParent(); adjCalc();
+    });
+  }
+  function clearParent(){ STORE.set('l2_adj_parent',''); drawParentNote(); }
+  function openParent(){
+    lastFocus=document.activeElement;
+    $('pmForm').hidden=false; $('pmDone').hidden=true; $('parentErr').textContent='';
+    $('parentAmt').value=parentAmt()>0?parentAmt():'';
+    $('parentModal').hidden=false; $('parentAmt').focus();
+  }
+  function closeParent(){ $('parentModal').hidden=true; if(lastFocus) lastFocus.focus(); }
+  $('emergencyBtn').addEventListener('click',function(){
+    showEmergency($('emergencyBtn').getAttribute('aria-expanded')!=='true');
+  });
+  $('parentBtn').addEventListener('click',openParent);
+  $('parentCancel').addEventListener('click',closeParent);
+  $('parentClose').addEventListener('click',closeParent);
+  $('parentModal').addEventListener('click',function(e){ if(e.target===$('parentModal')) closeParent(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!$('parentModal').hidden) closeParent(); });
+  $('parentOk').addEventListener('click',function(){
+    var v=parseFloat($('parentAmt').value);
+    if(!isFinite(v)||v<=0){ $('parentErr').innerHTML='<span style="color:#b91c1c">지원 받는 금액을 만원 단위로 적어 주세요.</span>'; return; }
+    if(v>PARENT_MAX){ $('parentErr').innerHTML='<span style="color:#b91c1c">세금 없이 받을 수 있는 금액은 <b>최대 15,000만원(1억 5천만원)</b>입니다. 15,000 이하로 적어 주세요.</span>'; return; }
+    var cost=num('a_cost');
+    if(cost===null){ $('parentErr').innerHTML='<span style="color:#b91c1c">먼저 4단계의 결혼 비용 칸을 채워 주세요.</span>'; return; }
+    v=Math.round(v);
+    var before=cost+2*parentAmt();              /* 전에 반영한 도움은 되돌린 뒤 새 금액으로 다시 계산 */
+    var after=Math.max(0,before-2*v);
+    $('a_cost').value=Math.round(after); STORE.set('l2_adj_weddingCost',String(Math.round(after)));
+    STORE.set('l2_adj_parent',String(v));
+    $('pmDoneMsg').innerHTML='<b>신랑, 신부 같은 금액만큼 지원 받아 2배로 결혼 비용이 내려갑니다.</b><br>'
+      +'부모님 지원 '+CALC.won(v)+' × 2명 = <b>'+CALC.won(2*v)+'</b> 줄어듦<br>'
+      +'결혼 비용 '+CALC.won(before)+' → <b>'+CALC.won(after)+'</b>'
+      +(before-2*v<0?'<br>지원 금액이 결혼 비용보다 많아 결혼 비용을 0원으로 했습니다.':'');
+    $('pmForm').hidden=true; $('pmDone').hidden=false; $('parentClose').focus();
+    drawParentNote(); adjCalc();
+  });
+
   $('infl').addEventListener('input',function(){ topCalc(); adjCalc(); [1,2,3].forEach(function(i){ if(results[i]) calcScen(i); }); });
-  $('reloadL1').addEventListener('click',function(){ topCalc(); fillAdj(true); });
+  $('reloadL1').addEventListener('click',function(){ topCalc(); fillAdj(true); clearParent(); });
 
   STORE.bind(document);
   topCalc(); fillAdj(false);
+  if(STORE.get('l2_emergency')==='1'||parentAmt()>0) showEmergency(true);
+  drawParentNote();
   [1,2,3].forEach(function(i){ showRatio(i); if($('s'+i+'rate').value!==''&&$('s'+i+'save').value!=='') calcScen(i); });
 })();
 </script>

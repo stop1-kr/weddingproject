@@ -45,7 +45,7 @@
 <div class="card">
   <h3 style="margin-top:0">오늘의 목표</h3>
   <p class="lead" style="margin-bottom:0">2차시에서 결혼 나이를 맞추려면 <b>어느 정도의 투자 수익률</b>이 필요한지 알아봤습니다.
-  오늘은 <b>주식</b>이 무엇인지 배우고, 실제 회사 두 곳에 <b>2010년부터 투자했다면</b> 어땠을지 과거 자료로 확인해 봅니다.
+  오늘은 <b>주식</b>이 무엇인지 배우고, 실제 회사 두 곳에 <b><span class="startYear">2020</span>년부터 투자했다면</b> 어땠을지 과거 자료로 확인해 봅니다.
   <b>얼마나 벌 수 있는지</b>뿐 아니라 <b>얼마나 잃을 수 있는지</b>도 함께 봅니다.</p>
 </div>
 
@@ -118,7 +118,7 @@
   <div class="box plain" style="margin-top:10px">
     <b>나이스비즈인포에서 회사 정보 찾기</b><br>
     ① 아래 버튼으로 <b>나이스비즈인포(www.nicebizinfo.com)</b>를 새 창으로 엽니다. ② 검색창에 회사 이름을 넣어 <b>기업 규모, 산업명, 산업 내 순위, 산업 내 위치(활동성·수익성·안정성·성장성·규모)</b>를 찾습니다.
-    ③ 아래 메모 칸에 그대로 옮겨 적습니다. <b>시가총액 10위 안의 회사가 아니어도</b> 내가 궁금한 회사를 직접 찾아 적어도 됩니다.
+    ③ 아래 메모 칸에 옮겨 적고, 산업 내 위치 5가지는 화면에 나온 단계(최하위~최상위)를 골라 줍니다. <b>시가총액 10위 안의 회사가 아니어도</b> 내가 궁금한 회사를 직접 찾아 적어도 됩니다.
     <div class="btnrow"><a class="btn teal" href="https://www.nicebizinfo.com" target="_blank" rel="noopener">나이스비즈인포 열기 (새 창)</a></div>
   </div>
 </div>
@@ -134,14 +134,14 @@
       <label class="f"><span class="t">산업명</span><input type="text" id="m1_ind" data-store="l3_m1_industry" placeholder="예: 반도체 제조업"></label>
     </div>
     <label class="f"><span class="t">산업 내 순위</span><input type="text" id="m1_rank" data-store="l3_m1_rank" placeholder="예: 1위 (같은 산업 500곳 중)"></label>
-    <div class="rowhelp" style="margin:-4px 0 6px">산업 내 위치 (화면에 표시된 단계 그대로 적기)</div>
+    <div class="rowhelp" style="margin:-4px 0 6px">산업 내 위치 (화면에 표시된 단계를 골라 주세요)</div>
     <div class="grid2">
-      <label class="f"><span class="t">활동성</span><input type="text" data-store="l3_m1_act" placeholder="예: 상위"></label>
-      <label class="f"><span class="t">수익성</span><input type="text" data-store="l3_m1_prof" placeholder="예: 중위"></label>
-      <label class="f"><span class="t">안정성</span><input type="text" data-store="l3_m1_stab" placeholder="예: 상위"></label>
-      <label class="f"><span class="t">성장성</span><input type="text" data-store="l3_m1_grow" placeholder="예: 하위"></label>
+      <label class="f"><span class="t">활동성</span><select class="lvl" data-store="l3_m1_act"></select></label>
+      <label class="f"><span class="t">수익성</span><select class="lvl" data-store="l3_m1_prof"></select></label>
+      <label class="f"><span class="t">안정성</span><select class="lvl" data-store="l3_m1_stab"></select></label>
+      <label class="f"><span class="t">성장성</span><select class="lvl" data-store="l3_m1_grow"></select></label>
     </div>
-    <label class="f"><span class="t">규모</span><input type="text" data-store="l3_m1_scale" placeholder="예: 최상위"></label>
+    <label class="f"><span class="t">규모</span><select class="lvl" data-store="l3_m1_scale"></select></label>
   </div>
   <div class="card memo" id="memo2">
     <h4><span class="dot" style="background:#c2410c"></span>회사 2</h4>
@@ -152,14 +152,14 @@
       <label class="f"><span class="t">산업명</span><input type="text" id="m2_ind" data-store="l3_m2_industry" placeholder="예: 반도체 제조업"></label>
     </div>
     <label class="f"><span class="t">산업 내 순위</span><input type="text" id="m2_rank" data-store="l3_m2_rank" placeholder="예: 2위 (같은 산업 500곳 중)"></label>
-    <div class="rowhelp" style="margin:-4px 0 6px">산업 내 위치 (화면에 표시된 단계 그대로 적기)</div>
+    <div class="rowhelp" style="margin:-4px 0 6px">산업 내 위치 (화면에 표시된 단계를 골라 주세요)</div>
     <div class="grid2">
-      <label class="f"><span class="t">활동성</span><input type="text" data-store="l3_m2_act" placeholder="예: 상위"></label>
-      <label class="f"><span class="t">수익성</span><input type="text" data-store="l3_m2_prof" placeholder="예: 중위"></label>
-      <label class="f"><span class="t">안정성</span><input type="text" data-store="l3_m2_stab" placeholder="예: 상위"></label>
-      <label class="f"><span class="t">성장성</span><input type="text" data-store="l3_m2_grow" placeholder="예: 하위"></label>
+      <label class="f"><span class="t">활동성</span><select class="lvl" data-store="l3_m2_act"></select></label>
+      <label class="f"><span class="t">수익성</span><select class="lvl" data-store="l3_m2_prof"></select></label>
+      <label class="f"><span class="t">안정성</span><select class="lvl" data-store="l3_m2_stab"></select></label>
+      <label class="f"><span class="t">성장성</span><select class="lvl" data-store="l3_m2_grow"></select></label>
     </div>
-    <label class="f"><span class="t">규모</span><input type="text" data-store="l3_m2_scale" placeholder="예: 최상위"></label>
+    <label class="f"><span class="t">규모</span><select class="lvl" data-store="l3_m2_scale"></select></label>
   </div>
 </div>
 
@@ -195,7 +195,7 @@
 <!-- ========== 4단계 ========== -->
 <h2>4단계 · 내가 감당할 수 있는 최대 손실 정하기</h2>
 <div class="card">
-  <p class="lead" style="margin-top:0">투자한 돈이 줄어들 때 <b>최대 몇 %까지 손실을 참을 수 있는지</b> 정해 봅시다. 여기서 정한 값은 6단계 결과에서 '끝까지 투자할 수 있었는가?'를 판단하는 기준이 됩니다.</p>
+  <p class="lead" style="margin-top:0">투자한 돈이 줄어들 때 <b>최대 몇 %까지 손실을 참을 수 있는지</b> 정해 봅시다. 여기서 정한 값은 5단계 결과에서 '끝까지 투자할 수 있었는가?'를 판단하는 기준이 됩니다.</p>
   <label class="f"><span class="t">내가 감당할 수 있는 최대 손실 (%)</span>
     <div class="lim">
       <div class="unit" style="width:150px"><input type="number" id="maxLoss" data-store="l3_maxLoss" min="1" max="99" step="1" placeholder="예: 20"><span class="u">%</span></div>
@@ -213,12 +213,15 @@
 </div>
 
 <!-- ========== 5단계 ========== -->
-<h2>5단계 · 2010년부터 투자했다면? 과거 자료로 확인하기</h2>
+<h2>5단계 · <span class="startYear">2020</span>년부터 투자했다면? 과거 자료로 확인하기</h2>
 <div class="card">
-  <p class="lead" style="margin-top:0">비교해 볼 회사 2곳을 고르면 <b>2010년 1월</b>부터 <b>2026년 9월</b>까지 가지고 있었을 때의 결과를 계산합니다. (회사 목록은 시가총액 TOP 10과 선생님이 추가한 회사입니다.)</p>
+  <p class="lead" style="margin-top:0">비교해 볼 회사 2곳을 고르면 <b id="periodStart">2020년 1월</b>부터 <b id="periodEnd">2026년 9월</b>까지 가지고 있었을 때의 결과를 계산합니다. (<span id="listNote">회사 목록은 시가총액 TOP 10과 선생님이 추가한 회사입니다.</span>)</p>
   <div class="grid2">
-    <label class="f"><span class="t"><span class="dot" style="background:#2563eb"></span>회사 1</span><select id="pick1" data-store="l3_pick1"></select></label>
-    <label class="f"><span class="t"><span class="dot" style="background:#c2410c"></span>회사 2</span><select id="pick2" data-store="l3_pick2"></select></label>
+    <div><label class="f" style="margin-bottom:6px"><span class="t"><span class="dot" style="background:#2563eb"></span>회사 1</span><select id="pick1" data-store="l3_pick1"></select></label>
+      <input type="text" id="q1" list="coList" placeholder="회사 이름으로 찾기 (예: 카카오)" autocomplete="off" aria-label="회사 1 이름으로 찾기"></div>
+    <div><label class="f" style="margin-bottom:6px"><span class="t"><span class="dot" style="background:#c2410c"></span>회사 2</span><select id="pick2" data-store="l3_pick2"></select></label>
+      <input type="text" id="q2" list="coList" placeholder="회사 이름으로 찾기 (예: 기아)" autocomplete="off" aria-label="회사 2 이름으로 찾기"></div>
+    <datalist id="coList"></datalist>
   </div>
   <div class="btnrow"><button type="button" class="btn ghost sm" id="fromMemo">메모에 적은 회사 불러오기</button></div>
   <div id="pickMsg" class="help"></div>
@@ -253,6 +256,19 @@
   var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
   var DATA=window.STOCK_DATA||null;
   var HAS=!!(DATA&&DATA.companies&&DATA.ranking);
+  /* 전체 회사 자료(--all)는 용량을 줄이려고 달 목록을 한 번만 저장함 → 회사마다 months/prices 로 풀어 줌 */
+  if(HAS&&DATA.months){
+    Object.keys(DATA.companies).forEach(function(c){
+      var o=DATA.companies[c];
+      if(!o.months){ o.prices=o.p; o.months=DATA.months.slice(o.s,o.s+o.p.length); }
+    });
+  }
+  var DSTART='2020-01', DEND='2026-09', NCO=0;
+  if(HAS){
+    var cs=Object.keys(DATA.companies); NCO=cs.length;
+    cs.forEach(function(c,i){ var ms=DATA.companies[c].months; if(!ms||!ms.length) return;
+      if(i===0||ms[0]<DSTART) DSTART=ms[0]; if(i===0||ms[ms.length-1]>DEND) DEND=ms[ms.length-1]; });
+  }
   var COLORS=['#2563eb','#c2410c'];
 
   /* 주식 조각 그림 */
@@ -298,7 +314,8 @@
         gapCard='<div class="metric"><div class="l">희망 결혼 나이와 비교</div><div class="v">'+gt+'</div><div class="s">희망 '+CALC.n1(o.wishAge)+'세</div></div>';
       }
       cond='<div class="formula">2차시 4단계 조건 · 취직 '+CALC.n1(o.jobAge)+'세, 취직 전 저축 '+CALC.won(o.preSave)
-        +', 매달 저축 '+CALC.won(o.monthlySave)+', 결혼 비용 '+CALC.won(o.weddingCost)+' × 내 비율 '+CALC.n1(o.share)+'%, 물가 '+CALC.n1(o.infl)+'%</div>';
+        +', 매달 저축 '+CALC.won(o.monthlySave)+', 결혼 비용 '+CALC.won(o.weddingCost)
+        +((STORE.num('l2_adj_parent',0)||0)>0?'(부모님 도움 신랑·신부 각 '+CALC.won(STORE.num('l2_adj_parent'))+' 반영)':'')+' × 내 비율 '+CALC.n1(o.share)+'%, 물가 '+CALC.n1(o.infl)+'%</div>';
     }
 
     var mx=15, pos=function(v){return Math.max(0,Math.min(100,v/mx*100));};
@@ -306,10 +323,10 @@
       +'<div class="zone" style="left:0;width:'+pos(3)+'%;background:#bbf7d0"></div>'
       +'<div class="zone" style="left:'+pos(3)+'%;width:'+(pos(10)-pos(3))+'%;background:#fde68a"></div>'
       +'<div class="zone" style="left:'+pos(10)+'%;width:'+(100-pos(10))+'%;background:#fecaca"></div>'
-      +'<div class="tick" style="left:'+pos(3)+'%"></div><div class="tick" style="left:'+pos(9.2)+'%"></div><div class="tick" style="left:'+pos(10)+'%"></div>';
+      +'<div class="tick" style="left:'+pos(3)+'%"></div><div class="tick" style="left:'+pos(10)+'%"></div>';
     [0,5,10,15].forEach(function(v){ scale+='<div class="ax" style="left:'+pos(v)+'%">'+v+'%</div>'; });
     scale+='<div class="me" style="left:'+pos(rv)+'%">내 목표 '+CALC.n1(rv)+'%'+(rv>mx?' →':'')+'</div>';
-    scale+='</div><div class="help">초록 : 적금 수준(3% 이하) · 노랑 : 도전 구간(3~10%) · 빨강 : 현실적 한계(10%) 초과 &nbsp;|&nbsp; 세로선 : 적금 3%, 전문 투자업체 5년 평균 9.2%, 현실적 한계 10%</div>';
+    scale+='</div><div class="help">초록 : 적금 수준(3% 이하) · 노랑 : 도전 구간(3~10%) · 빨강 : 현실적 한계(10%) 초과 &nbsp;|&nbsp; 세로선 : 적금 3%, 현실적 한계 10%</div>';
 
     $('reqBody').innerHTML=
       '<div class="grid3">'
@@ -385,6 +402,27 @@
       });
     }
     $('pick1').innerHTML=opts; $('pick2').innerHTML=opts;
+    if(HAS){
+      var seen={}, dl='';
+      Object.keys(DATA.companies).forEach(function(c){ var nm=DATA.companies[c].name; if(!seen[nm]){ seen[nm]=1; dl+='<option value="'+esc(nm)+'">'; } });
+      $('coList').innerHTML=dl;
+    }
+  }
+  [1,2].forEach(function(i){
+    function go(final){
+      var nm=$('q'+i).value.trim(); if(!nm) return;
+      var c=exactCode(nm)||(final?matchCode(nm):null);
+      if(c){ setField('pick'+i,c); $('pickMsg').textContent=''; runAnalysis(); }
+      else if(final) $('pickMsg').textContent='"'+nm+'" 은(는) 주가 자료에 없습니다. 이름을 다시 확인해 주세요.';
+    }
+    $('q'+i).addEventListener('input',function(){ go(false); });
+    $('q'+i).addEventListener('change',function(){ go(true); });
+  });
+  function exactCode(name){
+    var n=normName(name); if(!n||!HAS) return null;
+    var codes=Object.keys(DATA.companies);
+    for(var i=0;i<codes.length;i++) if(normName(DATA.companies[codes[i]].name)===n) return codes[i];
+    return null;
   }
   function normName(s){ return String(s||'').toLowerCase().replace(/[\s()\-\.]/g,''); }
   function matchCode(name){
@@ -434,7 +472,7 @@
     head+='</tr>';
     var body='';
     body+=row('분석 기간',function(a){
-      var late=(a.first>'2010-01')?'<span class="sub">2010년 1월 자료가 없어 '+ymText(a.first)+'부터 계산</span>':'';
+      var late=(a.first>DSTART)?'<span class="sub">'+ymText(DSTART)+' 자료가 없어 '+ymText(a.first)+'부터 계산 (이 무렵 상장한 회사)</span>':'';
       return ymText(a.first)+' ~ '+ymText(a.last)+'<span class="sub">'+a.years.toFixed(1)+'년 동안</span>'+late; });
     body+=row('100만원을 처음 투자했다면, 지금',function(a){
       return '<b>'+Math.round(100*(1+a.total)).toLocaleString()+'만원</b><span class="sub">전체 수익률 '+INVEST.pct(a.total,0)+'</span>'; });
@@ -445,11 +483,12 @@
     body+=row('최대 손실폭 (고점에서 가장 많이 떨어진 정도)',function(a){
       return '<b class="down">'+INVEST.pct(a.mdd)+'</b><span class="sub">'+ymText(a.peakM)+' 고점 → '+ymText(a.troughM)+' 저점</span>'
         +'<span class="sub">'+(a.recoverM?'고점을 다시 넘기까지 '+Math.round(a.recoverMonths/12*10)/10+'년 ('+ymText(a.recoverM)+')':'아직 그때의 고점을 되찾지 못함')+'</span>'; });
-    body+=row('최대 손실폭에서 나왔을 때 수익률',function(a){
+    body+=row('내 최대 손실 한도에서 팔고 나왔을 때 수익률',function(a){
       if(limit===null) return '<span class="sub">4단계에서 최대 손실을 정해 주세요</span>';
       if(a.success) return '<b class="up">끝까지 투자 성공</b><span class="sub">최대 손실폭 '+INVEST.pctAbs(a.mdd)+'가 내 한도 '+CALC.n1(limit)+'% 이내여서 끝까지 들고 있을 수 있었음 (전체 수익률 '+INVEST.pct(a.total,0)+')</span>';
-      return '<b class="'+cls(a.retAtTrough)+'">'+INVEST.pct(a.retAtTrough)+'</b><span class="sub">저점('+ymText(a.troughM)+')에서 팔고 나왔다면, 처음 투자한 돈 대비</span>'
-        +'<span class="sub">내 한도 '+CALC.n1(limit)+'%를 처음 넘은 '+ymText(a.exitM)+'에 팔았다면 '+INVEST.pct(a.exitRet)+'</span>'; });
+      return '<b class="'+cls(a.exitRet)+'">'+INVEST.pct(a.exitRet)+'</b>'
+        +'<span class="sub">'+ymText(a.exitPeakM)+' 고점에서 내 한도 '+CALC.n1(limit)+'%만큼 떨어진 '+ymText(a.exitM)+'에 팔고 나왔다면, 처음 투자한 돈 대비</span>'
+        +'<span class="sub">100만원 → '+Math.round(100*(1+a.exitRet)).toLocaleString()+'만원</span>'; });
     body+=row('평균 연이율 (1년 평균 수익률)',function(a){
       return '<b class="'+cls(a.cagr)+'">'+INVEST.pct(a.cagr)+'</b><span class="sub">연평균 복리</span>'; });
     body+=row('내가 얻어야 하는 수익률('+(target===null?'-':CALC.n1(target)+'%')+')과 비교',function(a){
@@ -480,7 +519,20 @@
       +'자료 출처 : '+esc(DATA.source||'')+'. <b>과거에 많이 올랐다고 앞으로도 오른다는 보장은 없습니다.</b></div>';
   }
 
+  /* 산업 내 위치 : 최하위~최상위 중에서 고르기 (예전에 직접 적은 값이 있으면 목록에 함께 보여 줌) */
+  var LEVELS=['최하위','하위','중위','상위','최상위'];
+  document.querySelectorAll('select.lvl').forEach(function(el){
+    var old=STORE.get(el.getAttribute('data-store'));
+    var h='<option value="">선택</option>'+LEVELS.map(function(v){ return '<option>'+v+'</option>'; }).join('');
+    if(old&&LEVELS.indexOf(old)<0) h+='<option value="'+esc(old)+'">'+esc(old)+' (직접 적은 값)</option>';
+    el.innerHTML=h;
+  });
+
   /* ========== 시작 ========== */
+  document.querySelectorAll('.startYear').forEach(function(el){ el.textContent=DSTART.slice(0,4); });
+  $('periodStart').textContent=ymText(DSTART); $('periodEnd').textContent=ymText(DEND);
+  if(HAS&&DATA.all) $('listNote').textContent='코스피·코스닥 상장 회사 '+NCO.toLocaleString()+'곳 중에서 고를 수 있습니다. 회사 이름으로 찾아보세요.';
+  else if(HAS) $('listNote').textContent='회사 목록은 시가총액 TOP 10과 선생님이 추가한 회사, 모두 '+NCO+'곳입니다.';
   fillPicks();
   STORE.bind(document);
   renderRank();
