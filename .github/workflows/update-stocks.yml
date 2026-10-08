@@ -15,6 +15,7 @@ on:
           - "주식 (TOP10 + extra_companies.txt)"
           - "주식 (코스피·코스닥 전체)"
           - "ETF (etf_list.txt, 4차시)"
+          - "미국 주식·환율 (us_list.txt, 4차시)"
 
 permissions:
   contents: write
@@ -27,17 +28,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install requests
+      - run: pip install requests yfinance
       - name: 자료 만들기
         env:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
         run: |
           case "${{ inputs.kind }}" in
-            *전체*) OPT="--all" ;;
-            ETF*)   OPT="--etf" ;;
-            *)      OPT="" ;;
+            미국*)  python tools/build_us.py --asof "${{ inputs.asof }}" ;;
+            *전체*) python tools/build_stocks.py --asof "${{ inputs.asof }}" --all ;;
+            ETF*)   python tools/build_stocks.py --asof "${{ inputs.asof }}" --etf ;;
+            *)      python tools/build_stocks.py --asof "${{ inputs.asof }}" ;;
           esac
-          python tools/build_stocks.py --asof "${{ inputs.asof }}" $OPT
       - name: 결과 저장(commit)
         run: |
           git config user.name "github-actions"
