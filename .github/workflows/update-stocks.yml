@@ -34,11 +34,18 @@ jobs:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
         run: |
           case "${{ inputs.kind }}" in
-            미국*)  python tools/build_us.py --asof "${{ inputs.asof }}" ;;
-            *전체*) python tools/build_stocks.py --asof "${{ inputs.asof }}" --all ;;
-            ETF*)   python tools/build_stocks.py --asof "${{ inputs.asof }}" --etf ;;
-            *)      python tools/build_stocks.py --asof "${{ inputs.asof }}" ;;
+            미국*)  CMD="python tools/build_us.py --asof ${{ inputs.asof }}" ;;
+            *전체*) CMD="python tools/build_stocks.py --asof ${{ inputs.asof }} --all" ;;
+            ETF*)   CMD="python tools/build_stocks.py --asof ${{ inputs.asof }} --etf" ;;
+            *)      CMD="python tools/build_stocks.py --asof ${{ inputs.asof }}" ;;
           esac
+          # 공공데이터포털이 해외(GitHub 서버)에서 오는 접속을 가끔 받지 않아서, 실패하면 5분 뒤 다시 해 봅니다 (최대 3번)
+          for i in 1 2 3; do
+            if $CMD; then exit 0; fi
+            if [ $i -lt 3 ]; then echo "=== 실패 ($i/3) → 5분 뒤 다시 시도합니다 ==="; sleep 300; fi
+          done
+          echo "=== 3번 모두 실패했습니다. 잠시 뒤 Re-run 하거나, README의 '내 컴퓨터에서 만들기'를 이용하세요 ==="
+          exit 1
       - name: 결과 저장(commit)
         run: |
           git config user.name "github-actions"
