@@ -7,6 +7,10 @@ on:
         description: "시가총액 순위 기준일 (YYYYMMDD)"
         required: true
         default: "20260930"
+      all:
+        description: "코스피·코스닥 상장 회사 전체 저장 (체크하면 extra_companies.txt 대신 전체)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -21,7 +25,7 @@ jobs:
           python-version: "3.12"
       - run: pip install requests
       - name: 주가 자료 만들기
-        run: python tools/build_stocks.py --asof "${{ github.event.inputs.asof }}"
+        run: python tools/build_stocks.py --asof "${{ inputs.asof }}" ${{ inputs.all && '--all' || '' }}
         env:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
       - name: 결과 저장(commit)
