@@ -115,7 +115,7 @@
         if(v===null){ open=false; return; }
         d+=(open?'L':'M')+X(k).toFixed(1)+' '+Y(v).toFixed(1)+' '; open=true;
       });
-      g+='<path d="'+d+'" fill="none" stroke="'+s.color+'" stroke-width="2" stroke-linejoin="round"/>';
+      g+='<path d="'+d+'" fill="none" stroke="'+s.color+'" stroke-width="'+(s.width||2)+'"'+(s.dash?' stroke-dasharray="'+s.dash+'"':'')+' stroke-linejoin="round"/>';
     });
     return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="'+(o.label||'그래프')+'" style="display:block">'+g+'</svg>';
   }

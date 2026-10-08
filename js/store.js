@@ -60,7 +60,9 @@
         'l2_adj_wishAge','l2_adj_weddingCost','l2_adj_share','l2_adj_rate','l2_adj_plan'],
     l3:['l3_basic','l3_m1_name','l3_m1_size','l3_m1_industry','l3_m1_rank','l3_m1_act','l3_m1_prof','l3_m1_stab','l3_m1_grow','l3_m1_scale',
         'l3_m2_name','l3_m2_size','l3_m2_industry','l3_m2_rank','l3_m2_act','l3_m2_prof','l3_m2_stab','l3_m2_grow','l3_m2_scale',
-        'l3_maxLoss','l3_pick1','l3_pick2','l3_memo'],l4:['l4_memo'],l5:['l5_memo']
+        'l3_maxLoss','l3_pick1','l3_pick2','l3_memo'],
+    l4:['l4_etf_memo','l4_us_memo','l4_risk_memo','l4_cash_memo','l4_pf1','l4_pf1w','l4_pf2','l4_pf2w','l4_pf3','l4_pf3w','l4_memo'],
+    l5:['l5_result','l5_memo']
   };
   window.STORE=S;
 })();
