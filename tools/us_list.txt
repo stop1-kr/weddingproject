@@ -1,0 +1,13 @@
+# 4차시에서 쓸 미국 종목 (시가총액 TOP10은 자동으로 들어갑니다)
+# 형식 : 티커  이름  종류      (종류 = 주식 / ETF / 코인 / 금,  생략하면 주식)
+# 티커는 야후 파이낸스(finance.yahoo.com)에서 검색했을 때 나오는 기호와 똑같이 적습니다.
+SPY   미국 S&P500 ETF (SPY)   ETF
+QQQ   미국 나스닥100 ETF (QQQ)  ETF
+BTC-USD  비트코인   코인
+ETH-USD  이더리움   코인
+GC=F  국제 금값   금
+KO    코카콜라
+NKE   나이키
+DIS   디즈니
+MCD   맥도날드
+SBUX  스타벅스
