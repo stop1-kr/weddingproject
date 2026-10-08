@@ -12,6 +12,7 @@
   python tools/build_stocks.py --key 일반_인증키
   (또는 환경변수 DATA_GO_KR_KEY 에 키를 넣어 두고  python tools/build_stocks.py )
   python tools/build_stocks.py --check      ← 자료는 만들지 않고 API 연결만 점검
+  python tools/build_stocks.py --etf        ← 4차시용 ETF 자료 (tools/etf_list.txt 의 ETF) → data/etf.json, js/etf-data.js
   python tools/build_stocks.py --all        ← 코스피·코스닥 상장 회사 '전체'를 저장
                                               (extra_companies.txt 는 필요 없음, 호출 약 300~400건)
 
@@ -32,6 +33,8 @@ except ImportError:
     sys.exit("requests 라이브러리가 필요합니다.  pip install requests")
 
 BASE = "https://apis.data.go.kr/1160100/GetStockSecuritiesInfoService_V2/getStockPriceInfo_V2"
+# 4차시 ETF 자료 : 「금융위원회_증권상품시세정보」 (data.go.kr에서 따로 활용신청 필요, 같은 인증키 사용)
+ETF_BASE = "https://apis.data.go.kr/1160100/service/GetSecuritiesProductInfoService/getETFPriceInfo"
 PREF = re.compile(r"\d?우[A-C]?(\(전환\))?$")      # 우선주 이름 끝 (예: 삼성전자우, 현대차2우B)
 SPLIT_THRESHOLD = 0.31                              # 하루 변동이 이 값보다 크면 액면분할/병합으로 보고 보정
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -97,14 +100,14 @@ def num(v, default=0.0):
         return default
 
 
-def call(params, key, retries=4):
+def call(params, key, retries=4, base=None):
     p = {"serviceKey": key, "resultType": "json"}
     p.update(params)
     last = None
     for t in range(retries):
         try:
             try:
-                r = requests.get(BASE, params=p, timeout=60)
+                r = requests.get(base or BASE, params=p, timeout=60)
             except requests.exceptions.RequestException as e:
                 raise ApiError("서버에 접속하지 못했습니다(네트워크/해외 접속 차단 가능성): %s" % mask(e))
             text = r.text
@@ -139,10 +142,10 @@ def call(params, key, retries=4):
     raise last
 
 
-def fetch_all(key, params, rows=1000):
+def fetch_all(key, params, rows=1000, base=None):
     out, page = [], 1
     while True:
-        items, total = call(dict(params, numOfRows=rows, pageNo=page), key)
+        items, total = call(dict(params, numOfRows=rows, pageNo=page), key, base=base)
         out += items
         if not items or len(out) >= total:
             break
@@ -347,6 +350,80 @@ def build_all(key, rows_asof, start, asof, include_preferred):
     return companies, months
 
 
+def build_etf(key, a, asof):
+    names = read_extras(a.etf_list)
+    if not names:
+        sys.exit("ETF 목록이 비어 있습니다: %s" % a.etf_list)
+    print("ETF 시세 주소:", a.etf_url)
+    try:
+        test = fetch_all(key, {"basDt": asof}, base=a.etf_url)
+    except ApiError as e:
+        print("\n[중단] ETF 시세를 받지 못했습니다.\n  " + mask(e))
+        print("  → data.go.kr 에서 「금융위원회_증권상품시세정보」를 활용신청했는지 확인하세요. (주식 시세와 별도 신청)")
+        sys.exit(1)
+    by_name = {}
+    for r in test:
+        by_name.setdefault(str(field(r, "itmsNm", default="")).strip(), norm_code(field(r, "srtnCd", "shotnIsin")))
+    want = {}
+    for nm in names:
+        if nm in by_name:
+            want[by_name[nm]] = nm
+        else:
+            key_nm = nm.replace(" ", "")
+            near = [k for k in by_name if key_nm.lower() in k.replace(" ", "").lower()][:5]
+            print("  [건너뜀] '%s' 이름이 기준일 ETF 자료에 없습니다. 비슷한 이름: %s" % (nm, near))
+    print("ETF %d개 자료 받는 중 (월말 자료)" % len(want))
+    months, snaps = [], []
+    for y, m in month_list(a.start, asof):
+        d = last_trading_day(key, y, m, asof)
+        if not d:
+            continue
+        snap = {}
+        for r in fetch_all(key, {"basDt": d}, base=a.etf_url):
+            c = norm_code(field(r, "srtnCd", "shotnIsin"))
+            if c in want:
+                p = num(field(r, "clpr", "clsPrc"), 0)
+                sh = num(field(r, "stLstgCnt", "lstgStCnt", default=0))
+                if sh <= 0 and p > 0:
+                    sh = num(field(r, "mrktTotAmt", default=0)) / p
+                if p > 0:
+                    snap[c] = (p, sh)
+        months.append("%d-%02d" % (y, m))
+        snaps.append(snap)
+        print("  %s (%s) ETF %d개" % (months[-1], d, len(snap)))
+        time.sleep(0.15)
+    etfs = {}
+    for code, nm in want.items():
+        idx = [i for i, s in enumerate(snaps) if code in s]
+        if not idx:
+            print("  [실패] %s: 월말 자료가 없습니다" % nm)
+            continue
+        closes, shares, prev = [], [], None
+        for i in range(idx[0], idx[-1] + 1):
+            prev = snaps[i].get(code, prev)
+            closes.append(prev[0])
+            shares.append(prev[1])
+        if len(closes) < 13:
+            print("  [건너뜀] %s: 자료가 1년 미만" % nm)
+            continue
+        adj, ev = adjust_by_shares(closes, shares)
+        etfs[code] = {"name": nm, "s": idx[0], "p": [round(v) if v >= 1000 else round(v, 2) for v in adj]}
+        print("  %s %-22s %s ~ %s (%d개월)%s" % (code, nm, months[idx[0]], months[idx[-1]], len(closes), "  분할 보정" if ev else ""))
+    if not etfs:
+        sys.exit("ETF 자료를 하나도 만들지 못했습니다. (기존 파일은 그대로 둡니다)")
+    out = {"generatedAt": dt.date.today().isoformat(), "asof": asof,
+           "source": "금융위원회_증권상품시세정보 (공공데이터포털)", "note": "월말 종가 기준, 분배금 미포함",
+           "months": months, "etfs": etfs}
+    text = json.dumps(out, ensure_ascii=False, separators=(",", ":"))
+    oj = os.path.join(ROOT, "data", "etf.json")
+    ojs = os.path.join(ROOT, "js", "etf-data.js")
+    os.makedirs(os.path.dirname(oj), exist_ok=True)
+    os.makedirs(os.path.dirname(ojs), exist_ok=True)
+    open(oj, "w", encoding="utf-8").write(text)
+    open(ojs, "w", encoding="utf-8").write("window.ETF_DATA=" + text + ";\n")
+    print("저장 완료:", oj, "/", ojs, "(ETF %d개)" % len(etfs))
+
+
 def read_extras(path):
     if not os.path.exists(path):
         return []
@@ -368,6 +445,9 @@ def main():
     ap.add_argument("--include-preferred", action="store_true", help="우선주도 순위에 포함")
     ap.add_argument("--check", action="store_true", help="자료는 만들지 않고 API 연결만 점검")
     ap.add_argument("--all", action="store_true", help="코스피·코스닥 상장 회사 전체를 월말 자료로 저장")
+    ap.add_argument("--etf", action="store_true", help="4차시용 ETF 월말 자료 만들기 (tools/etf_list.txt)")
+    ap.add_argument("--etf-url", default=ETF_BASE, help="ETF 시세 API 주소 (바뀌었을 때만)")
+    ap.add_argument("--etf-list", default=os.path.join(ROOT, "tools", "etf_list.txt"))
     ap.add_argument("--extras", default=os.path.join(ROOT, "tools", "extra_companies.txt"))
     ap.add_argument("--out-json", default=os.path.join(ROOT, "data", "stocks.json"))
     ap.add_argument("--out-js", default=os.path.join(ROOT, "js", "stocks-data.js"))
@@ -391,6 +471,10 @@ def main():
         print("  자세히 보려면:  python tools/build_stocks.py --check")
         sys.exit(1)
     print("기준일:", asof)
+
+    if a.etf:
+        build_etf(key, a, asof)
+        return
 
     rows = fetch_all(key, {"basDt": asof})
     rows = [r for r in rows if str(field(r, "mrktCtg", default="")).upper() in ("KOSPI", "KOSDAQ")]

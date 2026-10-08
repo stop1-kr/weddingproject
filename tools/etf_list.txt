@@ -1,0 +1,14 @@
+# 4차시에서 학생이 비교할 ETF 이름을 한 줄에 하나씩 적습니다. (증권사 앱에 표시되는 이름과 똑같이, 띄어쓰기 포함)
+# 3단계 '실제 자료' 비교는 KODEX 200 과 KODEX 레버리지 가 모두 있어야 나타납니다.
+KODEX 200
+TIGER 200
+KODEX 코스닥150
+KODEX 반도체
+KODEX 은행
+TIGER 2차전지테마
+KODEX 레버리지
+KODEX 인버스
+KODEX 골드선물(H)
+KODEX 국고채3년
+TIGER 미국S&P500
+TIGER 미국나스닥100
