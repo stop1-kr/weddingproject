@@ -25,12 +25,12 @@
     var best=yr[0], worst=yr[0];
     yr.forEach(function(o){ if(o.ret>best.ret) best=o; if(o.ret<worst.ret) worst=o; });
 
-    var peak=0, mdd=0, mp=0, mt=0, exit=null, dd=[];
+    var peak=0, mdd=0, mp=0, mt=0, exit=null, exitPeak=null, dd=[];
     for(i=0;i<n;i++){
       if(p[i]>p[peak]) peak=i;
       var d=p[i]/p[peak]-1; dd.push(d);
       if(d<mdd){ mdd=d; mp=peak; mt=i; }
-      if(exit===null && limitPct!==null && limitPct!==undefined && d<=-limitPct/100) exit=i;
+      if(exit===null && limitPct!==null && limitPct!==undefined && d<=-limitPct/100){ exit=i; exitPeak=peak; }
     }
     var rec=null;
     for(i=mt+1;i<n;i++){ if(p[i]>=p[mp]){ rec=i; break; } }
@@ -45,7 +45,10 @@
       retAtTrough:p[mt]/p[0]-1,
       total:p[n-1]/p[0]-1, cagr:cagr,
       success:hasLimit?(-mdd*100<=limitPct+1e-9):null,
-      exitM:(exit===null?null:m[exit]), exitRet:(exit===null?null:p[exit]/p[0]-1),
+      /* 내 한도에서 팔고 나옴 : 그때까지의 고점에서 정확히 '내 최대 손실 %'만큼 떨어진 가격에 판 것으로 계산 */
+      exitM:(exit===null?null:m[exit]), exitPeakM:(exit===null?null:m[exitPeak]),
+      exitRet:(exit===null?null:p[exitPeak]*(1-limitPct/100)/p[0]-1),
+      exitCloseRet:(exit===null?null:p[exit]/p[0]-1),
       dd:dd
     };
   }
