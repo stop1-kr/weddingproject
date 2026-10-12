@@ -34,7 +34,19 @@ except ImportError:
 
 BASE = "https://apis.data.go.kr/1160100/GetStockSecuritiesInfoService_V2/getStockPriceInfo_V2"
 # 4차시 ETF 자료 : 「금융위원회_증권상품시세정보」 (data.go.kr에서 따로 활용신청 필요, 같은 인증키 사용)
-ETF_BASE = "https://apis.data.go.kr/1160100/service/GetSecuritiesProductInfoService/getETFPriceInfo"
+# 주소는 data.go.kr 마이페이지 → 활용신청 현황 → 상세의 'End Point' 입니다. 판(버전)에 따라 달라서 아래 후보를 차례로 시험합니다.
+ETF_BASE = ""
+ETF_CANDIDATES = [
+    "https://apis.data.go.kr/1160100/GetSecuritiesProductInfoService_V2/getETFPriceInfo_V2",
+    "https://apis.data.go.kr/1160100/service/GetSecuritiesProductInfoService/getETFPriceInfo",
+    "https://apis.data.go.kr/1160100/GetSecuritiesProductInfoService/getETFPriceInfo",
+    "https://apis.data.go.kr/1160100/service/GetSecuritiesProductInfoService_V2/getETFPriceInfo_V2",
+]
+# 응답 항목 이름이 판마다 다를 수 있어 여러 이름을 확인
+ETF_NAME_FIELDS = ("itmsNm", "isuKorAbbrv", "isuNm", "isuAbbrv", "korSecnNm", "itmsKorNm")
+ETF_CODE_FIELDS = ("srtnCd", "shotnIsin", "isuSrtCd", "srtCd")
+ETF_PRICE_FIELDS = ("clpr", "clsPrc", "tddClsprc", "clsprc")
+EXIT_CONFIG = 3      # 설정·자료 문제(다시 시도해도 같은 결과) → 워크플로가 다시 시도하지 않음
 PREF = re.compile(r"\d?우[A-C]?(\(전환\))?$")      # 우선주 이름 끝 (예: 삼성전자우, 현대차2우B)
 SPLIT_THRESHOLD = 0.31                              # 하루 변동이 이 값보다 크면 액면분할/병합으로 보고 보정
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -365,20 +377,71 @@ def build_all(key, rows_asof, start, asof, include_preferred):
     return companies, months
 
 
+def etf_code(r):
+    c = field(r, *ETF_CODE_FIELDS)
+    if not c:
+        isin = str(field(r, "isinCd", "isuCd", default=""))
+        c = isin[3:9] if len(isin) == 12 else ""
+    return norm_code(c)
+
+
+def raw_peek(url, key, params):
+    """진단용 : 응답 앞부분을 그대로(인증키는 가리고) 보여 줌"""
+    try:
+        p = {"serviceKey": key, "resultType": "json", "numOfRows": 2, "pageNo": 1}
+        p.update(params)
+        r = requests.get(url, params=p, timeout=(15, 60))
+        return "HTTP %s : %s" % (r.status_code, mask(r.text[:400]).replace("\n", " "))
+    except Exception as e:
+        return "접속 실패 : " + mask(e)[:200]
+
+
+def find_etf_url(key, a, asof):
+    """ETF 주소 후보를 차례로 시험해서 기준일 자료가 실제로 들어 있는 주소를 고름"""
+    first = [u for u in (a.etf_url, os.environ.get("ETF_URL", "").strip()) if u]
+    cands = first + [u for u in ETF_CANDIDATES if u not in first]
+    print("ETF 시세 주소 찾는 중 (기준일 %s)" % asof)
+    for url in cands:
+        try:
+            items, total = call({"basDt": asof, "numOfRows": 5, "pageNo": 1}, key, retries=3, base=url)
+        except ApiError as e:
+            if getattr(e, "net", False):
+                raise
+            print("  ✗ %s\n      → %s" % (url, str(e).splitlines()[0][:200]))
+            continue
+        if total > 0 and items:
+            keys = sorted(items[0].keys())
+            print("  ✓ %s\n      → 기준일 자료 %d건, 응답 항목: %s" % (url, total, ", ".join(keys)))
+            return url
+        print("  ✗ %s\n      → 오류는 없지만 자료가 0건입니다. 응답 일부: %s" % (url, raw_peek(url, key, {"basDt": asof})))
+    print("\n[중단] ETF 자료를 돌려주는 주소를 찾지 못했습니다.")
+    print("  1) data.go.kr → 마이페이지 → 데이터 활용 → 'Open API' 활용신청 현황에서")
+    print("     「금융위원회_증권상품시세정보」가 '승인' 상태인지, 상세 화면의 End Point(주소)가 무엇인지 확인하세요.")
+    print("  2) 그 주소 뒤에 '/getETFPriceInfo'(또는 _V2) 를 붙인 전체 주소를 GitHub 저장소 Settings → Secrets and variables")
+    print("     → Actions → Variables 탭 → New repository variable 에 이름 ETF_URL 로 넣고 다시 실행하세요.")
+    print("  3) 승인 직후에는 1~2시간 뒤부터 동작하는 경우가 많습니다.")
+    sys.exit(EXIT_CONFIG)
+
+
 def build_etf(key, a, asof):
     names = read_extras(a.etf_list)
     if not names:
-        sys.exit("ETF 목록이 비어 있습니다: %s" % a.etf_list)
-    print("ETF 시세 주소:", a.etf_url)
+        print("ETF 목록이 비어 있습니다: %s" % a.etf_list)
+        sys.exit(EXIT_CONFIG)
+    a.etf_url = find_etf_url(key, a, asof)
     try:
         test = fetch_all(key, {"basDt": asof}, base=a.etf_url)
     except ApiError as e:
         print("\n[중단] ETF 시세를 받지 못했습니다.\n  " + mask(e))
-        print("  → data.go.kr 에서 「금융위원회_증권상품시세정보」를 활용신청했는지 확인하세요. (주식 시세와 별도 신청)")
-        sys.exit(1)
+        sys.exit(1 if getattr(e, "net", False) else EXIT_CONFIG)
     by_name = {}
     for r in test:
-        by_name.setdefault(str(field(r, "itmsNm", default="")).strip(), norm_code(field(r, "srtnCd", "shotnIsin")))
+        by_name.setdefault(str(field(r, *ETF_NAME_FIELDS, default="")).strip(), etf_code(r))
+    by_name.pop("", None)
+    print("기준일 ETF %d개 받음 (예: %s)" % (len(by_name), ", ".join(list(by_name)[:5])))
+    if not by_name:
+        print("[중단] ETF 이름 항목을 찾지 못했습니다. 응답 항목: %s" % (", ".join(sorted(test[0].keys())) if test else "없음"))
+        sys.exit(EXIT_CONFIG)
     want = {}
     for nm in names:
         if nm in by_name:
@@ -395,9 +458,9 @@ def build_etf(key, a, asof):
             continue
         snap = {}
         for r in fetch_all(key, {"basDt": d}, base=a.etf_url):
-            c = norm_code(field(r, "srtnCd", "shotnIsin"))
+            c = etf_code(r)
             if c in want:
-                p = num(field(r, "clpr", "clsPrc"), 0)
+                p = num(field(r, *ETF_PRICE_FIELDS), 0)
                 sh = num(field(r, "stLstgCnt", "lstgStCnt", default=0))
                 if sh <= 0 and p > 0:
                     sh = num(field(r, "mrktTotAmt", default=0)) / p
@@ -425,7 +488,8 @@ def build_etf(key, a, asof):
         etfs[code] = {"name": nm, "s": idx[0], "p": [round(v) if v >= 1000 else round(v, 2) for v in adj]}
         print("  %s %-22s %s ~ %s (%d개월)%s" % (code, nm, months[idx[0]], months[idx[-1]], len(closes), "  분할 보정" if ev else ""))
     if not etfs:
-        sys.exit("ETF 자료를 하나도 만들지 못했습니다. (기존 파일은 그대로 둡니다)")
+        print("ETF 자료를 하나도 만들지 못했습니다. (기존 파일은 그대로 둡니다)")
+        sys.exit(EXIT_CONFIG)
     out = {"generatedAt": dt.date.today().isoformat(), "asof": asof,
            "source": "금융위원회_증권상품시세정보 (공공데이터포털)", "note": "월말 종가 기준, 분배금 미포함",
            "months": months, "etfs": etfs}
@@ -461,7 +525,7 @@ def main():
     ap.add_argument("--check", action="store_true", help="자료는 만들지 않고 API 연결만 점검")
     ap.add_argument("--all", action="store_true", help="코스피·코스닥 상장 회사 전체를 월말 자료로 저장")
     ap.add_argument("--etf", action="store_true", help="4차시용 ETF 월말 자료 만들기 (tools/etf_list.txt)")
-    ap.add_argument("--etf-url", default=ETF_BASE, help="ETF 시세 API 주소 (바뀌었을 때만)")
+    ap.add_argument("--etf-url", default=ETF_BASE, help="ETF 시세 API 주소 (비우면 후보 주소를 자동으로 시험)")
     ap.add_argument("--etf-list", default=os.path.join(ROOT, "tools", "etf_list.txt"))
     ap.add_argument("--extras", default=os.path.join(ROOT, "tools", "extra_companies.txt"))
     ap.add_argument("--out-json", default=os.path.join(ROOT, "data", "stocks.json"))

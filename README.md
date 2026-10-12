@@ -92,6 +92,9 @@ ETF 자료가 없어도 4차시는 동작합니다(학생이 회사를 골라 '�
 3. Actions → Run workflow → `kind` 에서 **ETF** 를 고르고 실행합니다. → `data/etf.json`, `js/etf-data.js` 생성
 - `KODEX 200` 과 `KODEX 레버리지` 가 모두 있으면 3단계에 실제 레버리지 비교 그래프가 나타납니다.
 - 이름이 틀리면 실행 기록에 `[건너뜀]` 과 비슷한 이름이 나옵니다.
+- ETF 주소는 판(버전)마다 달라서 스크립트가 후보 주소를 차례로 시험합니다(✓/✗ 표시). 모두 ✗이면 data.go.kr 마이페이지의
+  활용신청 상세에서 End Point 를 확인해, 저장소 Settings → Secrets and variables → Actions → **Variables** 탭에 이름 `ETF_URL`,
+  값 `End Point 주소/getETFPriceInfo`(V2면 `/getETFPriceInfo_V2`) 로 넣고 다시 실행합니다.
 
 ## 4차시 계산 규칙
 - 나만의 ETF = 고른 종목에 처음 같은 금액씩 넣고 계속 들고 있는 것으로 계산. 비교는 모든 종목에 자료가 있는 공통 기간만 사용.
