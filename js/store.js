@@ -5,6 +5,18 @@
   var data={};
   try{ data=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ data={}; }
 
+  /* 2026년 10월 차시 재구성 : 5차시 인생게임 → 6차시 (l5_ → l6_), 4차시 3~5단계 → 5차시 (l4_ → l5_)
+     예전에 저장했거나 예전 파일을 불러와도 새 위치로 옮겨 줌 */
+  function migrate(o){
+    if(!o||o._v6) return o;
+    ['l5_result','l5_memo','l5_gender','l5_log','l5_score'].forEach(function(k){
+      if(k in o){ var n='l6_'+k.slice(3); if(!(n in o)) o[n]=o[k]; delete o[k]; } });
+    var MOVE=/^l4_(lev_|db_|cv_|pf|risk_memo$|cash_memo$|memo$)/;
+    Object.keys(o).forEach(function(k){ if(MOVE.test(k)){ var n='l5_'+k.slice(3); if(!(n in o)) o[n]=o[k]; delete o[k]; } });
+    o._v6=1; return o;
+  }
+  if(!data._v6){ migrate(data); try{ localStorage.setItem(KEY,JSON.stringify(data)); }catch(e){} }
+
   var S={
     all:function(){return data;},
     get:function(k,dv){ var v=data[k]; return (v===undefined||v===null||v==='')?(dv===undefined?'':dv):v; },
@@ -40,7 +52,7 @@
     },
     importFile:function(file,cb){
       var r=new FileReader();
-      r.onload=function(){ try{ var o=JSON.parse(r.result);
+      r.onload=function(){ try{ var o=migrate(JSON.parse(r.result));
         Object.keys(o).forEach(function(k){ data[k]=o[k]; }); S.save(); cb&&cb(true);
       }catch(e){ cb&&cb(false); } };
       r.readAsText(file);
@@ -61,8 +73,9 @@
     l3:['l3_basic','l3_m1_name','l3_m1_size','l3_m1_industry','l3_m1_rank','l3_m1_act','l3_m1_prof','l3_m1_stab','l3_m1_grow','l3_m1_scale',
         'l3_m2_name','l3_m2_size','l3_m2_industry','l3_m2_rank','l3_m2_act','l3_m2_prof','l3_m2_stab','l3_m2_grow','l3_m2_scale',
         'l3_maxLoss','l3_pick1','l3_pick2','l3_memo'],
-    l4:['l4_etf_memo','l4_us_memo','l4_risk_memo','l4_cash_memo','l4_pf1','l4_pf1w','l4_pf2','l4_pf2w','l4_pf3','l4_pf3w','l4_memo'],
-    l5:['l5_result','l5_memo']
+    l4:['l4_etf_memo','l4_us_cmp_memo','l4_us_memo','l4_memo'],
+    l5:['l5_risk_memo','l5_cash_memo','l5_pf1','l5_pf1w','l5_pf2','l5_pf2w','l5_pf3','l5_pf3w','l5_memo'],
+    l6:['l6_result','l6_memo']
   };
   window.STORE=S;
 })();

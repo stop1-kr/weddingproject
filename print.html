@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>종이 수업용 자료집 · 결혼 나이를 바꾸는 투자 프로젝트</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{word-break:keep-all}
+  .sheet{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-bottom:16px}
+  .sheet h2{margin-top:0}
+  .sheet h3{margin:16px 0 6px;font-size:16px}
+  .sheet p{margin:4px 0 8px;font-size:14px}
+  table.t{font-size:13px}
+  table.t th,table.t td{padding:5px 7px}
+  table.t td.num,table.t th.num{text-align:right}
+  .up{color:#15803d}.down{color:#b91c1c}
+  .tw{overflow-x:auto}
+  .cols2{columns:2;column-gap:18px}
+  .cols2 table{break-inside:avoid}
+  .src{font-size:12px;color:var(--muted)}
+  .how{border:1px solid #c7d2fe;background:#eef2ff;border-radius:6px;padding:8px 10px;font-size:13px;margin:6px 0 10px}
+  @media(max-width:700px){.cols2{columns:1}}
+  @media print{
+    @page{size:A4;margin:12mm 11mm}
+    body{background:#fff;font-size:12px}
+    .noprint,header.top,.sticky{display:none!important}
+    .wrap{max-width:none;padding:0}
+    .sheet{border:0;padding:0;margin:0;break-before:page}
+    .sheet.first{break-before:auto}
+    table.t{font-size:10.5px}
+    table.t th,table.t td{padding:3px 5px}
+    h3{break-after:avoid}
+    tr{break-inside:avoid}
+  }
+</style>
+<script>
+  document.write('<script src="js/'+(location.search.indexOf('demo=1')>=0?'stocks-demo.js':'stocks-data.js')+'"><\/script>');
+</script>
+<script src="js/etf-data.js" onerror="window.ETF_DATA=null"></script>
+<script src="js/us-data.js" onerror="window.US_DATA=null"></script>
+</head>
+<body>
+<header class="top"><div class="inner">
+  <a class="home" href="index.html">← 홈</a><h1>종이 수업용 자료집</h1><span class="step">선생님용 · 인쇄</span>
+</div></header>
+<div class="wrap">
+
+<div class="card noprint">
+  <h3 style="margin-top:0">인쇄 전에 확인하세요</h3>
+  <p class="lead" style="margin-bottom:8px">이 페이지는 웹앱과 같은 주가·ETF·미국 주식 자료로 <b>종이 학습지에 필요한 표</b>를 만들어 줍니다. 아래 값을 바꾸면 표가 다시 계산됩니다.
+  <b>인쇄하기</b>를 누르고 용지 A4, 여백 기본으로 인쇄하거나 PDF로 저장하세요. 차시마다 새 쪽에서 시작합니다.</p>
+  <div class="grid4">
+    <label class="f"><span class="t">2차시 표 · 취직 나이</span><div class="unit"><input type="number" id="pJob" value="28"><span class="u">세</span></div></label>
+    <label class="f"><span class="t">2차시 표 · 취직 전 저축</span><div class="unit"><input type="number" id="pPre" value="1000"><span class="u">만원</span></div></label>
+    <label class="f"><span class="t">5차시 표 · 처음에 넣을 돈</span><div class="unit"><input type="number" id="pX" value="1000"><span class="u">만원</span></div></label>
+    <label class="f"><span class="t">5차시 표 · 매달 넣을 돈</span><div class="unit"><input type="number" id="pY" value="100"><span class="u">만원</span></div></label>
+  </div>
+  <label class="f"><span class="t">3차시 표 · 시가총액 TOP10 말고 더 넣을 회사 (쉼표로 구분)</span>
+    <input type="text" id="pExtra" value="NAVER, 카카오, 현대차, 기아, POSCO홀딩스, 셀트리온, KB금융, 신한지주, 크래프톤, LG에너지솔루션, 삼성바이오로직스"></label>
+  <label class="f"><span class="t">인쇄할 차시</span>
+    <span style="display:flex;gap:14px;flex-wrap:wrap;font-size:15px">
+      <label><input type="checkbox" class="pick" value="1" checked> 1차시</label><label><input type="checkbox" class="pick" value="2" checked> 2차시</label>
+      <label><input type="checkbox" class="pick" value="3" checked> 3차시</label><label><input type="checkbox" class="pick" value="4" checked> 4차시</label>
+      <label><input type="checkbox" class="pick" value="5" checked> 5차시</label></span></label>
+  <div class="btnrow"><button type="button" class="btn strong" onclick="window.print()">인쇄하기</button></div>
+  <div id="warn"></div>
+</div>
+
+<div id="out"></div>
+</div>
+
+<script src="js/jobs-data.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/invest.js"></script>
+<script src="js/market.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var M=window.MKT, ITEMS=M.ITEMS, pct=INVEST.pct, ym=INVEST.mLabel, won=CALC.won, n1=CALC.n1;
+  function cls(v){ return v>=0?'up':'down'; }
+  function P(v,d){ return '<span class="'+cls(v)+'">'+pct(v,d===undefined?0:d)+'</span>'; }
+  function man(v){ return Math.round(v).toLocaleString()+'만원'; }
+  function val(id){ var v=parseFloat($(id).value); return isFinite(v)?v:0; }
+  function table(head,rows,numFrom){
+    numFrom=(numFrom===undefined)?1:numFrom;
+    return '<div class="tw"><table class="t"><tr>'+head.map(function(h,i){ return '<th'+(i>=numFrom?' class="num"':'')+'>'+h+'</th>'; }).join('')+'</tr>'
+      +rows.map(function(r){ return '<tr>'+r.map(function(c,i){ return '<td'+(i>=numFrom?' class="num"':'')+'>'+c+'</td>'; }).join('')+'</tr>'; }).join('')+'</table></div>';
+  }
+  var PERIOD=ym(M.DSTART)+' ~ '+ym(M.DEND);
+  function full(id){ return M.isFull(id); }
+
+  /* ---------------- 자료 1 : 1차시 ---------------- */
+  function s1(){
+    var J=(window.JOBS||[]).slice();
+    var half=Math.ceil(J.length/2);
+    function tb(list){ return table(['직업','관련 학과','평균 연봉','만족도'],list.map(function(j){ return [esc(j.name),esc(j.major),j.salary.toLocaleString()+'만원',j.satisfaction+'점']; }),2); }
+    return '<h2>자료 1 · 1차시 결혼하게 될 나이 계산하기</h2>'
+      +'<h3>표 1-1 직업 참고표 (연봉은 세전, 만족도는 100점 만점 · 수업용 어림값)</h3>'
+      +'<p>관심 직업이 표에 없으면 모둠 패드로 <b>커리어넷(www.career.go.kr) 직업정보</b>에서 찾아 적으세요. 세후 월급 ≈ 연봉 × 0.85 ÷ 12</p>'
+      +'<div class="cols2">'+tb(J.slice(0,half))+tb(J.slice(half))+'</div>'
+      +'<h3>표 1-2 계산에 쓰는 참고값</h3>'
+      +table(['항목','참고값'],[
+        ['평균 신입사원 나이','남성 32세 · 여성 29.5세'],['19세 이하 계좌 잔고 평균','161만원 (특이값이 있어 중앙값은 더 작음)'],
+        ['20~24세 중위연봉 (세후)','월 210만원'],['25~29세 중위연봉 (세후)','월 250만원'],['30~34세 중위연봉 (세후)','월 290만원'],
+        ['아르바이트 최저시급 (2030년 예상)','12,000원'],['군대 평균 저축액','1,000만원'],['1인 가구 평균 저축률','8.2%'],
+        ['평균 초혼 연령','남성 34세 · 여성 31.5세'],['결혼 비용 (집 포함)','서울 평균 4억 · 지방 평균 3억'],['내가 준비할 비율','둘이 함께 준비하므로 50%']],1);
+  }
+
+  /* ---------------- 자료 2 : 2차시 ---------------- */
+  function s2(){
+    var job=val('pJob'), pre=val('pPre');
+    var ages=[]; for(var a=20;a<=45;a++) ages.push(a);
+    var infl=table(['나이']. concat(['20','25','28','30','32','35','38','40','45'].map(function(x){return x+'세';})),
+      [['15세의 1억원이 그 나이에는']. concat([20,25,28,30,32,35,38,40,45].map(function(a){ return (Math.pow(1.031,a-15)).toFixed(2)+'억'; }))],1);
+    var rates=[0,3,5,7,9.2,10], saves=[50,80,100,120,150,200,250,300], targets=[10000,15000,20000];
+    var html='<h2>자료 2 · 2차시 결혼 비용 버는 시간 줄이기</h2>'
+      +'<h3>표 2-1 물가가 1년에 3.1%씩 오르면 (15세 기준 1억원이 몇 억원이 될까?)</h3>'+infl
+      +'<p>예: 15세에 1억원인 결혼 비용은 32세에는 약 '+(Math.pow(1.031,17)).toFixed(2)+'억원이 됩니다. (1억원 × 1.031을 17번 곱한 값)</p>'
+      +'<h3>표 2-2 결혼 가능 나이 찾기 표</h3>'
+      +'<div class="how"><b>읽는 법</b> : 내가 모아야 하는 돈(결혼 비용 × 내 비율, 오늘 기준)에 가장 가까운 표를 고르고, 내 <b>월 저축액</b> 줄과 <b>투자 수익률</b> 칸이 만나는 곳이 결혼 가능 나이입니다.<br>'
+      +'가정 : 취직 <b>'+n1(job)+'세</b>, 취직 전 저축 <b>'+man(pre)+'</b>, 물가 1년 3.1%, 수익은 매달 복리. 취직이 1년 늦으면 대체로 결혼도 1년 이상 늦어집니다. "못 모음"은 60세까지 모으지 못한다는 뜻입니다.</div>';
+    targets.forEach(function(tg){
+      var rows=saves.map(function(sv){ return [sv+'만원'].concat(rates.map(function(r){
+        var s=CALC.simulate({nowAge:15,jobAge:job,preSave:pre,monthlySave:sv,rate:r,weddingCost:tg,share:100,infl:3.1,maxAge:60});
+        return s.age===null?'못 모음':n1(s.age)+'세'; })); });
+      html+='<p style="margin-top:10px"><b>내가 모아야 하는 돈 '+won(tg)+' (오늘 기준)</b></p>'
+        +table(['월 저축 ＼ 수익률'].concat(rates.map(function(r){ return r===0?'0% (저축만)':r+'%'; })),rows,1);
+    });
+    html+='<p class="src">수익률 참고 : 은행 적금 평균 3%, 미국 투자 전문 업체 5년 평균 9.2%, 현실적인 한계 10% (유명한 투자자도 1년 평균 10%를 넘기기 어려움)</p>';
+    return html;
+  }
+
+  /* ---------------- 자료 3 : 3차시 ---------------- */
+  function companyIds(){
+    var ids=M.topIds().slice(), ex=String($('pExtra').value).split(/[,，\n]/);
+    ex.forEach(function(n){ n=n.trim(); if(!n) return; var id=M.byName(n); if(id&&ITEMS[id].kind==='주식'&&ids.indexOf(id)<0) ids.push(id); });
+    return ids;
+  }
+  function s3(){
+    var SD=M.SD, html='<h2>자료 3 · 3차시 결혼 비용을 위해 투자 도전하기</h2>';
+    if(!SD||!SD.ranking){ return html+'<p class="down">주가 자료(js/stocks-data.js)가 없습니다.</p>'; }
+    html+='<h3>표 3-1 대한민국 시가총액 TOP 10 (기준일 '+esc(String(SD.asof||'').replace(/(\d{4})(\d{2})(\d{2})/,'$1.$2.$3'))+')</h3>'
+      +table(['순위','회사','시장','시가총액','주가(종가)'],SD.ranking.map(function(r){
+        var eok=Math.round((r.cap||r.mcap||0)/1e8), jo=Math.floor(eok/10000), rest=eok%10000;
+        return [r.rank,esc(r.name),esc(r.market||''),(jo?jo.toLocaleString()+'조 ':'')+(rest?rest.toLocaleString()+'억':'')+'원',(r.close||0).toLocaleString()+'원']; }),3)
+      +'<p>회사의 기업 크기, 산업명, 산업 내 순위, 산업 내 위치(활동성·수익성·안정성·성장성·규모)는 모둠 패드로 <b>나이스비즈인포(www.nicebizinfo.com)</b>에서 찾아 학습지에 적으세요.</p>';
+    var ids=companyIds(), A=[], B=[], years={};
+    ids.forEach(function(id){
+      var it=ITEMS[id], a=INVEST.analyze({months:it.months,prices:it.prices},null); if(!a) return;
+      var late=it.months[0]>M.DSTART?' <span class="src">('+ym(it.months[0])+'부터)</span>':'';
+      A.push([esc(it.name)+late,man(100*(1+a.total)),P(a.total),P(a.cagr,1),a.best.year+'년 '+pct(a.best.ret,0),a.worst.year+'년 '+pct(a.worst.ret,0)]);
+      var ex=[10,20,30,50].map(function(L){ var b=INVEST.analyze({months:it.months,prices:it.prices},L); return b.success?'끝까지 성공':pct(b.exitRet,0); });
+      B.push([esc(it.name),'<span class="down">'+pct(a.mdd,0)+'</span>',ym(a.peakM)+' → '+ym(a.troughM),a.recoverM?ym(a.recoverM)+' 회복':'아직 회복 못 함'].concat(ex));
+      a.yearly.forEach(function(y){ years[y.year]=1; });
+      it._a=a;
+    });
+    var ys=Object.keys(years).sort();
+    html+='<h3>표 3-2 '+PERIOD+' 동안 100만원을 넣고 그대로 두었다면</h3>'
+      +table(['회사','지금 가치','전체 수익률','평균 연이율','가장 좋았던 해','가장 나빴던 해'],A,1)
+      +'<h3>표 3-3 얼마나 떨어졌을까? (최대 손실폭) · 내 한도에서 팔고 나왔다면</h3>'
+      +'<div class="how">최대 손실폭 = 가장 높았던 때(고점)에서 가장 많이 떨어진 비율. 오른쪽 네 칸은 고점에서 <b>내 한도만큼 떨어진 때 팔고 나왔다면</b> 처음 투자한 돈보다 몇 % 벌었거나 잃었는지입니다. 한도 안에서만 움직였다면 "끝까지 성공"입니다.</div>'
+      +table(['회사','최대 손실폭','고점 → 저점','회복','한도 10%','한도 20%','한도 30%','한도 50%'],B,1)
+      +'<h3>표 3-4 연도별 수익률 (그해 1월 초 → 12월 말)</h3>'
+      +table(['회사'].concat(ys.map(function(y){return y+'년';})),ids.filter(function(id){return ITEMS[id]._a;}).map(function(id){
+        var a=ITEMS[id]._a, m={}; a.yearly.forEach(function(y){ m[y.year]=y; });
+        return [esc(ITEMS[id].name)].concat(ys.map(function(y){ return m[y]?P(m[y].ret)+(m[y].partial?'*':''):'-'; })); }),1)
+      +'<p class="src">* 표시는 1년이 다 차지 않은 해입니다. 월말 종가 기준, 배당금 제외.</p>';
+    return html;
+  }
+
+  /* ---------------- 자료 4 : 4차시 ---------------- */
+  function s4(){
+    var html='<h2>자료 4 · 4차시 ETF와 해외 주식 알아보기</h2>';
+    var rows=[];
+    M.SECTORS.forEach(function(sec){ if(sec.all) return; var st=M.secStats(sec); if(st.n<3) return;
+      rows.push([esc(sec.n)+' ('+st.n+'곳)',esc(st.best.it.name)+' '+pct(st.best.a.total,0),esc(st.worst.it.name)+' '+pct(st.worst.a.total,0),
+        '<b>'+pct(st.ba.total,0)+'</b>','<span class="down">'+pct(st.ba.mdd,0)+'</span>','<span class="down">'+pct(st.avgMdd,0)+'</span>']); });
+    html+='<h3>표 4-1 같은 분야 회사들을 모두 담은 그릇 vs 회사 하나 ('+PERIOD+', 100만원씩)</h3>'
+      +table(['분야','가장 많이 오른 회사','가장 적게 오른 회사','그릇 전체 수익률','그릇 최대 손실폭','회사 하나 평균 최대 손실폭'],rows,3)
+      +'<div class="how"><b>나만의 ETF를 손으로 계산하기</b> : 회사들에 같은 금액씩 나눠 담으면, 그릇의 지금 가치 = 담은 회사들의 \'지금 가치\'(표 3-2)를 <b>모두 더해서 회사 수로 나눈 값</b>입니다.</div>';
+    var E=M.IDS.filter(function(id){ return ITEMS[id].kind==='ETF'; });
+    if(E.length){
+      html+='<h3>표 4-2 실제 ETF 결과 (100만원을 넣고 그대로 두었다면)</h3>'
+        +table(['ETF','기간','지금 가치','전체 수익률','평균 연이율','최대 손실폭'],E.map(function(id){ var it=ITEMS[id], a=INVEST.analyze({months:it.months,prices:it.prices},null);
+          return [esc(it.name),ym(it.months[0])+'~',man(100*(1+a.total)),P(a.total),P(a.cagr,1),'<span class="down">'+pct(a.mdd,0)+'</span>']; }),2);
+    } else html+='<p class="src">ETF 자료(js/etf-data.js)가 없어 실제 ETF 표는 빠졌습니다.</p>';
+    if(M.HAS_US){
+      var U=M.UIDS.slice().sort(function(a,b){ return (M.URANK[a]||99)-(M.URANK[b]||99); });
+      html+='<h3>표 4-3 미국 주식을 원화로 계산하면 (달러 수익률 + 환율 변화)</h3>'
+        +'<div class="how">원화로 본 수익률 = (1 + 달러 수익률) × (1 + 환율 변화) − 1. 예: 달러로 +50%, 환율 +10%면 1.5 × 1.1 − 1 = +65%</div>'
+        +table(['종목','종류','기간','달러 수익률','환율 변화','원화 수익률','100만원 →','최대 손실폭(원화)'],U.map(function(id){
+          var it=ITEMS[id], k=M.krw(it), a=INVEST.analyze({months:k.months,prices:k.prices},null), s=k.months[0], e=k.months[k.months.length-1];
+          var iu=it.months.indexOf(s), ie=it.months.indexOf(e), loc=it.prices[ie]/it.prices[iu]-1, fx=M.FX[e]/M.FX[s]-1;
+          return [esc(it.name)+(M.URANK[id]?' <span class="src">(시총 '+M.URANK[id]+'위)</span>':''),M.KTAG[it.kind],ym(s)+'~',P(loc),P(fx,1),'<b>'+P(a.total)+'</b>',man(100*(1+a.total)),'<span class="down">'+pct(a.mdd,0)+'</span>']; }),3);
+      var fm=Object.keys(M.FX).sort(), pick=fm.filter(function(m,i){ return m.slice(5)==='01'||m.slice(5)==='07'||i===fm.length-1; });
+      html+='<h3>표 4-4 원/달러 환율 (1달러가 몇 원인지, 월말)</h3>'
+        +table(['달'].concat(pick.map(function(m){ return m.slice(2,4)+'.'+m.slice(5); })),[['환율'].concat(pick.map(function(m){ return Math.round(M.FX[m]).toLocaleString(); }))],1);
+    } else html+='<p class="src">미국 주식·환율 자료(js/us-data.js)가 없어 표 4-3, 4-4는 빠졌습니다.</p>';
+    return html;
+  }
+
+  /* ---------------- 자료 5 : 5차시 ---------------- */
+  function plan(it,X,Y,fixed){
+    var n=INVEST.monthRange([[M.DSTART,M.DEND]]).length, v=0, units=0, i;
+    if(fixed!==undefined){ var r=Math.pow(1+fixed/100,1/12)-1; for(i=0;i<n;i++) v=(i===0?0:v*(1+r))+(i===0?X:0)+Y; return {v:v,n:n,mdd:0}; }
+    var k=M.krw(it); for(i=0;i<n;i++) units+=((i===0?X:0)+Y)/k.prices[i];
+    return {v:units*k.prices[n-1],n:n,mdd:INVEST.analyze({months:k.months,prices:k.prices},null).mdd};
+  }
+  function s5(){
+    var html='<h2>자료 5 · 5차시 안정적인 투자 계획 세우기</h2>', X=val('pX'), Y=val('pY');
+    var tf=M.topIds().filter(full);
+    if(tf.length>1){
+      var b=M.bowl(tf.map(function(id){return ITEMS[id];}),M.DSTART,M.DEND), last=b.prices[b.prices.length-1], rows=[];
+      for(var w=0;w<24&&w<b.prices.length-12;w++) rows.push([ym(b.months[w])+(w===0?' (바로 투자)':''),man(100*last/b.prices[w]),(w===0?'-':P((b.prices[0]/b.prices[w])-1))]);
+      html+='<h3>표 5-1 코로나19 때 현금으로 기다렸다가 투자했다면 (시가총액 TOP10 중 '+tf.length+'곳을 담은 그릇, 100만원)</h3>'
+        +'<div class="how">왼쪽 달에 100만원을 넣고 '+ym(M.DEND)+'까지 두었을 때의 가치입니다. 오른쪽 칸은 바로 투자한 사람보다 몇 % 더(덜) 받는지입니다.</div>'
+        +'<div class="cols2">'+table(['투자를 시작한 달','지금 가치','바로 투자 대비'],rows.slice(0,12),1)+table(['투자를 시작한 달','지금 가치','바로 투자 대비'],rows.slice(12),1)+'</div>';
+    }
+    var list=[{n:'예금·적금 (연 3%)',t:'예금·적금',fixed:3},{n:'현금 (이자 없음)',t:'현금',fixed:0}];
+    function add(id,t){ if(ITEMS[id]&&full(id)||(ITEMS[id]&&ITEMS[id].cur==='USD'&&M.krw(ITEMS[id]).months[0]===M.DSTART)) list.push({id:id,n:ITEMS[id].name,t:t}); }
+    M.IDS.filter(function(id){ return ITEMS[id].kind==='ETF'; }).forEach(function(id){ add(id,/미국|나스닥|S&P/.test(ITEMS[id].name)?'해외 주식 ETF':(/골드|금/.test(ITEMS[id].name)?'금':'국내 주식 ETF')); });
+    M.UIDS.forEach(function(id){ var k=ITEMS[id].kind; if(k!=='미국주식') add(id,k==='미국ETF'?'해외 주식 ETF':k); });
+    M.topIds().forEach(function(id){ add(id,'국내 개별 주식'); });
+    M.UIDS.filter(function(id){ return M.URANK[id]; }).sort(function(a,b){ return M.URANK[a]-M.URANK[b]; }).forEach(function(id){ add(id,'해외 개별 주식'); });
+    var n=INVEST.monthRange([[M.DSTART,M.DEND]]).length, principal=X+Y*n;
+    html+='<h3>표 5-2 투자 방법별 결과 : '+ym(M.DSTART)+'에 '+man(X)+', 그 뒤 매달 '+man(Y)+'씩 '+ym(M.DEND)+'까지 ('+n+'개월, 넣은 돈 '+won(principal)+')</h3>'
+      +'<div class="how"><b>내 투자 비율로 계산하기</b> : 지금 가치 = (방법 1의 지금 가치 × 비율) + (방법 2 × 비율) + (방법 3 × 비율).<br>예: 예금·적금 30% + A 40% + B 30% → 예금 가치×0.3 + A 가치×0.4 + B 가치×0.3. 해외 상품과 코인은 그 달 환율로 원화로 바꿔 계산했습니다.</div>'
+      +table(['투자 방법','상품','지금 가치','넣은 돈 대비','최대 손실폭'],list.map(function(o){
+        var r=o.fixed!==undefined?plan(null,X,Y,o.fixed):plan(ITEMS[o.id],X,Y);
+        return [o.t,esc(o.n),'<b>'+won(r.v)+'</b>',P(r.v/principal-1),r.mdd?'<span class="down">'+pct(r.mdd,0)+'</span>':'0%']; }),2);
+    var rs=[]; for(var R=-10;R<=30;R+=2) rs.push(R);
+    function V(R){ var m=Math.pow(1+R/100,1/12)-1, v=0; for(var t=0;t<n;t++) v+=((t===0?X:0)+Y)*Math.pow(1+m,n-1-t); return v; }
+    var half=Math.ceil(rs.length/2);
+    html+='<h3>표 5-3 지금 가치 → 1년 평균 수익률 바꾸기 (이 돈 계획 기준)</h3>'
+      +'<div class="how">계산한 지금 가치와 가장 가까운 줄의 수익률이 내 투자 비율의 1년 평균 수익률입니다. 이 수익률로 자료 2의 표 2-2에서 결혼 가능 나이를 찾아보세요.</div>'
+      +'<div class="cols2">'+table(['1년 평균 수익률','지금 가치'],rs.slice(0,half).map(function(R){ return [R+'%',won(V(R))]; }),1)
+      +table(['1년 평균 수익률','지금 가치'],rs.slice(half).map(function(R){ return [R+'%',won(V(R))]; }),1)+'</div>'
+      +'<p class="src">섞은 그릇의 최대 손실폭은 보통 각 방법의 최대 손실폭을 비율대로 평균 낸 값과 비슷하거나 그보다 작습니다(어림값).</p>';
+    return html;
+  }
+
+  function render(){
+    var picks=[].slice.call(document.querySelectorAll('.pick')).filter(function(c){return c.checked;}).map(function(c){return c.value;});
+    var F={'1':s1,'2':s2,'3':s3,'4':s4,'5':s5}, html='', first=true;
+    picks.forEach(function(k){ html+='<section class="sheet'+(first?' first':'')+'">'+F[k]()+'<p class="src">자료 : 공공데이터포털 금융위원회 주식·증권상품 시세, 야후 파이낸스(미국 주식·환율) · 월말 종가 · 배당금 제외 · 수업용 자료</p></section>'; first=false; });
+    $('out').innerHTML=html;
+    var w=[]; if(!M.HAS) w.push('주가 자료'); if(!M.HAS_ETF) w.push('ETF 자료'); if(!M.HAS_US) w.push('미국 주식·환율 자료');
+    $('warn').innerHTML=w.length?'<div class="box" style="margin-top:10px">'+w.join(', ')+'가 없어 일부 표가 빠집니다.</div>':'';
+  }
+  ['pJob','pPre','pX','pY','pExtra'].forEach(function(id){ $(id).addEventListener('change',render); });
+  document.querySelectorAll('.pick').forEach(function(c){ c.addEventListener('change',render); });
+  render();
+})();
+</script>
+</body></html>

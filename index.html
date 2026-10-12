@@ -9,14 +9,14 @@
 <body>
 <header class="top"><div class="inner">
   <h1>결혼 나이를 바꾸는 투자 프로젝트</h1>
-  <span class="step">중학교 3학년 · 5차시</span>
+  <span class="step">중학교 3학년 · 6차시</span>
 </div></header>
 <div class="wrap">
 <div class="card">
   <h3 style="margin-top:0">프로젝트 소개</h3>
   <p class="lead" style="margin-bottom:12px">저축만으로 결혼 비용을 모으면 몇 살이 될까요?
   주식·금·현금·부동산에 투자하면 그 나이를 얼마나 앞으로 당길 수 있을까요?
-  5차시 동안 내 돈 계획을 직접 세워 봅니다.</p>
+  6차시 동안 내 돈 계획을 직접 세워 봅니다.</p>
   <div class="grid2">
     <label class="f"><span class="t">이름</span><input type="text" id="name" data-store="name" placeholder="예: 김민준"></label>
     <label class="f"><span class="t">학반 / 번호</span><input type="text" id="cls" data-store="class" placeholder="예: 3학년 2반 7번"></label>
@@ -35,6 +35,7 @@
   </div>
   <div id="ioMsg" class="help"></div>
 </div>
+<p class="help" style="text-align:right">선생님용 · <a href="print.html">종이 수업 자료집 인쇄</a></p>
 </div>
 <div class="sticky"><span>입력 내용은 자동 저장됩니다.</span><span id="savedFlag" class="saved"></span></div>
 <script src="js/store.js"></script>
@@ -44,8 +45,9 @@
     {n:1,t:'결혼하게 될 나이 계산하기',d:'관심 직업을 조사하고, 저축만으로 결혼 비용을 모을 때 결혼하게 되는 나이를 계산합니다.',k:'l1',f:'lesson1.html',on:true},
     {n:2,t:'결혼 비용 버는 시간 줄이기',d:'물가 상승률을 반영하고, 저축액과 목표 수익률을 바꿔 결혼 나이를 앞으로 당겨 봅니다.',k:'l2',f:'lesson2.html',on:true},
     {n:3,t:'결혼 비용을 위해 투자 도전하기',d:'주식·금·현금·부동산의 과거 자료로 실제 투자 시뮬레이션을 해 봅니다.',k:'l3',f:'lesson3.html',on:true},
-    {n:4,t:'안정적인 투자 계획 세우기',d:'ETF·해외 주식·레버리지·빚투·코인·현금을 알아보고, 내 돈을 3가지에 나눠 담아 결혼 나이를 계산합니다.',k:'l4',f:'lesson4.html',on:true},
-    {n:5,t:'성공한 투자자 되기',d:'인생게임처럼 갈림길마다 카드를 골라 가며 몇 살에 결혼하게 되는지 시뮬레이션합니다.',k:'l5',f:'lesson5.html',on:true}
+    {n:4,t:'ETF와 해외 주식 알아보기',d:'여러 회사를 한 그릇에 담은 ETF와 미국 주식을 실제 자료로 비교하고, 환율이 내 수익을 어떻게 바꾸는지 알아봅니다.',k:'l4',f:'lesson4.html',on:true},
+    {n:5,t:'안정적인 투자 계획 세우기',d:'레버리지·빚투·코인의 위험과 현금의 가치를 알아보고, 내 돈을 3가지에 나눠 2020년부터 투자했다면 몇 살에 결혼할지 확인합니다.',k:'l5',f:'lesson5.html',on:true},
+    {n:6,t:'성공한 투자자 되기 : 결혼 인생게임',d:'인생게임처럼 갈림길마다 카드를 골라 가며 몇 살에 결혼하는지, 얼마나 행복한지 점수로 확인합니다.',k:'l6',f:'lesson6.html',on:true}
   ];
   var html='';
   L.forEach(function(x){
