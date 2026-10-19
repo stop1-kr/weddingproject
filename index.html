@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>결혼 나이를 바꾸는 투자 프로젝트</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+  #qrOverlay{position:fixed;inset:0;background:#fff;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    padding:24px;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom))}
+  #qrOverlay[hidden]{display:none}
+  @media print{#qrCard{display:none}}
+</style>
 </head>
 <body>
 <header class="top"><div class="inner">
@@ -35,10 +41,29 @@
   </div>
   <div id="ioMsg" class="help"></div>
 </div>
+<div class="card" id="qrCard">
+  <h3 style="margin-top:0">QR 코드로 들어오기</h3>
+  <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+    <div id="qrSmall" style="width:132px;height:132px;flex:0 0 auto"></div>
+    <div style="flex:1;min-width:200px">
+      <p class="help" style="margin:0 0 6px">휴대폰·태블릿 카메라로 찍으면 이 홈 화면으로 바로 들어옵니다. 수업 첫 시간에 <b>크게 보기</b>로 화면에 띄워 주세요.</p>
+      <div class="help" id="qrUrl" style="word-break:break-all"></div>
+      <div class="btnrow"><button type="button" class="btn sm" id="qrBig">크게 보기</button>
+        <button type="button" class="btn ghost sm" id="qrSave">QR 이미지 저장 (인쇄용)</button></div>
+    </div>
+  </div>
+</div>
+<div id="qrOverlay" hidden>
+  <div style="font-size:24px;font-weight:700">결혼 나이를 바꾸는 투자 프로젝트</div>
+  <div id="qrLarge"></div>
+  <div id="qrLargeUrl" style="font-size:18px;color:#374151;word-break:break-all;text-align:center"></div>
+  <button type="button" class="btn strong" id="qrClose">닫기</button>
+</div>
 <p class="help" style="text-align:right">선생님용 · <a href="print.html">종이 수업 자료집 인쇄</a></p>
 </div>
 <div class="sticky"><span>입력 내용은 자동 저장됩니다.</span><span id="savedFlag" class="saved"></span></div>
 <script src="js/store.js"></script>
+<script src="js/qrcode.js"></script>
 <script>
 (function(){
   var L=[
@@ -61,6 +86,38 @@
   });
   document.getElementById('cards').innerHTML=html;
   STORE.bind(document);
+  /* ---- 홈 화면 QR 코드 (지금 열린 주소로 자동 생성) ---- */
+  (function(){
+    var url=location.href.split('#')[0].split('?')[0].replace(/index\.html$/,'');
+    var ok=/^https?:/.test(url)&&typeof qrcode==='function';
+    if(!ok){ document.getElementById('qrUrl').textContent='웹 주소(https://…)로 열었을 때 QR 코드가 만들어집니다.'; return; }
+    var qr=qrcode(0,'M'); qr.addData(url); qr.make();
+    var n=qr.getModuleCount();
+    function svg(px){
+      var m=4, size=n+m*2, d='';
+      for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(qr.isDark(r,c)) d+='M'+(c+m)+' '+(r+m)+'h1v1h-1z';
+      return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+size+' '+size+'" width="'+px+'" height="'+px+'" shape-rendering="crispEdges" role="img" aria-label="홈 화면 QR 코드">'
+        +'<rect width="'+size+'" height="'+size+'" fill="#fff"/><path d="'+d+'" fill="#000"/></svg>';
+    }
+    document.getElementById('qrSmall').innerHTML=svg(132);
+    document.getElementById('qrUrl').textContent=url;
+    var ov=document.getElementById('qrOverlay');
+    document.getElementById('qrBig').addEventListener('click',function(){
+      var px=Math.floor(Math.min(window.innerWidth,window.innerHeight-200)*0.9);
+      document.getElementById('qrLarge').innerHTML=svg(Math.max(240,px));
+      document.getElementById('qrLargeUrl').textContent=url;
+      ov.hidden=false; document.getElementById('qrClose').focus();
+    });
+    function close(){ ov.hidden=true; document.getElementById('qrBig').focus(); }
+    document.getElementById('qrClose').addEventListener('click',close);
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!ov.hidden) close(); });
+    document.getElementById('qrSave').addEventListener('click',function(){
+      var cell=12, m=4, size=(n+m*2)*cell, cv=document.createElement('canvas'); cv.width=cv.height=size;
+      var g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,size,size); g.fillStyle='#000';
+      for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(qr.isDark(r,c)) g.fillRect((c+m)*cell,(r+m)*cell,cell,cell);
+      var a=document.createElement('a'); a.href=cv.toDataURL('image/png'); a.download='홈화면_QR.png'; document.body.appendChild(a); a.click(); a.remove();
+    });
+  })();
   document.getElementById('exp').addEventListener('click',function(){ STORE.exportFile(); });
   document.getElementById('imp').addEventListener('change',function(e){
     if(!e.target.files[0]) return;

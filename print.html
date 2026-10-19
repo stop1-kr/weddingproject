@@ -50,8 +50,7 @@
   <h3 style="margin-top:0">인쇄 전에 확인하세요</h3>
   <p class="lead" style="margin-bottom:8px">이 페이지는 웹앱과 같은 주가·ETF·미국 주식 자료로 <b>종이 학습지에 필요한 표</b>를 만들어 줍니다. 아래 값을 바꾸면 표가 다시 계산됩니다.
   <b>인쇄하기</b>를 누르고 용지 A4, 여백 기본으로 인쇄하거나 PDF로 저장하세요. 차시마다 새 쪽에서 시작합니다.</p>
-  <div class="grid4">
-    <label class="f"><span class="t">2차시 표 · 취직 나이</span><div class="unit"><input type="number" id="pJob" value="28"><span class="u">세</span></div></label>
+  <div class="grid3">
     <label class="f"><span class="t">2차시 표 · 취직 전 저축</span><div class="unit"><input type="number" id="pPre" value="1000"><span class="u">만원</span></div></label>
     <label class="f"><span class="t">5차시 표 · 처음에 넣을 돈</span><div class="unit"><input type="number" id="pX" value="1000"><span class="u">만원</span></div></label>
     <label class="f"><span class="t">5차시 표 · 매달 넣을 돈</span><div class="unit"><input type="number" id="pY" value="100"><span class="u">만원</span></div></label>
@@ -110,22 +109,28 @@
 
   /* ---------------- 자료 2 : 2차시 ---------------- */
   function s2(){
-    var job=val('pJob'), pre=val('pPre');
-    var ages=[]; for(var a=20;a<=45;a++) ages.push(a);
-    var infl=table(['나이']. concat(['20','25','28','30','32','35','38','40','45'].map(function(x){return x+'세';})),
-      [['15세의 1억원이 그 나이에는']. concat([20,25,28,30,32,35,38,40,45].map(function(a){ return (Math.pow(1.031,a-15)).toFixed(2)+'억'; }))],1);
-    var rates=[0,3,5,7,9.2,10], saves=[50,80,100,120,150,200,250,300], targets=[10000,15000,20000];
+    var pre=val('pPre');
+    /* 표 2-1 : 15~62세 물가 배수 (12살씩 한 줄) */
+    var rows21=[], a;
+    for(a=15;a<=62;a+=12){
+      var ages=[], vals=[];
+      for(var k=a;k<a+12;k++){ ages.push(k+'세'); vals.push((Math.pow(1.031,k-15)).toFixed(2)); }
+      rows21.push(['<b>나이</b>'].concat(ages)); rows21.push(['배수'].concat(vals));
+    }
+    var t21='<div class="tw"><table class="t">'+rows21.map(function(r,ri){ return '<tr>'+r.map(function(c,ci){ return (ri%2===0?'<th':'<td')+(ci>0?' class="num"':'')+'>'+c+(ri%2===0?'</th>':'</td>'); }).join('')+'</tr>'; }).join('')+'</table></div>';
+    var rates=[0,3,5,7,9.2,10], saves=[50,80,100,120,150,200,250,300], targets=[10000,15000,20000,25000,30000,40000];
     var html='<h2>자료 2 · 2차시 결혼 비용 버는 시간 줄이기</h2>'
-      +'<h3>표 2-1 물가가 1년에 3.1%씩 오르면 (15세 기준 1억원이 몇 억원이 될까?)</h3>'+infl
-      +'<p>예: 15세에 1억원인 결혼 비용은 32세에는 약 '+(Math.pow(1.031,17)).toFixed(2)+'억원이 됩니다. (1억원 × 1.031을 17번 곱한 값)</p>'
-      +'<h3>표 2-2 결혼 가능 나이 찾기 표</h3>'
-      +'<div class="how"><b>읽는 법</b> : 내가 모아야 하는 돈(결혼 비용 × 내 비율, 오늘 기준)에 가장 가까운 표를 고르고, 내 <b>월 저축액</b> 줄과 <b>투자 수익률</b> 칸이 만나는 곳이 결혼 가능 나이입니다.<br>'
-      +'가정 : 취직 <b>'+n1(job)+'세</b>, 취직 전 저축 <b>'+man(pre)+'</b>, 물가 1년 3.1%, 수익은 매달 복리. 취직이 1년 늦으면 대체로 결혼도 1년 이상 늦어집니다. "못 모음"은 60세까지 모으지 못한다는 뜻입니다.</div>';
+      +'<h3>표 2-1 물가가 1년에 3.1%씩 오르면 : 15세 기준 1억원이 그 나이에는 몇 억원? (배수)</h3>'+t21
+      +'<p>그 나이에 필요한 돈 = 오늘(15세) 기준 금액 × 그 나이의 배수. 예 : 오늘 2억원이면 30세에는 2억 × '+(Math.pow(1.031,15)).toFixed(2)+' = 약 '+(2*Math.pow(1.031,15)).toFixed(2)+'억원</p>'
+      +'<h3>표 2-2 결혼 비용 모으는 데 걸리는 시간 찾기 표 (취직한 뒤 몇 년?)</h3>'
+      +'<div class="how"><b>읽는 법</b> : ① <b>취직할 때 필요한 돈</b>(오늘 기준 금액 × 표 2-1의 취직 나이 배수)에 가장 가까운 표를 고릅니다. '
+      +'② 내 <b>월 저축액</b> 줄과 <b>투자 수익률</b> 칸이 만나는 곳이 <b>취직한 뒤 걸리는 시간</b>입니다. ③ <b>결혼 가능 나이 = 취직 나이 + 걸리는 시간</b>.<br>'
+      +'가정 : 취직 전 저축 <b>'+man(pre)+'</b>, 취직한 뒤에도 필요한 돈은 해마다 3.1%씩 커짐, 수익은 매달 복리. "못 모음"은 <b>30년이 지나도 모으지 못한다</b>는 뜻입니다.</div>';
     targets.forEach(function(tg){
       var rows=saves.map(function(sv){ return [sv+'만원'].concat(rates.map(function(r){
-        var s=CALC.simulate({nowAge:15,jobAge:job,preSave:pre,monthlySave:sv,rate:r,weddingCost:tg,share:100,infl:3.1,maxAge:60});
-        return s.age===null?'못 모음':n1(s.age)+'세'; })); });
-      html+='<p style="margin-top:10px"><b>내가 모아야 하는 돈 '+won(tg)+' (오늘 기준)</b></p>'
+        var s=CALC.simulate({nowAge:0,jobAge:0,preSave:pre,monthlySave:sv,rate:r,weddingCost:tg,share:100,infl:3.1,maxAge:30});
+        return s.age===null?'못 모음':n1(s.age)+'년'; })); });
+      html+='<p style="margin-top:10px"><b>취직할 때 필요한 돈 '+won(tg)+'</b></p>'
         +table(['월 저축 ＼ 수익률'].concat(rates.map(function(r){ return r===0?'0% (저축만)':r+'%'; })),rows,1);
     });
     html+='<p class="src">수익률 참고 : 은행 적금 평균 3%, 미국 투자 전문 업체 5년 평균 9.2%, 현실적인 한계 10% (유명한 투자자도 1년 평균 10%를 넘기기 어려움)</p>';
@@ -234,7 +239,7 @@
     function V(R){ var m=Math.pow(1+R/100,1/12)-1, v=0; for(var t=0;t<n;t++) v+=((t===0?X:0)+Y)*Math.pow(1+m,n-1-t); return v; }
     var half=Math.ceil(rs.length/2);
     html+='<h3>표 5-3 지금 가치 → 1년 평균 수익률 바꾸기 (이 돈 계획 기준)</h3>'
-      +'<div class="how">계산한 지금 가치와 가장 가까운 줄의 수익률이 내 투자 비율의 1년 평균 수익률입니다. 이 수익률로 자료 2의 표 2-2에서 결혼 가능 나이를 찾아보세요.</div>'
+      +'<div class="how">계산한 지금 가치와 가장 가까운 줄의 수익률이 내 투자 비율의 1년 평균 수익률입니다. 이 수익률로 자료 2의 표 2-2에서 걸리는 시간을 찾아 취직 나이에 더하면 결혼 가능 나이입니다.</div>'
       +'<div class="cols2">'+table(['1년 평균 수익률','지금 가치'],rs.slice(0,half).map(function(R){ return [R+'%',won(V(R))]; }),1)
       +table(['1년 평균 수익률','지금 가치'],rs.slice(half).map(function(R){ return [R+'%',won(V(R))]; }),1)+'</div>'
       +'<p class="src">섞은 그릇의 최대 손실폭은 보통 각 방법의 최대 손실폭을 비율대로 평균 낸 값과 비슷하거나 그보다 작습니다(어림값).</p>';
@@ -249,7 +254,7 @@
     var w=[]; if(!M.HAS) w.push('주가 자료'); if(!M.HAS_ETF) w.push('ETF 자료'); if(!M.HAS_US) w.push('미국 주식·환율 자료');
     $('warn').innerHTML=w.length?'<div class="box" style="margin-top:10px">'+w.join(', ')+'가 없어 일부 표가 빠집니다.</div>':'';
   }
-  ['pJob','pPre','pX','pY','pExtra'].forEach(function(id){ $(id).addEventListener('change',render); });
+  ['pPre','pX','pY','pExtra'].forEach(function(id){ $(id).addEventListener('change',render); });
   document.querySelectorAll('.pick').forEach(function(c){ c.addEventListener('change',render); });
   render();
 })();
