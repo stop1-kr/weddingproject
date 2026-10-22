@@ -10,6 +10,7 @@ lesson4.html      4차시 ETF와 해외 주식 알아보기 (분야별 비교, �
 lesson5.html      5차시 안정적인 투자 계획 세우기 (레버리지·빚투·코인, 현금, 3가지 투자 비율)
 lesson6.html      6차시 결혼 인생게임 (EASY 약 14단계 / HARD 약 31단계, 돌발 이벤트, 아바타, 점수)
 print.html        종이 수업용 자료집 (선생님용 인쇄)
+answers.html      교사용 정답 학습지 (종이 학습지 1~5차시에 정답·예시 답을 채워 인쇄, 예시 학생 값은 화면 위에서 바꿈)
 js/qrcode.js      홈 화면 QR 코드 만들기 (qrcode-generator, MIT 라이선스)
 js/market.js      4·5차시 공통 시장 자료 정리 (국내 주식·ETF·미국 주식·환율을 한 형식으로)
 css/style.css     공통 스타일 (아이패드 터치 대응, 인쇄/PDF 대응)

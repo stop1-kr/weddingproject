@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>교사용 정답 학습지 · 결혼 나이를 바꾸는 투자 프로젝트</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{word-break:keep-all}
+  .sheet{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-bottom:16px}
+  .sheet h2{margin:0 0 4px;font-size:21px;border:0;padding:0}
+  .sheet h3{margin:16px 0 6px;font-size:16px;border-left:4px solid var(--primary);padding-left:8px}
+  .sheet h4{margin:12px 0 4px;font-size:14px}
+  .sheet p{margin:4px 0 8px;font-size:14px}
+  .tag{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#b91c1c;border-radius:4px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+  .ans{color:#c2410c;font-weight:700}
+  table.t{font-size:13px}
+  table.t th,table.t td{padding:5px 7px}
+  table.t td.num,table.t th.num{text-align:right}
+  table.t td.c{text-align:center}
+  .tw{overflow-x:auto}
+  .src{font-size:12px;color:var(--muted)}
+  .how{border:1px solid #c7d2fe;background:#eef2ff;border-radius:6px;padding:8px 10px;font-size:13px;margin:6px 0 10px}
+  .line{border-bottom:1px solid #9ca3af;padding:4px 2px;margin:4px 0 8px;font-size:14px}
+  .chk{font-size:14px;margin:2px 0}
+  @media print{
+    @page{size:A4;margin:12mm 11mm}
+    body{background:#fff;font-size:12px}
+    .noprint,header.top,.sticky{display:none!important}
+    .wrap{max-width:none;padding:0}
+    .sheet{border:0;padding:0;margin:0;break-before:page}
+    .sheet.first{break-before:auto}
+    .pb{break-before:page}
+    table.t{font-size:10.5px}
+    table.t th,table.t td{padding:3px 5px}
+    h3,h4{break-after:avoid}
+    tr{break-inside:avoid}
+    .ans{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+<script>
+  document.write('<script src="js/'+(location.search.indexOf('demo=1')>=0?'stocks-demo.js':'stocks-data.js')+'"><\/script>');
+</script>
+<script src="js/etf-data.js" onerror="window.ETF_DATA=null"></script>
+<script src="js/us-data.js" onerror="window.US_DATA=null"></script>
+</head>
+<body>
+<header class="top"><div class="inner">
+  <a class="home" href="index.html">← 홈</a><h1>교사용 정답 학습지</h1><span class="step">선생님용 · 인쇄</span>
+</div></header>
+<div class="wrap">
+
+<div class="card noprint">
+  <h3 style="margin-top:0">인쇄 전에 확인하세요</h3>
+  <p class="lead" style="margin-bottom:8px">종이 학습지(1~5차시)의 빈칸에 <b class="ans">정답·예시 답</b>을 채운 교사용 판입니다. 학생마다 달라지는 값은 아래 <b>예시 학생</b>으로 계산하고,
+  주가·ETF·환율 값은 자료집(print.html)과 같은 자료로 계산합니다. 값을 바꾸면 바로 다시 계산되며, <b>인쇄하기</b>로 A4 인쇄나 PDF 저장을 할 수 있습니다.</p>
+  <h4 style="margin:8px 0">예시 학생 (1·2차시)</h4>
+  <div class="grid4">
+    <label class="f"><span class="t">관심 직업</span><select id="aJob"></select></label>
+    <label class="f"><span class="t">취직 나이</span><div class="unit"><input type="number" id="aJobAge" value="27"><span class="u">세</span></div></label>
+    <label class="f"><span class="t">저축률</span><div class="unit"><input type="number" id="aRate" value="50"><span class="u">%</span></div></label>
+    <label class="f"><span class="t">희망 결혼 나이</span><div class="unit"><input type="number" id="aWish" value="34"><span class="u">세</span></div></label>
+    <label class="f"><span class="t">결혼 비용</span><div class="unit"><input type="number" id="aCost" value="40000"><span class="u">만원</span></div></label>
+    <label class="f"><span class="t">내가 준비할 비율</span><div class="unit"><input type="number" id="aShare" value="50"><span class="u">%</span></div></label>
+    <label class="f"><span class="t">대학생 알바 (주당·년)</span><div class="unit"><input type="number" id="aH1" value="8"><span class="u">시간</span><input type="number" id="aY1" value="4"><span class="u">년</span></div></label>
+    <label class="f"><span class="t">취업 준비 알바 (주당·년)</span><div class="unit"><input type="number" id="aH2" value="20"><span class="u">시간</span><input type="number" id="aY2" value="2"><span class="u">년</span></div></label>
+  </div>
+  <h4 style="margin:8px 0">3~5차시 예시 선택</h4>
+  <div class="grid4">
+    <label class="f"><span class="t">3차시 회사 1</span><input type="text" id="aC1" value="삼성전자"></label>
+    <label class="f"><span class="t">3차시 회사 2</span><input type="text" id="aC2" value="카카오"></label>
+    <label class="f"><span class="t">최대 손실 한도</span><div class="unit"><input type="number" id="aLim" value="20"><span class="u">%</span></div></label>
+    <label class="f"><span class="t">5차시 투자 비율 예시</span><select id="aPf"><option value="safe">안정형</option><option value="mid" selected>균형형</option><option value="agg">공격형</option></select></label>
+    <label class="f"><span class="t">4차시 분야 1</span><select id="aS1"></select></label>
+    <label class="f"><span class="t">4차시 분야 2</span><select id="aS2"></select></label>
+    <label class="f"><span class="t">4차시 미국 종목 (티커)</span><input type="text" id="aUS" value="AAPL"></label>
+    <label class="f"><span class="t">자료집과 같게 : 취직 전 저축 / 5차시 처음·매달</span><div class="unit"><input type="number" id="aPre" value="1000"><input type="number" id="aX" value="1000"><input type="number" id="aY" value="100"><span class="u">만원</span></div></label>
+  </div>
+  <p class="help">마지막 칸의 세 값은 자료집 맨 위 설정(표 2-2 취직 전 저축, 표 5-2 처음·매달 넣을 돈)과 같아야 정답이 자료집 표와 맞습니다.</p>
+  <label class="f"><span class="t">인쇄할 차시</span>
+    <span style="display:flex;gap:14px;flex-wrap:wrap;font-size:15px">
+      <label><input type="checkbox" class="pick" value="1" checked> 1차시</label><label><input type="checkbox" class="pick" value="2" checked> 2차시</label>
+      <label><input type="checkbox" class="pick" value="3" checked> 3차시</label><label><input type="checkbox" class="pick" value="4" checked> 4차시</label>
+      <label><input type="checkbox" class="pick" value="5" checked> 5차시</label></span></label>
+  <div class="btnrow"><button type="button" class="btn strong" onclick="window.print()">인쇄하기</button><a class="btn ghost" href="print.html">자료집 보기</a></div>
+  <div id="warn"></div>
+</div>
+
+<div id="out"></div>
+</div>
+
+<script src="js/jobs-data.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/invest.js"></script>
+<script src="js/market.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var M=window.MKT, ITEMS=M.ITEMS, pct=INVEST.pct, ym=INVEST.mLabel, won=CALC.won, n1=CALC.n1;
+  function val(id){ var v=parseFloat($(id).value); return isFinite(v)?v:0; }
+  function A(v){ return '<span class="ans">'+v+'</span>'; }
+  function f1(v){ return (Math.round(v*10)/10).toLocaleString(undefined,{maximumFractionDigits:1}); }
+  function f2(v){ return (Math.round(v*100)/100).toLocaleString(undefined,{maximumFractionDigits:2}); }
+  function man(v){ return f1(v)+'만원'; }
+  function T(head,rows,opt){
+    opt=opt||{};
+    return '<div class="tw"><table class="t"><tr>'+head.map(function(h){ return '<th>'+h+'</th>'; }).join('')+'</tr>'
+      +rows.map(function(r){ return '<tr>'+r.map(function(c,i){ var cl=(opt.num&&i>=opt.num)?' class="num"':''; return '<td'+cl+'>'+c+'</td>'; }).join('')+'</tr>'; }).join('')+'</table></div>';
+  }
+  function box(h){ return '<div class="how">'+h+'</div>'; }
+  function line(h){ return '<div class="line">'+h+'</div>'; }
+  function chk(on,t){ return '<div class="chk">'+(on?'<span class="ans">☑</span>':'☐')+' '+t+'</div>'; }
+  function head(n,title){ return '<h2>'+n+'차시 · '+title+' <span class="tag">정답</span></h2><p class="src">빨간 글씨가 정답 또는 예시 답입니다. 학생마다 값이 다른 칸은 예시 학생 기준입니다.</p>'; }
+
+  /* ---------- 공통 계산 ---------- */
+  var TARGETS=[5000,10000,15000,20000,25000,30000,40000], SAVES=[50,80,100,120,150,200,250,300], RATES=[0,3,5,7,9.2,10];
+  function nearest(list,x){ var b=list[0]; list.forEach(function(v){ if(Math.abs(v-x)<Math.abs(b-x)) b=v; }); return b; }
+  function years22(T,mon,rate){ var s=CALC.simulate({nowAge:0,jobAge:0,preSave:val('aPre'),monthlySave:mon,rate:rate,weddingCost:T,share:100,infl:0,maxAge:30}); return s.age; }
+  function ytxt(y){ return y===null?'못 모음':f1(y)+'년'; }
+  function student(){
+    var J=(window.JOBS||[]).filter(function(j){ return j.name===$('aJob').value; })[0]||{name:'교사(중등)',major:'교육학과, 사범대 관련 전공',salary:4300,satisfaction:72};
+    var uni=val('aH1')*1.2*52*val('aY1'), prep=val('aH2')*1.2*52*val('aY2');
+    var pre=Math.round(161+uni+1000+prep-1000);
+    var pay=Math.round(J.salary*0.85/12*10)/10, mon=Math.round(pay*val('aRate')/100*10)/10;
+    var o={J:J,uni:uni,prep:prep,pre:pre,pay:pay,mon:mon,year:mon*12,job:val('aJobAge'),wish:val('aWish'),cost:val('aCost'),share:val('aShare')};
+    o.ga=o.cost*o.share/100; o.short=o.ga-o.pre; o.yrs=o.short/o.year; o.age1=o.job+o.yrs;
+    o.mult=Math.round(Math.pow(1.031,o.wish-15)*100)/100; o.na=o.ga*o.mult;
+    /* 2차시 4단계 예시 : 지방 3억 + 내 비율 30%, 수익률 7% */
+    o.ga4=30000*30/100; o.na4=o.ga4*o.mult; o.T4=nearest(TARGETS,o.na4); o.y4=years22(o.T4,nearest(SAVES,o.mon),7);
+    return o;
+  }
+
+  /* ---------- 1차시 ---------- */
+  function s1(S){
+    var J=S.J;
+    return head(1,'결혼하게 될 나이 계산하기')
+      +T(['항목','○ 표시'],[['나는 (성별)','남자 / 여자 '+A('(예시 : 남자)')],['결혼해서 살고 싶은 지역',A(S.cost>=40000?'서울·수도권':'지방')]])
+      +'<h3>1단계 · 직업에 대한 정보 구하기</h3>'
+      +T(['항목','내가 조사한 내용'],[['① 관심 있는 직업',A(esc(J.name))],['② 관련 학과',A(esc(J.major))],['③ 평균 연봉 (세전)',A(J.salary.toLocaleString())+' 만원 / 년'],
+        ['④ 직업 만족도',A(J.satisfaction)+' 점'],['⑤ 마음에 드는 이유',A('예 : 학생들과 함께 성장할 수 있고, 방학이 있어 여유 시간이 있다.')]])
+      +'<h3 class="pb">2단계 · 결혼하게 될 나이 계산해 보기</h3>'
+      +'<h4>① 처음 취직하게 될 나이</h4>'+line('나의 값 : '+A(S.job)+' 세')
+      +'<h4>② 취직 전에 저축하게 될 돈 (계산 도우미)</h4>'
+      +T(['항목','계산','금액 (만원)'],[['지금까지 모은 돈','평균 161만원',A('161')],
+        ['대학생 때 아르바이트','주당 '+A(val('aH1'))+'시간 × 1.2 × 52주 × '+A(val('aY1'))+'년',A(f1(S.uni))],
+        ['군대 저축','평균 1,000만원',A('1,000')],
+        ['취업 준비할 때 아르바이트','주당 '+A(val('aH2'))+'시간 × 1.2 × 52주 × '+A(val('aY2'))+'년',A(f1(S.prep))],
+        ['여행·쇼핑·생활비로 쓴 돈','빼기 (−)',A('− 1,000')],['<b>합계 = ②번 값</b>','',A(S.pre.toLocaleString())]],{num:2})
+      +'<h4>③ 월급 (세후)</h4>'+line('연봉 '+A(J.salary.toLocaleString())+' 만원 × 0.85 ÷ 12 = '+A(f1(S.pay))+' 만원 / 월')
+      +'<h4>④ 한 달에 저축할 돈</h4>'
+      +T(['저축률','30%','50%','70%'],[['③ 월급 × 저축률',A(f1(S.pay*0.3))+' 만원',A(f1(S.pay*0.5))+' 만원',A(f1(S.pay*0.7))+' 만원']],{num:1})
+      +line('내가 정한 ④ 한 달 저축 : '+A(f1(S.mon))+' 만원 / 월 (저축률 '+A(val('aRate'))+' %)')
+      +'<h4>⑤ 1년에 저축할 돈</h4>'+line('④ '+A(f1(S.mon))+' 만원 × 12개월 = '+A(f1(S.year))+' 만원 / 년')
+      +'<h4>⑥ 결혼하고 싶은 나이</h4>'+line('나의 값 : '+A(S.wish)+' 세')
+      +'<h4>⑦ 결혼할 때 쓰게 될 비용</h4>'+line('결혼 비용 '+A(S.cost.toLocaleString())+' 만원 · 이 중 내가 준비할 비율 '+A(S.share)+' %')
+      +'<h3 class="pb">계산 결과</h3>'
+      +T(['결과','계산식','답'],[['가. 내가 모아야 하는 돈','⑦ × 비율 ÷ 100',A(man(S.ga))],['나. 아직 모자란 돈','가 − ②',A(man(S.short))],
+        ['다. 1년에 저축하는 돈','⑤',A(man(S.year))],['라. 모으는 데 걸리는 시간','나 ÷ 다',A(f1(S.yrs)+'년')],
+        ['<b>마. 실제로 결혼하게 될 나이</b>','① + 라',A(f1(S.age1)+'세')],['바. 희망 나이와 차이','마 − ⑥',A(f1(Math.abs(S.age1-S.wish))+'년 '+(S.age1>=S.wish?'늦음':'빠름'))]],{num:2})
+      +'<h3>오늘 배운 것 정리</h3>'+line(A('예 : 저축만으로는 '+f1(S.age1)+'세에야 결혼할 수 있어서 희망 나이보다 '+f1(Math.abs(S.age1-S.wish))+'년 '+(S.age1>=S.wish?'늦다':'빠르다')+'. 생각보다 오래 걸려서 저축을 늘리거나 다른 방법이 필요하다고 느꼈다.'));
+  }
+
+  /* ---------- 2차시 ---------- */
+  function s2(S){
+    var T0=nearest(TARGETS,S.na), rowMon=nearest(SAVES,S.mon);
+    var short2=S.na-S.pre, y2=short2/S.year, age2=S.job+y2;
+    var plans=[{r:3,m:S.mon},{r:7,m:S.mon},{r:10,m:Math.round(S.pay*0.6)}].map(function(p){ var row=nearest(SAVES,p.m), y=years22(T0,row,p.r); return {r:p.r,m:p.m,row:row,y:y,age:y===null?null:S.job+y}; });
+    var lim=S.pay*0.6, remain=S.wish-S.job, rec=null;
+    [3,5,7,9.2,10].forEach(function(r){ if(rec) return; SAVES.filter(function(m){ return m<=lim; }).forEach(function(m){ if(rec&&rec.r===r) return; var y=years22(T0,m,r); if(y!==null&&y<=remain&&(!rec)) rec={r:r,m:m,y:y}; }); });
+    /* 4단계 예시 : 지방 3억 + 내 비율 30%, 수익률 7% */
+    var ga4=S.ga4, na4=S.na4, T4=S.T4, y4=S.y4;
+    return head(2,'결혼 비용 버는 시간 줄이기')
+      +'<h3>1단계 · 1차시에서 가져온 내 정보</h3>'
+      +T(['항목','1차시에 적은 값'],[['① 처음 취직하게 될 나이',A(S.job)+' 세'],['② 취직 전에 저축하게 될 돈',A(S.pre.toLocaleString())+' 만원'],['③ 월급',A(f1(S.pay))+' 만원 / 월'],
+        ['④ 한 달에 저축할 돈',A(f1(S.mon))+' 만원 / 월 (저축률 '+A(val('aRate'))+' %)'],['⑥ 결혼하고 싶은 나이',A(S.wish)+' 세'],['가. 내가 모아야 하는 돈 (오늘 기준)',A(man(S.ga))]],{num:1})
+      +'<h3>돈을 모으는 동안 물가는 계속 오릅니다</h3>'
+      +T(['계산','답'],[['오늘(15세) 기준 내가 모아야 하는 돈 (가)',A(man(S.ga))],['희망 결혼 나이 '+A(S.wish)+' 세의 배수 (표 2-1)',A(f2(S.mult))+' 배'],['<b>나. 결혼할 때 필요한 돈 = 가 × 배수</b>',A(man(S.na))]],{num:1})
+      +'<h4>물가를 반영한 금액으로, 저축만 하면 몇 살에 결혼할까?</h4>'
+      +T(['계산','계산식','답'],[['다. 아직 모자란 돈','나 − ②',A(man(short2))],['라. 1년에 저축하는 돈','④ × 12',A(man(S.year))],['마. 걸리는 시간','다 ÷ 라',A(f1(y2)+'년')],
+        ['<b>바. 저축만으로 결혼할 수 있는 나이</b>','① + 마',A(f1(age2)+'세')],['사. 1차시와 비교','1차시 '+A(f1(S.age1))+' 세',A(f1(age2-S.age1)+'년 늦음')]],{num:2})
+      +'<h3 class="pb">2단계 · 세 가지 계획을 넣고 비교하기</h3>'
+      +box('나. 결혼할 때 필요한 돈 '+A(man(S.na))+' → 자료집 표 2-2에서 가장 가까운 <b>'+A(won(T0))+'</b> 표를 봅니다. 월 저축 '+f1(S.mon)+'만원은 가장 가까운 <b>'+A(rowMon+'만원')+'</b> 줄을 봅니다.')
+      +T(['계획','투자 수익률','한 달 저축','저축률','걸리는 시간 (표 2-2)','결혼 가능 나이','희망 나이 대비'],plans.map(function(p,i){
+        return [(i+1)+'번',A(p.r+' %'),A(f1(p.m)+' 만원'),A(f1(p.m/S.pay*100)+' %'),A(ytxt(p.y)+(p.row!==p.m?' ('+p.row+'만원 줄)':'')),A(p.age===null?'못 모음':f1(p.age)+' 세'),A(p.age===null?'-':f1(Math.abs(p.age-S.wish))+'년 '+(p.age>S.wish?'늦음':'빠름'))]; }),{num:1})
+      +line('해 보고 싶은 계획과 이유 : '+A('예 : 2번. 7%는 현실적인 수익률(10% 이하) 안에 있고, 저축률도 무리하지 않는 수준이다.'))
+      +'<h3>3단계 · 추천 받아보기 (선생님의 추천 규칙)</h3>'
+      +'<ol style="font-size:14px;margin:4px 0 8px;padding-left:20px"><li>월급 '+A(f1(S.pay))+' × 0.6 = '+A(f1(lim))+' 만원</li><li>표 2-2에서 월 저축이 '+A(f1(lim))+'만원 이하인 줄만 봅니다.</li>'
+      +'<li>남은 시간 : 희망 '+A(S.wish)+' − 취직 '+A(S.job)+' = '+A(f1(remain))+' 년</li><li>걸리는 시간이 '+f1(remain)+'년 이하가 되는 가장 낮은 수익률을 찾습니다.</li></ol>'
+      +line(rec?('추천 결과 : 수익률 '+A(rec.r+' %')+', 한 달 저축 '+A(rec.m+' 만원')+', 걸리는 시간 '+A(f1(rec.y)+' 년')+' → 결혼 가능 나이 '+A(f1(S.job+rec.y)+' 세'))
+        :('추천 결과 : '+A('찾을 수 없음')+' → 월급의 60% 이하 저축과 10% 이하 수익률로는 희망 나이에 맞추기 어렵습니다. 4단계에서 조건을 바꿉니다.'))
+      +'<h3 class="pb">4단계 · 결혼 나이를 맞추려면 무엇을 더 할 수 있을까?</h3>'
+      +chk(false,'취직을 2년 일찍 한다')+chk(false,'대학 대신 바로 취업·기술 자격')+chk(true,'사는 지역을 지방으로 옮긴다 (결혼 비용 3억)')+chk(false,'결혼식·신혼여행을 줄인다')
+      +chk(true,'둘이 함께 모으는 비율을 늘린다 (내 비율 30%)')+chk(false,'한 달 저축을 월급의 20%p 더 늘린다')+chk(false,'취직 전 저축을 1,000만원 더 모은다')+chk(false,'월급이 더 높은 직업·승진')+chk(false,'결혼 나이를 2년 늦춘다')
+      +T(['항목','바꾸기 전','바꾼 뒤'],[['취직 나이',S.job+' 세',A(S.job+' 세')],['한 달 저축',f1(S.mon)+' 만원',A(f1(S.mon)+' 만원')],['결혼 비용',S.cost.toLocaleString()+' 만원',A('30,000 만원')],
+        ['내가 준비할 비율',S.share+' %',A('30 %')],['가. 내가 모아야 하는 돈',man(S.ga),A(man(ga4))],['나. 결혼할 때 필요한 돈 (× '+f2(S.mult)+')',man(S.na),A(man(na4))],
+        ['투자 수익률','3 %',A('7 %')],['걸리는 시간 (표 2-2, '+won(T4)+' 표)',ytxt(plans[0].y),A(ytxt(y4))],['<b>결혼 가능 나이</b>',plans[0].age===null?'못 모음':f1(plans[0].age)+' 세',A(y4===null?'못 모음':f1(S.job+y4)+' 세')]],{num:1})
+      +box('<b>나의 목표 투자 수익률 : '+A('7 %')+'</b> (4단계에서 바꾼 뒤의 수익률)')
+      +'<h4>비상상황 : 부모님 도움 (예시)</h4>'+line('부모님 지원 '+A('3,000')+' 만원 × 2 = '+A('6,000')+' 만원 → 줄어든 결혼 비용 '+A('24,000')+' 만원 (30,000 − 6,000)')
+      +line('내가 고른 방법과 이유 : '+A('예 : 지방으로 옮기고 둘이 준비하는 비율을 30%로 늘렸다. 수익률만 올리는 것보다 조건을 함께 바꾸는 것이 효과가 컸다.'));
+  }
+
+  /* ---------- 3차시 ---------- */
+  function comp(name){ var id=M.byName(name); if(!id||ITEMS[id].kind!=='주식') return null; var it=ITEMS[id];
+    return {it:it,a:INVEST.analyze({months:it.months,prices:it.prices},val('aLim'))}; }
+  function s3(S){
+    var lim=val('aLim'), goal=7, c=[comp($('aC1').value),comp($('aC2').value)];
+    var y4=S.y4;   /* 2차시 4단계 예시와 같은 값 */
+    function col(k,f){ return c[k]?f(c[k]):A('자료에 없는 회사'); }
+    function row(label,f){ return [label,col(0,f),col(1,f)]; }
+    return head(3,'결혼 비용을 위해 투자 도전하기')
+      +'<h3>1단계 · 내가 얻어야 하는 현실적인 투자 수익률</h3>'
+      +line('나의 목표 수익률 : '+A(goal+' %')+' → 결혼 가능 나이 '+A(y4===null?'못 모음':f1(S.job+y4)+' 세')+' (희망 '+A(S.wish)+' 세)')
+      +T(['0% ~ 3%','3% ~ 10%','10% ~ 15% 이상'],[['적금 수준',A('▼ 도전해 볼 만한 구간'),'현실적 한계를 넘음']])
+      +'<h3>2단계 · 주식이란 무엇일까요?</h3>'
+      +line('내 말로 정리하기 : '+A('주식은 회사를 잘게 나눈 조각으로, 사면 그 회사의 주인 중 한 명이 된다. 싸게 사서 비싸게 팔거나(시세 차익) 배당금을 받아 돈을 벌 수 있지만, 원금을 잃을 수도 있다.'))
+      +'<h3>3단계 · 시가총액 TOP 10과 기업 알아보기</h3>'
+      +T(['항목','회사 1 : '+A(esc($('aC1').value)),'회사 2 : '+A(esc($('aC2').value))],[['기업 크기',A('대기업 (나이스비즈인포에서 확인)'),A('나이스비즈인포에서 확인')],
+        ['산업명 · 산업 내 순위',A('검색 결과를 그대로'),A('검색 결과를 그대로')],['활동성·수익성·안정성·성장성·규모',A('화면에 나온 단계에 ○'),A('화면에 나온 단계에 ○')]])
+      +'<p class="src">3단계는 나이스비즈인포 검색 결과를 그대로 옮겨 적으면 정답입니다. 장점과 약점을 함께 보도록 지도해 주세요.</p>'
+      +'<h3>4단계 · 내가 감당할 수 있는 최대 손실</h3>'+line('나의 최대 손실 한도 : '+A(lim+' %')+' · 100만원이 '+A((100-lim)+' 만원')+'이 될 때까지는 참을 수 있다.')
+      +'<h3 class="pb">5단계 · 2020년부터 투자했다면?</h3>'
+      +T(['항목','회사 1 : '+A(esc($('aC1').value)),'회사 2 : '+A(esc($('aC2').value))],[
+        row('분석 기간',function(x){ return A(ym(x.a.first)+' ~ '+ym(x.a.last)); }),
+        row('100만원을 처음 투자했다면, 지금',function(x){ return A(Math.round(100*(1+x.a.total)).toLocaleString()+' 만원'); }),
+        row('전체 수익률',function(x){ return A(pct(x.a.total,0)); }),
+        row('최고 급등했던 연도',function(x){ return A(x.a.best.year+' 년      '+pct(x.a.best.ret,0)); }),
+        row('최고 하락했던 연도',function(x){ return A(x.a.worst.year+' 년      '+pct(x.a.worst.ret,0)); }),
+        row('최대 손실폭 (고점 → 저점)',function(x){ return A(pct(x.a.mdd,0)+' ('+ym(x.a.peakM)+' → '+ym(x.a.troughM)+')'); }),
+        row('내 한도 '+lim+'%에서 팔고 나왔을 때 수익률',function(x){ return A(x.a.success?'끝까지 성공':pct(x.a.exitRet,0)); }),
+        row('평균 연이율',function(x){ return A(pct(x.a.cagr,1)); }),
+        row('내 목표 수익률('+goal+'%)보다 높은가?',function(x){ return A(x.a.cagr*100>=goal?'○':'×'); }),
+        row('최대 손실폭이 내 한도 안이었나?',function(x){ return A(-x.a.mdd*100<=lim?'○':'×'); })])
+      +line('알게 된 점 : '+A(c[0]&&c[1]?('예 : 전체 수익률은 '+esc(c[0].it.name)+' '+pct(c[0].a.total,0)+', '+esc(c[1].it.name)+' '+pct(c[1].a.total,0)+'였지만 두 회사 모두 중간에 '+pct(Math.max(c[0].a.mdd,c[1].a.mdd),0)+' 이상 떨어졌다. 수익률만 보지 말고 최대 손실폭이 내 한도를 넘는지도 봐야 한다.'):'예시 회사를 다시 골라 주세요.'));
+  }
+
+  /* ---------- 4차시 ---------- */
+  function s4(S){
+    var st=[M.SECTORS[+$('aS1').value],M.SECTORS[+$('aS2').value]].filter(Boolean).map(function(sec){ return M.secStats(sec); });
+    var bowlIds=M.topIds().filter(M.isFull).slice(0,5), four=bowlIds.slice(0,4), other=bowlIds[4];
+    function v(id){ var it=ITEMS[id], a=INVEST.analyze({months:it.months,prices:it.prices},null); return {name:it.name,val:100*(1+a.total),tot:a.total}; }
+    var fv=four.map(v), sum=fv.reduce(function(t,x){ return t+x.val; },0), avg=fv.length?sum/fv.length:0;
+    var k200=M.byName('KODEX 200'), kv=(k200&&ITEMS[k200].kind==='ETF')?v(k200):null, ov=other?v(other):null;
+    function fx(r0,r1,p0,p1){ var usd=100*10000/r0, usd1=usd*p1/p0, krw=usd1*r1/10000; return [usd,usd1,krw,krw/100-1]; }
+    var e1=fx(1450,1250,100,110), e2=fx(1300,1450,100,110), e3=fx(1300,1450,100,90);
+    var us=ITEMS['u'+String($('aUS').value).trim().toUpperCase()]||(M.UIDS.length?ITEMS[M.UIDS[0]]:null), kr=M.byName($('aC1').value);
+    var usRow='';
+    if(us&&M.HAS_US){
+      var k=M.krw(us), s=k.months[0], e=k.months[k.months.length-1], iu=us.months.indexOf(s), ie=us.months.indexOf(e);
+      var loc=us.prices[ie]/us.prices[iu]-1, fxr=M.FX[e]/M.FX[s]-1, a=INVEST.analyze({months:k.months,prices:k.prices},null);
+      var kra=kr?INVEST.analyze({months:ITEMS[kr].months,prices:ITEMS[kr].prices},null):null;
+      usRow=T(['항목','미국 : '+A(esc(us.name)),'한국 : '+A(kr?esc(ITEMS[kr].name):'-')],[
+        ['달러 수익률',A(pct(loc,0)),'원화 그대로'],['그 기간 환율 변화',A(Math.round(M.FX[s]).toLocaleString()+' 원 → '+Math.round(M.FX[e]).toLocaleString()+' 원 ( '+pct(fxr,1)+' )'),'없음'],
+        ['원화로 본 수익률',A(pct(a.total,0)),A(kra?pct(kra.total,0):'-')],['100만원 → 지금 가치',A(Math.round(100*(1+a.total)).toLocaleString()+' 만원'),A(kra?Math.round(100*(1+kra.total)).toLocaleString()+' 만원':'-')],
+        ['최대 손실폭',A(pct(a.mdd,0)),A(kra?pct(kra.mdd,0):'-')]])
+        +line('알게 된 점 : '+A('예 : '+esc(us.name)+' 주가는 달러로 '+pct(loc,0)+'였지만 그 기간 환율이 '+pct(fxr,1)+' 변해서 원화로는 '+pct(a.total,0)+'가 되었다. 환율이 '+(fxr>=0?'올라서 이득이었다.':'내려서 손해였다.')));
+    } else usRow='<p class="src">미국 주식·환율 자료(js/us-data.js)가 없어 이 칸의 정답을 만들 수 없습니다.</p>';
+    return head(4,'ETF와 해외 주식 알아보기')
+      +'<h3>1단계 · 주식을 담아 놓은 그릇, ETF 알아보기</h3>'
+      +'<ul style="font-size:14px;margin:4px 0 8px;padding-left:20px"><li>ETF는 여러 회사의 주식을 한 '+A('그릇(바구니)')+'에 담아 주식 1주처럼 사고팔 수 있게 만든 상품이다.</li>'
+      +'<li>여러 회사에 나눠 담는 것을 '+A('분산')+' 투자라고 한다.</li><li>ETF는 그릇일 뿐이라 '+A('무엇을 담았는지')+'에 따라 위험이 달라진다.</li></ul>'
+      +'<h4>분야별 비교 (표 4-1)</h4>'
+      +T(['분야','가장 많이 오른 회사','가장 적게 오른 회사','그릇 수익률','그릇 최대 손실폭','회사 하나 평균 최대 손실폭'],st.filter(function(x){ return x.n>=3; }).map(function(x){
+        return [A(esc(x.sec.n)),A(esc(x.best.it.name)+' '+pct(x.best.a.total,0)),A(esc(x.worst.it.name)+' '+pct(x.worst.a.total,0)),A(pct(x.ba.total,0)),A(pct(x.ba.mdd,0)),A(pct(x.avgMdd,0))]; }))
+      +line('무엇을 알 수 있나요? '+A('결과를 미리 알 수 없으니 회사 하나만 사면 크게 떨어질 수 있다. 모두 담은 그릇은 가장 좋은 회사만큼 벌지는 못했지만 최대 손실폭이 회사 하나 평균보다 작아 덜 흔들렸다.'))
+      +'<h4 class="pb">나만의 ETF 만들기 (예시 : 시가총액 상위 4곳)</h4>'
+      +T(['이름','100만원 → 지금 가치','전체 수익률'],fv.map(function(x,i){ return ['그릇에 담은 회사 '+(i+1)+' : '+A(esc(x.name)),A(Math.round(x.val).toLocaleString()+' 만원'),A(pct(x.tot,0))]; })
+        .concat([['<b>나만의 ETF (합 '+Math.round(sum).toLocaleString()+' ÷ 4)</b>',A(Math.round(avg).toLocaleString()+' 만원'),A(pct(avg/100-1,0))],
+          ['따로 비교할 회사 : '+A(ov?esc(ov.name):'-'),A(ov?Math.round(ov.val).toLocaleString()+' 만원':'-'),A(ov?pct(ov.tot,0):'-')],
+          ['실제 ETF (표 4-2) : '+A(kv?'KODEX 200':'ETF 자료 없음'),A(kv?Math.round(kv.val).toLocaleString()+' 만원':'-'),A(kv?pct(kv.tot,0):'-')]]),{num:1})
+      +line('알게 된 점 : '+A('예 : 가장 많이 오른 회사 하나보다는 덜 벌었지만, 떨어진 회사가 섞여도 그릇 전체는 안정적으로 올랐다.'))
+      +'<h3 class="pb">2단계 · 해외 주식 알아보기</h3><h4>환율 계산기</h4>'
+      +T(['단계','예시 ① 주가 +10%, 환율 하락','예시 ② 주가 +10%, 환율 상승','내가 만든 상황 (예시)'],[
+        ['투자한 돈','100만원','100만원',A('100 만원')],['살 때 환율 → 팔 때 환율','1,450원 → 1,250원','1,300원 → 1,450원',A('1,300 원 → 1,450 원')],
+        ['살 때 주가 → 팔 때 주가','100달러 → 110달러','100달러 → 110달러',A('100 달러 → 90 달러')],
+        ['① 달러로 바꾸기',A(f2(e1[0])+' 달러'),A(f2(e2[0])+' 달러'),A(f2(e3[0])+' 달러')],['② 팔 때 받은 달러',A(f2(e1[1])+' 달러'),A(f2(e2[1])+' 달러'),A(f2(e3[1])+' 달러')],
+        ['③ 원화로 받은 돈',A(f2(e1[2])+' 만원'),A(f2(e2[2])+' 만원'),A(f2(e3[2])+' 만원')],['원화 기준 수익률',A(pct(e1[3])),A(pct(e2[3])),A(pct(e3[3]))]],{num:1})
+      +line('예시 ①에서 손해를 본 이유 : '+A('주가는 10% 올랐지만 그 사이 환율이 1,450원에서 1,250원으로 약 13.8% 내려서, 달러를 원화로 바꿀 때 받은 돈이 줄었기 때문이다.'))
+      +'<h4>미국 주식 vs 한국 주식 (표 4-3, 3-2)</h4>'+usRow
+      +'<h4>해외 주식이 어려운 이유</h4>'
+      +T(['번호','어려운 이유','설명'],[['1',A('환율'),'주가와 이것 두 가지를 함께 맞혀야 합니다.'],['2',A('세금'),'1년에 번 돈이 250만원을 넘으면 넘은 금액의 22%'],['3',A('시차'),'한국 시간 밤 11시 30분~새벽 6시에 열림'],
+        ['4',A('정보(영어)'),'회사 소식과 보고서가 대부분 영어'],['5',A('환전 수수료'),'원화와 달러를 바꿀 때마다 내는 돈']])
+      +line('꼭 확인할 것 : '+A('주가만 보지 말고 지금 환율이 높은지 낮은지, 세금과 수수료가 얼마인지 함께 확인한다.'))
+      +'<h3>오늘 정리하기</h3>'+line(A('예 : ETF - 좋은 점 : 여러 회사에 나눠 담아 한 회사가 떨어져도 덜 흔들린다. 조심할 점 : 무엇을 담았는지 확인해야 한다(레버리지 ETF처럼 더 위험한 것도 있음).'));
+  }
+
+  /* ---------- 5차시 ---------- */
+  function plan(it,X,Y,fixed){
+    var n=INVEST.monthRange([[M.DSTART,M.DEND]]).length, v=0, units=0, i;
+    if(fixed!==undefined){ var r=Math.pow(1+fixed/100,1/12)-1; for(i=0;i<n;i++) v=(i===0?0:v*(1+r))+(i===0?X:0)+Y; return {v:v,n:n,mdd:0}; }
+    var k=M.krw(it); for(i=0;i<n;i++) units+=((i===0?X:0)+Y)/k.prices[i];
+    return {v:units*k.prices[n-1],n:n,mdd:INVEST.analyze({months:k.months,prices:k.prices},null).mdd};
+  }
+  function fullOk(id){ var it=ITEMS[id]; if(!it) return false; return it.cur==='USD'?M.krw(it).months[0]===M.DSTART:M.isFull(id); }
+  function pick(list){ for(var i=0;i<list.length;i++){ var id=list[i].charAt(0)==='u'&&ITEMS[list[i]]?list[i]:M.byName(list[i]); if(id&&fullOk(id)) return id; } return null; }
+  function s5(S){
+    /* 레버리지 6일 */
+    var a=[100], b=[100], d=[10,-10,10,-10,10,-10];
+    d.forEach(function(x,i){ a.push(a[i]*(1+x/100)); b.push(b[i]*(1+2*x/100)); });
+    var ra=a[6]/100-1, rb=b[6]/100-1;
+    /* 뉴스 */
+    var NEWS=[['회사 소식 : 이익 20% 증가 발표','↑ / 그대로',8,0],['SNS : 유명인 "이 코인이 미래다!"','그대로 / ↑',0,35],['정부 : 코인 거래 금지 소문','↓ / ↓',-1,-30],
+      ['사고 : 거래소 해킹','그대로 / ↓',0,-20],['유행 : "친구들이 다 벌었대"','↑ / ↑',2,25],['회사 소식 : 공장 사고로 이익 감소','↓ / 그대로',-12,0]];
+    var sp=100, cp=100, nrows=[['시작','-','100','100']];
+    NEWS.forEach(function(n){ sp*=1+n[2]/100; cp*=1+n[3]/100; nrows.push([n[0],A(n[1]),A(f2(sp)),A(f2(cp))]); });
+    /* 코로나 */
+    var tf=M.topIds().filter(M.isFull), cv='';
+    if(tf.length>1){
+      var bw=M.bowl(tf.map(function(id){return ITEMS[id];}),M.DSTART,M.DEND), last=bw.prices[bw.prices.length-1];
+      function at(w){ return 100*last/bw.prices[w]; }
+      var best=0; for(var w=1;w<24&&w<bw.prices.length-12;w++) if(at(w)>at(best)) best=w;
+      var A0=at(0);
+      cv=T(['투자를 시작한 달','100만원 → 지금 가치','바로 투자한 사람보다'],[['A · '+ym(bw.months[0]),A(Math.round(A0)+' 만원'),'-'],
+        ['B · '+ym(bw.months[2]),A(Math.round(at(2))+' 만원'),A(Math.round(Math.abs(at(2)-A0))+' 만원 '+(at(2)>=A0?'더':'덜'))],
+        ['C · '+ym(bw.months[Math.min(23,bw.months.length-13)]),A(Math.round(at(Math.min(23,bw.months.length-13)))+' 만원'),A(Math.round(Math.abs(at(Math.min(23,bw.months.length-13))-A0))+' 만원 '+(at(Math.min(23,bw.months.length-13))>=A0?'더':'덜'))],
+        ['가장 좋았던 달 : '+A(ym(bw.months[best])),A(Math.round(at(best))+' 만원'),'']],{num:1});
+    }
+    /* 투자 비율 */
+    var P={safe:[['예금·적금',50,'d'],['국내 주식 ETF',30,'k'],['금',20,'g']],mid:[['예금·적금',30,'d'],['국내 주식 ETF',40,'k'],['해외 주식 ETF',30,'u']],agg:[['국내 주식 ETF',30,'k'],['해외 주식 ETF',40,'u'],['국내 개별 주식',30,'s']]}[$('aPf').value];
+    var ITEM={k:pick(['KODEX 200','TIGER 200']),u:pick(['uSPY','TIGER 미국S&P500','uQQQ']),g:pick(['KODEX 골드선물(H)','uGC=F']),s:M.topIds().filter(M.isFull)[0]};
+    if(!ITEM.k) ITEM.k=ITEM.s;
+    var X=val('aX'), Y=val('aY'), n=INVEST.monthRange([[M.DSTART,M.DEND]]).length, principal=X+Y*n, tot=0, mdd=0, rows=[];
+    P.forEach(function(p,i){
+      var id=p[2]==='d'?null:ITEM[p[2]], r=p[2]==='d'?plan(null,X,Y,3):(id?plan(ITEMS[id],X,Y):{v:0,mdd:0});
+      tot+=r.v*p[1]/100; mdd+=r.mdd*p[1]/100;
+      rows.push([String(i+1),A(p[0]),A(p[2]==='d'?'연 3%':(id?esc(ITEMS[id].name):'자료 없음')),A(p[1]+' %'),A(won(r.v)),A(won(r.v*p[1]/100)),A(pct(r.mdd*p[1]/100,1))]);
+    });
+    rows.push(['합계','','',A('100 %'),'',A(won(tot)),A(pct(mdd,1))]);
+    function V(R){ var m=Math.pow(1+R/100,1/12)-1, v=0; for(var t=0;t<n;t++) v+=((t===0?X:0)+Y)*Math.pow(1+m,n-1-t); return v; }
+    var lo=-30,hi=60; for(var k=0;k<60;k++){ var mid=(lo+hi)/2; if(V(mid)<tot) lo=mid; else hi=mid; }
+    var irr=(lo+hi)/2, irrRow=Math.max(-10,Math.min(30,Math.round(irr/2)*2)), dep=plan(null,X,Y,3).v;
+    var col=nearest(RATES,Math.min(irr,10)), T0=S.T4, rowMon=nearest(SAVES,S.mon), ym1=years22(T0,rowMon,col), ym3=years22(T0,rowMon,3), ym10=years22(T0,rowMon,10);
+    return head(5,'안정적인 투자 계획 세우기')
+      +'<h3>1단계 · 위험한 투자 방법 알아보기</h3><h4>① 레버리지 : +10%와 −10%가 반복될 때</h4>'
+      +T(['날','주가 변화','일반 투자 (만원)','2배 레버리지 변화','2배 레버리지 (만원)'],[['시작','-','100','-','100']].concat(d.map(function(x,i){
+        return [(i+1)+'일',(x>0?'+':'−')+Math.abs(x)+'%',A(f1(a[i+1])),(x>0?'+':'−')+Math.abs(2*x)+'%',A(f1(b[i+1]))]; })),{num:1})
+      +T(['일반 투자 수익률','일반 투자 수익률의 2배 (단순 2배)','실제 레버리지 수익률'],[[A(pct(ra)),A(pct(2*ra)),A(pct(rb))]],{num:0})
+      +line('판정 : '+A('2배보다 더 잃었다')+' · 하루 −35%이면 2배는 '+A('−70 %')+', 3배는 '+A('−105% → 0원(−100 %)')+' · 100만원이 70% 줄면 '+A('30')+' 만원, 다시 100만원이 되려면 '+A('233.3 %')+' 올라야 함')
+      +line('이유 : '+A('레버리지는 매일 바뀐 금액에서 다시 2배를 해서, 오르락내리락할 때마다 돈이 조금씩 새어 나가기 때문이다.'))
+      +'<h4 class="pb">② 빚내서 투자하기 (내 돈 1,000 + 빌린 돈 1,000, 이자 8%)</h4>'
+      +T(['항목','수익률 +10%일 때','반대로 −10%였다면'],[['투자한 돈',A('2,000 만원'),A('2,000 만원')],['투자로 번 돈 (잃은 돈)',A('+200 만원'),A('−200 만원')],['갚아야 할 이자',A('80 만원'),A('80 만원')],
+        ['이자를 갚고 남은 진짜 이익',A('+120 만원'),A('−280 만원')],['내 돈 기준 수익률',A('+12 %'),A('−28 %')],['빚 없이 내 돈만 투자했다면',A('+100 만원'),A('−100 만원')]],{num:1})
+      +line('조심할 점 : '+A('이자는 결과와 상관없이 갚아야 하고, 손해가 나면 이자까지 더해져 손실이 훨씬 커진다. 내 돈보다 많이 잃으면 빚이 남는다.'))
+      +'<h4>③ 코인 : 비트코인 칸</h4>'
+      +T(['성적표 항목','삼성전자','비트코인'],[['일하는 회사·직원','있음',A('없음')],['매출','약 300조원',A('없음')],['영업이익','약 33조원',A('없음')],['가진 재산','약 500조원 이상',A('없음')],
+        ['주주에게 나눠 주는 돈','배당금',A('없음')],['가격을 정하는 근거','회사가 벌 돈 + 기대',A('사람들의 기대와 믿음 (사려는 사람과 팔려는 사람)')]])
+      +'<h4>뉴스 카드 활동 (선생님이 알려 줄 실제 변화 : 웹앱과 같음)</h4>'+T(['뉴스','예상 (주식 / 코인)','주식 가격','코인 가격'],nrows,{num:2})
+      +line('정리 : '+A('주식은 회사의 성적표(이익)가 바뀔 때 주로 움직이지만, 코인은 버는 돈이 없어 사람들의 마음(기대·공포·유행)만으로 크게 움직인다.'))
+      +'<h3 class="pb">2단계 · 투자하지 않기 (표 5-1)</h3>'+cv
+      +line('내 생각 : '+A('항상 모든 돈을 투자할 필요는 없다. 현금이 있으면 폭락 때 싸게 살 수 있고 급한 일에도 쓸 수 있다. 하지만 폭락이 언제 올지 모르고, 현금은 물가만큼 가치가 줄어든다.'))
+      +'<h3 class="pb">3단계 · 나에게 맞는 투자 비율 찾기 (예시 : '+$('aPf').options[$('aPf').selectedIndex].text+')</h3>'
+      +T(['','투자 방법','회사·ETF','비율','표 5-2 지금 가치','지금 가치 × 비율','최대 손실폭 × 비율'],rows,{num:3})
+      +T(['결과','답'],[['넣은 돈 (원금)',A(won(principal))],['지금 가치 (합계)',A(won(tot))],['1년 평균 수익률 (표 5-3 가장 가까운 줄)',A(irrRow+' % (정확히는 '+f1(irr)+'%)')],
+        ['최대 손실폭 (어림값)',A(pct(mdd,1))],['모두 예금·적금(3%)이었다면',A(won(dep))],
+        ['내 투자 비율로 결혼 가능 나이',A('취직 '+S.job+' 세 + '+ytxt(ym1)+' = '+(ym1===null?'못 모음':f1(S.job+ym1)+' 세')+' (2차시 4단계의 나 → 표 2-2 '+won(T0)+' 표 · '+rowMon+'만원 줄 · '+col+'% 칸)'+(irr>10?' · 10%로 '+(ym10===null?'못 모음':f1(S.job+ym10)+'세'):''))],
+        ['모두 예금·적금(3%)이라면 결혼 가능 나이',A('취직 '+S.job+' 세 + '+ytxt(ym3)+' = '+(ym3===null?'못 모음':f1(S.job+ym3)+' 세'))]],{num:1})
+      +line('손실 비교 : 최대 손실폭(어림값) '+A(f1(-mdd*100)+' %')+'는 3차시 한도 '+A(val('aLim')+' %')+' 안에 '+A(-mdd*100<=val('aLim')?'들어온다':'넘는다'))
+      +line('비율과 이유 : '+A('예 : 예금·적금으로 안전한 부분을 두고, 국내·해외 ETF에 나눠 담아 한쪽이 떨어져도 덜 흔들리게 했다. 최대 손실폭이 내 한도 안에 들어오는지도 확인했다.'));
+  }
+
+  function render(){
+    var S=student(), F={'1':s1,'2':s2,'3':s3,'4':s4,'5':s5}, html='', first=true;
+    [].slice.call(document.querySelectorAll('.pick')).filter(function(c){return c.checked;}).forEach(function(c){
+      html+='<section class="sheet'+(first?' first':'')+'">'+F[c.value](S)+'</section>'; first=false; });
+    $('out').innerHTML=html;
+    var w=[]; if(!M.HAS) w.push('주가 자료'); if(!M.HAS_ETF) w.push('ETF 자료'); if(!M.HAS_US) w.push('미국 주식·환율 자료');
+    $('warn').innerHTML=w.length?'<div class="box" style="margin-top:10px">'+w.join(', ')+'가 없어 일부 정답 칸이 비어 있습니다.</div>':'';
+  }
+  /* 선택 상자 채우기 */
+  $('aJob').innerHTML=(window.JOBS||[]).map(function(j){ return '<option'+(j.name==='교사(중등)'?' selected':'')+'>'+esc(j.name)+'</option>'; }).join('');
+  var secOpts=M.SECTORS.map(function(s,i){ var st=M.secStats(s); return {i:i,ok:!s.all&&st.n>=3,txt:s.n+(st.n>=3?' ('+st.n+'곳)':' (자료 부족)')}; });
+  var okIdx=secOpts.filter(function(o){return o.ok;}).map(function(o){return o.i;});
+  ['aS1','aS2'].forEach(function(id,k){ $(id).innerHTML=secOpts.map(function(o){ return '<option value="'+o.i+'"'+(o.ok?'':' disabled')+(okIdx[k]===o.i?' selected':'')+'>'+esc(o.txt)+'</option>'; }).join(''); });
+  document.querySelectorAll('.noprint input, .noprint select').forEach(function(el){ el.addEventListener('change',render); });
+  render();
+})();
+</script>
+</body></html>
